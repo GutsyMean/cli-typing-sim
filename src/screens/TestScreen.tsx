@@ -23,6 +23,9 @@ export interface TestResult {
 const BACK_WINDOW = 4
 const AHEAD_WINDOW = 2
 
+const isTouchDevice =
+  typeof window !== 'undefined' && window.matchMedia('(pointer: coarse)').matches
+
 export function TestScreen({
   onFinish,
   onRestart,
@@ -163,6 +166,12 @@ export function TestScreen({
         <KeyHint keys={['esc']} label="restart" />
         <KeyHint keys={['tab', 'enter']} label={tabArmed ? 'restart armed…' : 'restart'} />
       </div>
+
+      {isTouchDevice && (
+        <p className="mt-4 text-center font-sans text-sm text-dim">
+          termtype needs a physical keyboard — grab your laptop for the full experience.
+        </p>
+      )}
     </div>
   )
 }

@@ -17,7 +17,11 @@ export function ResultsScreen({
   onHome: () => void
 }) {
   useEffect(() => {
+    // Grace period so typing momentum from the final second of a test
+    // can't accidentally dismiss the results.
+    const armedAt = performance.now() + 400
     const onKey = (e: KeyboardEvent) => {
+      if (performance.now() < armedAt) return
       if (e.key === 'Enter' || e.key === 'Tab') {
         e.preventDefault()
         onNext()

@@ -1,5 +1,5 @@
 import { animate } from 'motion/react'
-import { useEffect, useRef, useState } from 'react'
+import { useEffect, useState } from 'react'
 import type { TestMetrics } from '../../engine/metrics'
 import { fmt1, fmtClock, fmtInt, fmtPercent } from '../../lib/format'
 
@@ -13,10 +13,7 @@ function CountUp({
   delay?: number
 }) {
   const [display, setDisplay] = useState(0)
-  const done = useRef(false)
   useEffect(() => {
-    if (done.current) return
-    done.current = true
     const controls = animate(0, value, {
       duration: 0.9,
       delay,

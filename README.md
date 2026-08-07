@@ -1,32 +1,46 @@
-# React + TypeScript + Vite
+# termtype
 
-This template provides a minimal setup to get React working in Vite with HMR and some Oxlint rules.
+Muscle memory for the command line. A [monkeytype](https://monkeytype.com)-style
+typing trainer for **real CLI commands**, rendered as a simulated terminal.
 
-Currently, two official plugins are available:
+![termtype](public/terminal.svg)
 
-- [@vitejs/plugin-react](https://github.com/vitejs/vite-plugin-react/blob/main/packages/plugin-react) uses [Oxc](https://oxc.rs)
-- [@vitejs/plugin-react-swc](https://github.com/vitejs/vite-plugin-react/blob/main/packages/plugin-react-swc) uses [SWC](https://swc.rs/)
+## Features
 
-## React Compiler
+- **689 real commands** across 15 categories — bash, git, docker, podman,
+  kubectl, npm, PowerShell, cmd.exe, ssh & networking, vim, systemd, archives,
+  text tools (grep/sed/awk/jq), package managers, and cloud CLIs — in 3
+  difficulty tiers from `ls -la` to flag-heavy one-liners.
+- **Terminal-native test flow** — every command sits on its own prompt line
+  (`dev@local:~/projects$`, `PS C:\Users\dev>`, …); press Enter to "run" it and
+  get the next prompt. Prompts can auto-match each command's native shell.
+- **Monkeytype-style feedback** — per-character coloring, spring-animated
+  caret (block/line/underscore), live WPM, caps-lock warning, `esc` or
+  `tab+enter` to restart, timer starts on your first keystroke.
+- **Deep configuration** — timed sprints (15/30/60/120s) or command counts
+  (10/25/50), category multi-select, difficulty tiers, forgiving vs.
+  stop-on-error, 8 terminal themes (dracula, nord, gruvbox, solarized,
+  catppuccin, CRT green, paper…), font sizes, synthesized key sounds, and more.
+- **Results that teach** — WPM / raw / accuracy / consistency, a per-second
+  WPM chart with error markers, most-missed keys, per-category accuracy, and a
+  progress graph persisted in localStorage.
 
-The React Compiler is not enabled on this template because of its impact on dev & build performances. To add it, see [this documentation](https://react.dev/learn/react-compiler/installation).
+## Stack
 
-## Expanding the Oxlint configuration
+Vite · React · TypeScript · Tailwind CSS v4 · [Motion](https://motion.dev)
+(`motion/react`) · zustand · vitest. Fonts: Google Sans Code (terminal) and
+Outfit (UI) from Google Fonts.
 
-If you are developing a production application, we recommend enabling type-aware lint rules by installing `oxlint-tsgolint` and editing `.oxlintrc.json`:
+## Develop
 
-```json
-{
-  "$schema": "./node_modules/oxlint/configuration_schema.json",
-  "plugins": ["react", "typescript", "oxc"],
-  "options": {
-    "typeAware": true
-  },
-  "rules": {
-    "react/rules-of-hooks": "error",
-    "react/only-export-components": ["warn", { "allowConstantExport": true }]
-  }
-}
+```sh
+npm install
+npm run dev      # local dev server
+npx vitest run   # engine + data-invariant tests
+npm run build    # production build in dist/
 ```
 
-See the [Oxlint rules documentation](https://oxc.rs/docs/guide/usage/linter/rules) for the full list of rules and categories.
+## Deploy
+
+Static SPA — no backend. Connect the repo to Vercel or Netlify; the defaults
+(`npm run build`, output `dist/`) just work.

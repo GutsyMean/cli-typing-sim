@@ -33,6 +33,8 @@ export const CommandLine = memo(function CommandLine({
 
   return (
     <div
+      data-line={state}
+      data-cmd={entry.text}
       className={
         state === 'done'
           ? 'opacity-45 transition-opacity duration-300'
