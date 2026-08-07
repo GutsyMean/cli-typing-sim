@@ -32,6 +32,7 @@ export const CommandLine = memo(function CommandLine({
   const active = state === 'active'
 
   return (
+    // data-line / data-cmd are the hooks e2e/smoke.mjs drives the test with
     <div
       data-line={state}
       data-cmd={entry.text}

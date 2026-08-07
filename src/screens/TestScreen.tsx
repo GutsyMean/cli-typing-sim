@@ -24,7 +24,8 @@ const BACK_WINDOW = 4
 const AHEAD_WINDOW = 2
 
 const isTouchDevice =
-  typeof window !== 'undefined' && window.matchMedia('(pointer: coarse)').matches
+  typeof window !== 'undefined' &&
+  window.matchMedia('(hover: none) and (pointer: coarse)').matches
 
 export function TestScreen({
   onFinish,
@@ -169,7 +170,7 @@ export function TestScreen({
 
       {isTouchDevice && (
         <p className="mt-4 text-center font-sans text-sm text-dim">
-          termtype needs a physical keyboard — grab your laptop for the full experience.
+          termtype works best with a physical keyboard.
         </p>
       )}
     </div>

@@ -1,7 +1,7 @@
 import { animate } from 'motion/react'
 import { useEffect, useState } from 'react'
 import type { TestMetrics } from '../../engine/metrics'
-import { fmt1, fmtClock, fmtInt, fmtPercent } from '../../lib/format'
+import { fmtClock, fmtInt, fmtPercent } from '../../lib/format'
 
 function CountUp({
   value,
@@ -74,8 +74,4 @@ export function StatCards({ metrics }: { metrics: TestMetrics }) {
       </div>
     </div>
   )
-}
-
-export function fmtWpm(n: number): string {
-  return fmt1(n)
 }

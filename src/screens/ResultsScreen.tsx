@@ -21,14 +21,11 @@ export function ResultsScreen({
     // can't accidentally dismiss the results.
     const armedAt = performance.now() + 400
     const onKey = (e: KeyboardEvent) => {
+      if (e.key !== 'Enter' && e.key !== 'Tab' && e.key !== 'Escape') return
+      e.preventDefault()
       if (performance.now() < armedAt) return
-      if (e.key === 'Enter' || e.key === 'Tab') {
-        e.preventDefault()
-        onNext()
-      } else if (e.key === 'Escape') {
-        e.preventDefault()
-        onHome()
-      }
+      if (e.key === 'Escape') onHome()
+      else onNext()
     }
     window.addEventListener('keydown', onKey)
     return () => window.removeEventListener('keydown', onKey)
