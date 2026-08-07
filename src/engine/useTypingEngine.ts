@@ -15,7 +15,11 @@ const LOOKAHEAD = 2
 export function useTypingEngine(
   stream: CommandStream,
   config: EngineConfig,
-  callbacks: { onFinish: (state: EngineState) => void; onRestart: () => void },
+  callbacks: {
+    onFinish: (state: EngineState) => void
+    onRestart: () => void
+    onQuit: () => void
+  },
 ) {
   const [state, dispatch] = useReducer(
     typingReducer,
@@ -41,14 +45,15 @@ export function useTypingEngine(
     const onKeyDown = (e: KeyboardEvent) => {
       setCapsLock(e.getModifierState('CapsLock'))
 
-      // Restart chords are handled before the engine sees anything.
+      // Quit/restart chords are handled before the engine sees anything.
       if (e.key === 'Escape') {
         e.preventDefault()
-        // In endless mode a running session has no natural end — esc is it.
+        // In endless mode a running session has no natural end — esc ends it
+        // and shows results; everywhere else esc quits back to config.
         if (config.mode === 'endless' && stateRef.current.status === 'running') {
           dispatch({ type: 'finishNow', now: performance.now() })
         } else {
-          callbacksRef.current.onRestart()
+          callbacksRef.current.onQuit()
         }
         return
       }

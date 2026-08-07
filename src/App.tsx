@@ -53,6 +53,7 @@ function App() {
             <TestScreen
               key={screen.seed}
               onRestart={() => setScreen({ name: 'test', seed: screen.seed + 1 })}
+              onExit={() => setScreen({ name: 'home' })}
               onFinish={(result) =>
                 setScreen({ name: 'results', result, seed: screen.seed })
               }

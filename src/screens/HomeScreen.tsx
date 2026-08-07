@@ -98,8 +98,9 @@ export function HomeScreen({ onStart }: { onStart: () => void }) {
       <footer className="mt-12 flex items-center justify-center gap-6 border-t border-edge pt-6 pb-4">
         <KeyHint keys={['enter']} label="start" />
         <span className="font-sans text-[13px] text-faint">
-          during a test: <span className="text-dim">esc</span> restarts ·{' '}
-          <span className="text-dim">enter</span> runs a command
+          during a test: <span className="text-dim">enter</span> runs a command ·{' '}
+          <span className="text-dim">tab+enter</span> restarts ·{' '}
+          <span className="text-dim">esc</span> quits
         </span>
       </footer>
     </div>

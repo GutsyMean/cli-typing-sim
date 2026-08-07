@@ -30,9 +30,11 @@ const isTouchDevice =
 export function TestScreen({
   onFinish,
   onRestart,
+  onExit,
 }: {
   onFinish: (result: TestResult) => void
   onRestart: () => void
+  onExit: () => void
 }) {
   // Settings are snapshotted for the lifetime of this test instance —
   // the screen fully remounts (seed key) on restart.
@@ -56,6 +58,7 @@ export function TestScreen({
 
   const { state, capsLock, tabArmed } = useTypingEngine(stream, config, {
     onRestart,
+    onQuit: onExit,
     onFinish: (final: EngineState) => {
       if (final.startedAt === null || final.endedAt === null) return
       const metrics = computeMetrics(final.keystrokes, final.endedAt - final.startedAt)
@@ -173,7 +176,7 @@ export function TestScreen({
       <div className="mt-5 flex items-center justify-center gap-6">
         <KeyHint
           keys={['esc']}
-          label={settings.mode === 'endless' ? 'finish & see results' : 'restart'}
+          label={settings.mode === 'endless' ? 'finish & see results' : 'quit'}
         />
         <KeyHint keys={['tab', 'enter']} label={tabArmed ? 'restart armed…' : 'restart'} />
       </div>

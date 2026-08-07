@@ -94,15 +94,21 @@ check(
     .catch(() => false),
 )
 
-// Esc restarts mid-test.
-await page.keyboard.press('Escape')
+// Tab+Enter restarts mid-test.
+await page.keyboard.press('Tab')
+await page.keyboard.press('Enter')
 check(
-  'esc restarts test',
+  'tab+enter restarts test',
   await page
     .waitForSelector('[data-line="active"]', { timeout: 5000 })
     .then(() => true)
     .catch(() => false),
 )
+
+// Esc quits back to the config screen.
+await page.keyboard.press('Escape')
+await page.waitForTimeout(800)
+check('esc quits to config', (await page.textContent('body')).includes('command sets'))
 
 await browser.close()
 console.log(failures === 0 ? '\nSMOKE OK' : `\nSMOKE FAILED (${failures})`)
