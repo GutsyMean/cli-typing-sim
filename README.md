@@ -30,6 +30,11 @@ typing trainer for **real CLI commands**, rendered as a simulated terminal.
   wrong recalls show a character diff and make you copy-type the real command
   once. Mastery persists, and the home screen shows your learning progress per
   category with recently-mastered and needs-work lists.
+- **Flag-level learning** — a ~690-entry flag glossary covers every flag the
+  command sets use. After each answered command a flag breakdown explains what
+  its flags do, and the study selector (commands / flags / both) adds a flag
+  ladder: pick the flag from its meaning → pick the meaning of a flag → type
+  the flag from memory.
 
 ## Stack
 

@@ -8,12 +8,15 @@ import { safeStorage } from '../lib/storage'
 export type TestMode = 'timed' | 'commands' | 'endless' | 'learn'
 /** modes the typing engine runs — learn has its own session machinery */
 export type TypingMode = Exclude<TestMode, 'learn'>
+/** what learn mode studies */
+export type LearnScope = 'commands' | 'flags' | 'both'
 export type CaretStyle = 'block' | 'line' | 'underscore'
 export type FontSize = 'sm' | 'md' | 'lg' | 'xl'
 export type Behavior = 'forgiving' | 'stop-on-error'
 
 export interface Settings {
   mode: TestMode
+  learnScope: LearnScope
   duration: 15 | 30 | 60 | 120
   commandCount: 10 | 25 | 50
   categories: CategoryId[]
@@ -38,6 +41,7 @@ interface SettingsStore extends Settings {
 
 export const defaultSettings: Settings = {
   mode: 'timed',
+  learnScope: 'both',
   duration: 30,
   commandCount: 10,
   categories: ['bash', 'git'],

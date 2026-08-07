@@ -15,10 +15,11 @@ export function McQuestion({
   onContinue: () => void
 }) {
   const feedback = phase.name === 'feedback' ? phase : null
+  const mono = question.qtype !== 'flag-which'
 
   return (
-    <div data-qtype="mc" className="flex flex-col gap-1.5">
-      <div className="terminal-text text-dim select-none"># {question.entry.desc}</div>
+    <div data-qtype={question.qtype} className="flex flex-col gap-1.5">
+      <div className="terminal-text text-dim select-none"># {question.comment}</div>
       <div className="mt-1 flex flex-col gap-1">
         {question.options!.map((opt, i) => {
           const isCorrect = i === question.correctIndex
@@ -33,19 +34,20 @@ export function McQuestion({
           }
           return (
             <motion.button
-              key={`${opt.text}-${i}`}
+              key={`${opt}-${i}`}
               type="button"
               data-option={i}
-              data-correct={isCorrect}
               onClick={() => onChoose(i)}
               disabled={!!feedback}
               initial={{ opacity: 0, y: 6 }}
               animate={{ opacity: 1, y: 0 }}
               transition={{ delay: i * 0.04 }}
-              className={`terminal-text flex items-baseline gap-3 px-1 py-0.5 text-left transition-colors duration-150 ${cls}`}
+              className={`flex items-baseline gap-3 px-1 py-0.5 text-left transition-colors duration-150 ${
+                mono ? 'terminal-text' : 'terminal-text !font-sans !text-[0.85em]'
+              } ${cls}`}
             >
-              <span className="select-none font-semibold text-dim">[{i + 1}]</span>
-              <span className="whitespace-pre-wrap break-words">{opt.text}</span>
+              <span className="select-none font-mono font-semibold text-dim">[{i + 1}]</span>
+              <span className="whitespace-pre-wrap break-words">{opt}</span>
               {feedback && isCorrect && (
                 <span className="select-none font-sans text-xs text-accent">✓</span>
               )}

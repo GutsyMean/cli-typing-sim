@@ -9,6 +9,9 @@ const typeLabel: Record<QType, string> = {
   mc: 'multiple choice',
   cloze: 'fill the blank',
   recall: 'full recall',
+  'flag-mc': 'pick the flag',
+  'flag-which': 'flag meaning',
+  'flag-recall': 'type the flag',
 }
 
 export function LearnSummaryScreen({
@@ -75,20 +78,22 @@ export function LearnSummaryScreen({
         transition={{ delay: 0.1 }}
         className="grid gap-3 sm:grid-cols-3"
       >
-        {(Object.keys(typeLabel) as QType[]).map((t) => {
-          const s = summary.byType[t]
-          return (
-            <div key={t} className="rounded-xl border border-edge bg-term p-4">
-              <div className="font-sans text-xs font-medium text-faint">{typeLabel[t]}</div>
-              <div className="mt-1 font-mono text-2xl font-semibold text-fg tabular-nums">
-                {s.total === 0 ? '—' : fmtPercent((s.correct / s.total) * 100)}
+        {(Object.keys(typeLabel) as QType[])
+          .filter((t) => summary.byType[t].total > 0)
+          .map((t) => {
+            const s = summary.byType[t]
+            return (
+              <div key={t} className="rounded-xl border border-edge bg-term p-4">
+                <div className="font-sans text-xs font-medium text-faint">{typeLabel[t]}</div>
+                <div className="mt-1 font-mono text-2xl font-semibold text-fg tabular-nums">
+                  {fmtPercent((s.correct / s.total) * 100)}
+                </div>
+                <div className="font-sans text-xs text-dim">
+                  {s.correct}/{s.total} correct
+                </div>
               </div>
-              <div className="font-sans text-xs text-dim">
-                {s.correct}/{s.total} correct
-              </div>
-            </div>
-          )
-        })}
+            )
+          })}
       </motion.div>
 
       {summary.weakest.length > 0 && (
@@ -103,12 +108,12 @@ export function LearnSummaryScreen({
           <div className="flex flex-col gap-2">
             {summary.weakest.map((w) => (
               <div
-                key={`${w.entry.category}:${w.entry.text}`}
+                key={w.label}
                 className="flex items-baseline justify-between gap-4 rounded-lg border border-edge bg-surface px-3 py-2"
               >
                 <div className="min-w-0">
-                  <div className="truncate font-mono text-sm text-fg">{w.entry.text}</div>
-                  <div className="truncate font-sans text-xs text-faint">{w.entry.desc}</div>
+                  <div className="truncate font-mono text-sm text-fg">{w.label}</div>
+                  <div className="truncate font-sans text-xs text-faint">{w.desc}</div>
                 </div>
                 <span className="shrink-0 font-sans text-xs text-err">
                   ×{w.misses} missed

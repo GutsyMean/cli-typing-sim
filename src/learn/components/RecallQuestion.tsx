@@ -18,13 +18,14 @@ export function RecallQuestion({
   promptSetting: 'auto' | PromptId
   caretStyle: CaretStyle
 }) {
-  const { entry } = question
+  const entry = question.item.kind === 'command' ? question.item.entry : null
+  if (!entry) return null
   const feedback = phase.name === 'feedback' ? phase : null
   const diff = phase.name === 'recall-diff' ? phase : null
 
   return (
-    <div data-qtype="recall" data-answer={entry.text} className="flex flex-col gap-1.5">
-      <div className="terminal-text text-dim select-none"># {entry.desc}</div>
+    <div data-qtype="recall" className="flex flex-col gap-1.5">
+      <div className="terminal-text text-dim select-none"># {question.comment}</div>
 
       {!feedback && !diff && (
         <InputLine

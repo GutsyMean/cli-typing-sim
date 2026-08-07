@@ -1,20 +1,23 @@
 import { useEffect, useReducer, useRef, useState } from 'react'
-import type { CommandEntry } from '../data/types'
 import { classifyKey } from '../engine/keys'
 import {
   initLearn,
+  isMcType,
   learnReducer,
   summarize,
   type LearnState,
   type LearnSummary,
 } from './learnReducer'
 import { useLearn, type MasteryLevel } from './learnStore'
+import type { QuestionPools } from './questions'
+import type { StudyItem } from './studyItems'
 
 const FEEDBACK_MS = { correct: 900, roundComplete: 1800 }
 const GRACE_MS = 300
 
 export function useLearnSession(
-  pool: CommandEntry[],
+  items: StudyItem[],
+  pools: QuestionPools,
   callbacks: {
     onSummary: (summary: LearnSummary) => void
     onQuit: () => void
@@ -24,7 +27,7 @@ export function useLearnSession(
   const [state, dispatch] = useReducer(
     learnReducer,
     undefined,
-    () => initLearn(pool, useLearn.getState().records, Date.now()),
+    () => initLearn(items, pools, useLearn.getState().records, Date.now()),
   )
   const [tabArmed, setTabArmed] = useState(false)
   const callbacksRef = useRef(callbacks)
@@ -68,7 +71,7 @@ export function useLearnSession(
       }
 
       const q = s.queue[0]
-      if (phase === 'asking' && q?.qtype === 'mc') {
+      if (phase === 'asking' && q && isMcType(q.qtype)) {
         if (e.key >= '1' && e.key <= '9') {
           e.preventDefault()
           dispatch({ type: 'chooseMc', index: Number(e.key) - 1, now: Date.now() })

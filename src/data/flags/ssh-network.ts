@@ -1,0 +1,80 @@
+import type { FlagEntry } from './types'
+
+export const flags: FlagEntry[] = [
+  // ssh
+  { tool: 'ssh', flag: '-p', desc: 'connect to the given port instead of 22', category: 'ssh-network', difficulty: 1 },
+  { tool: 'ssh', flag: '-i', desc: 'use the given private key file for authentication', category: 'ssh-network', difficulty: 1 },
+  { tool: 'ssh', flag: '-L', desc: 'local port forward: local port tunnels to a remote host:port', category: 'ssh-network', difficulty: 2 },
+  { tool: 'ssh', flag: '-N', desc: 'do not run a remote command, just hold the connection (for tunnels)', category: 'ssh-network', difficulty: 2 },
+  { tool: 'ssh', flag: '-f', desc: 'go to background after authentication', category: 'ssh-network', difficulty: 2 },
+  { tool: 'ssh', flag: '-o', desc: 'set a config option inline (e.g. BatchMode=yes)', category: 'ssh-network', difficulty: 2 },
+  { tool: 'ssh', flag: '-v', desc: 'verbose output for debugging the connection', category: 'ssh-network', difficulty: 1 },
+  { tool: 'ssh', flag: '-R', desc: 'remote port forward: remote port tunnels back to a local host:port', category: 'ssh-network', difficulty: 3 },
+  { tool: 'ssh', flag: '-D', desc: 'dynamic port forwarding (SOCKS proxy) on the given local port', category: 'ssh-network', difficulty: 3 },
+  { tool: 'ssh', flag: '-J', desc: 'connect via a jump host (ProxyJump)', category: 'ssh-network', difficulty: 2 },
+  // ssh-keygen / ssh-copy-id / scp / sftp
+  { tool: 'ssh-keygen', flag: '-t', desc: 'key type to generate (e.g. ed25519, rsa)', category: 'ssh-network', difficulty: 1 },
+  { tool: 'ssh-keygen', flag: '-C', desc: 'comment embedded in the key (e.g. an identifying label)', category: 'ssh-network', difficulty: 2 },
+  { tool: 'ssh-copy-id', flag: '-i', desc: 'public key file to install on the remote host', category: 'ssh-network', difficulty: 1 },
+  { tool: 'scp', flag: '-r', desc: 'copy directories recursively', category: 'ssh-network', difficulty: 1 },
+  { tool: 'scp', flag: '-P', desc: 'connect to the given port (capital P, unlike ssh)', category: 'ssh-network', difficulty: 2 },
+  { tool: 'scp', flag: '-i', desc: 'use the given private key file for authentication', category: 'ssh-network', difficulty: 1 },
+  { tool: 'sftp', flag: '-b', desc: 'run commands from a batch file non-interactively', category: 'ssh-network', difficulty: 3 },
+  { tool: 'sftp', flag: '-i', desc: 'use the given private key file for authentication', category: 'ssh-network', difficulty: 2 },
+  // curl
+  { tool: 'curl', flag: '-I', desc: 'fetch headers only (HEAD request)', category: 'ssh-network', difficulty: 1 },
+  { tool: 'curl', flag: '-s', desc: 'silent mode: no progress meter or error messages', category: 'ssh-network', difficulty: 1 },
+  { tool: 'curl', flag: '-L', desc: 'follow redirects', category: 'ssh-network', difficulty: 1 },
+  { tool: 'curl', flag: '-o', desc: 'write output to the given file instead of stdout', category: 'ssh-network', difficulty: 1 },
+  { tool: 'curl', flag: '-X', desc: 'use the given HTTP method (e.g. POST, PUT)', category: 'ssh-network', difficulty: 1 },
+  { tool: 'curl', flag: '-H', desc: 'add a request header', category: 'ssh-network', difficulty: 1 },
+  { tool: 'curl', flag: '-d', desc: 'send the given data as the request body (implies POST)', category: 'ssh-network', difficulty: 1 },
+  { tool: 'curl', flag: '-fsSL', desc: 'fail on http errors, silent but show errors, follow redirects (-f -s -S -L)', category: 'ssh-network', difficulty: 2 },
+  { tool: 'curl', flag: '--retry', desc: 'retry the request up to N times on transient errors', category: 'ssh-network', difficulty: 2 },
+  { tool: 'curl', flag: '--max-time', desc: 'abort if the whole transfer takes longer than N seconds', category: 'ssh-network', difficulty: 2 },
+  { tool: 'curl', flag: '-k', desc: 'skip TLS certificate verification (insecure)', category: 'ssh-network', difficulty: 2 },
+  // wget
+  { tool: 'wget', flag: '-c', desc: 'continue a partially downloaded file', category: 'ssh-network', difficulty: 1 },
+  { tool: 'wget', flag: '-O', desc: 'save the download under the given filename', category: 'ssh-network', difficulty: 1 },
+  { tool: 'wget', flag: '-r', desc: 'download recursively', category: 'ssh-network', difficulty: 2 },
+  { tool: 'wget', flag: '-np', desc: 'no-parent: never ascend above the starting directory when recursing', category: 'ssh-network', difficulty: 3 },
+  { tool: 'wget', flag: '-nH', desc: 'do not create a directory named after the host', category: 'ssh-network', difficulty: 3 },
+  { tool: 'wget', flag: '--cut-dirs', desc: 'skip N leading directory components when saving files', category: 'ssh-network', difficulty: 3 },
+  { tool: 'wget', flag: '-A', desc: 'accept only files matching the given suffix/pattern list', category: 'ssh-network', difficulty: 3 },
+  // diagnostics
+  { tool: 'ping', flag: '-c', desc: 'stop after sending N packets', category: 'ssh-network', difficulty: 1 },
+  { tool: 'ping', flag: '-i', desc: 'interval in seconds between packets', category: 'ssh-network', difficulty: 2 },
+  { tool: 'traceroute', flag: '-n', desc: 'show numeric addresses, skipping DNS lookups', category: 'ssh-network', difficulty: 2 },
+  { tool: 'traceroute', flag: '-m', desc: 'maximum number of hops (TTL) to probe', category: 'ssh-network', difficulty: 3 },
+  { tool: 'nslookup', flag: '-type', desc: 'query the given DNS record type (e.g. TXT, MX)', category: 'ssh-network', difficulty: 2 },
+  { tool: 'ip', flag: '-4', desc: 'show IPv4 information only', category: 'ssh-network', difficulty: 2 },
+  { tool: 'arp', flag: '-a', desc: 'display the ARP cache for all interfaces', category: 'ssh-network', difficulty: 2 },
+  // sockets
+  { tool: 'ss', flag: '-t', desc: 'show TCP sockets', category: 'ssh-network', difficulty: 1 },
+  { tool: 'ss', flag: '-tulpn', desc: 'tcp + udp listeners with owning process, numeric ports (-t -u -l -p -n)', category: 'ssh-network', difficulty: 2 },
+  { tool: 'ss', flag: '-o', desc: 'show timer information for each socket', category: 'ssh-network', difficulty: 3 },
+  { tool: 'netstat', flag: '-an', desc: 'all sockets with numeric addresses (-a + -n)', category: 'ssh-network', difficulty: 1 },
+  { tool: 'netstat', flag: '-tulpn', desc: 'tcp + udp listeners with owning process, numeric ports (-t -u -l -p -n)', category: 'ssh-network', difficulty: 2 },
+  // nmap
+  { tool: 'nmap', flag: '-sV', desc: 'probe open ports to detect service versions', category: 'ssh-network', difficulty: 2 },
+  { tool: 'nmap', flag: '-sS', desc: 'TCP SYN (half-open) scan', category: 'ssh-network', difficulty: 2 },
+  { tool: 'nmap', flag: '-p', desc: 'scan the given port or port range', category: 'ssh-network', difficulty: 1 },
+  { tool: 'nmap', flag: '-T4', desc: 'aggressive timing template for faster scanning', category: 'ssh-network', difficulty: 3 },
+  { tool: 'nmap', flag: '-oN', desc: 'write normal (human-readable) output to the given file', category: 'ssh-network', difficulty: 3 },
+  // openssl
+  { tool: 'openssl s_client', flag: '-connect', desc: 'open a TLS connection to the given host:port', category: 'ssh-network', difficulty: 2 },
+  { tool: 'openssl x509', flag: '-in', desc: 'read the certificate from the given file', category: 'ssh-network', difficulty: 2 },
+  { tool: 'openssl x509', flag: '-noout', desc: 'do not print the encoded certificate itself', category: 'ssh-network', difficulty: 3 },
+  { tool: 'openssl x509', flag: '-subject', desc: 'print the certificate subject', category: 'ssh-network', difficulty: 2 },
+  { tool: 'openssl x509', flag: '-dates', desc: 'print the notBefore and notAfter validity dates', category: 'ssh-network', difficulty: 2 },
+  { tool: 'openssl x509', flag: '-fingerprint', desc: 'print the certificate fingerprint', category: 'ssh-network', difficulty: 3 },
+  { tool: 'openssl req', flag: '-x509', desc: 'output a self-signed certificate instead of a signing request', category: 'ssh-network', difficulty: 2 },
+  { tool: 'openssl req', flag: '-newkey', desc: 'generate a new key of the given type (e.g. rsa:4096)', category: 'ssh-network', difficulty: 3 },
+  { tool: 'openssl req', flag: '-keyout', desc: 'write the new private key to the given file', category: 'ssh-network', difficulty: 2 },
+  { tool: 'openssl req', flag: '-out', desc: 'write the output (certificate/request) to the given file', category: 'ssh-network', difficulty: 2 },
+  { tool: 'openssl req', flag: '-days', desc: 'number of days the certificate is valid', category: 'ssh-network', difficulty: 2 },
+  { tool: 'openssl req', flag: '-nodes', desc: 'do not encrypt the private key with a passphrase', category: 'ssh-network', difficulty: 3 },
+]
+
+/** "<command text> :: <flag>" pairs intentionally left without glossary entries */
+export const coverageExceptions: string[] = []

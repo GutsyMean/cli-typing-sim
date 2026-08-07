@@ -1,12 +1,14 @@
 import { useState } from 'react'
 import { allCommands, categoryLabel, categories as allCategories } from '../../data/commands'
+import { allFlags } from '../../data/flags'
 import { filterPool } from '../../data/generator'
-import type { CommandEntry } from '../../data/types'
+import type { CategoryId } from '../../data/types'
 import { useSettings } from '../../settings/settingsStore'
-import { commandKey, useLearn, type MasteryRecord } from '../learnStore'
+import { useLearn, type MasteryRecord } from '../learnStore'
+import { buildStudyItems, itemDesc, itemLabel, studyKey, type StudyItem } from '../studyItems'
 
 interface CategoryProgress {
-  id: CommandEntry['category']
+  id: CategoryId
   mastered: number
   learning: number
   total: number
@@ -23,12 +25,19 @@ function Bar({ mastered, learning, total }: { mastered: number; learning: number
   )
 }
 
-function CommandRow({ entry, note, noteClass }: { entry: CommandEntry; note: string; noteClass: string }) {
+function ItemRow({ item, note, noteClass }: { item: StudyItem; note: string; noteClass: string }) {
   return (
     <div className="flex items-baseline justify-between gap-4 rounded-lg border border-edge bg-surface px-3 py-2">
       <div className="min-w-0">
-        <div className="truncate font-mono text-sm text-fg">{entry.text}</div>
-        <div className="truncate font-sans text-xs text-faint">{entry.desc}</div>
+        <div className="truncate font-mono text-sm text-fg">
+          {itemLabel(item)}
+          {item.kind === 'flag' && (
+            <span className="ml-2 rounded bg-raised px-1.5 py-0.5 font-sans text-[10px] text-faint">
+              flag
+            </span>
+          )}
+        </div>
+        <div className="truncate font-sans text-xs text-faint">{itemDesc(item)}</div>
       </div>
       <span className={`shrink-0 font-sans text-xs ${noteClass}`}>{note}</span>
     </div>
@@ -40,39 +49,46 @@ export function LearnOverview() {
   const reset = useLearn((s) => s.reset)
   const selectedCategories = useSettings((s) => s.categories)
   const difficulties = useSettings((s) => s.difficulties)
+  const scope = useSettings((s) => s.learnScope)
   const [resetArmed, setResetArmed] = useState(false)
 
-  const pool = filterPool(allCommands, selectedCategories, difficulties)
-  const level = (e: CommandEntry) => records[commandKey(e)]?.level ?? 0
+  const commandPool = filterPool(allCommands, selectedCategories, difficulties)
+  const cats = new Set(selectedCategories)
+  const diffs = new Set(difficulties)
+  const flagPool = allFlags.filter((f) => cats.has(f.category) && diffs.has(f.difficulty))
+  const items = buildStudyItems(commandPool, flagPool, scope)
 
-  const mastered = pool.filter((e) => level(e) === 3)
-  const learning = pool.filter((e) => level(e) > 0 && level(e) < 3)
+  const level = (item: StudyItem) => records[studyKey(item)]?.level ?? 0
+  const mastered = items.filter((i) => level(i) === 3)
+  const learning = items.filter((i) => level(i) > 0 && level(i) < 3)
 
   const byCategory: CategoryProgress[] = allCategories
     .filter((c) => selectedCategories.includes(c.id))
     .map((c) => {
-      const entries = pool.filter((e) => e.category === c.id)
+      const inCat = items.filter(
+        (i) => (i.kind === 'command' ? i.entry.category : i.flag.category) === c.id,
+      )
       return {
         id: c.id,
-        mastered: entries.filter((e) => level(e) === 3).length,
-        learning: entries.filter((e) => level(e) > 0 && level(e) < 3).length,
-        total: entries.length,
+        mastered: inCat.filter((i) => level(i) === 3).length,
+        learning: inCat.filter((i) => level(i) > 0 && level(i) < 3).length,
+        total: inCat.length,
       }
     })
 
-  const withRecord = (e: CommandEntry): [CommandEntry, MasteryRecord] | null => {
-    const r = records[commandKey(e)]
-    return r ? [e, r] : null
+  const withRecord = (i: StudyItem): [StudyItem, MasteryRecord] | null => {
+    const r = records[studyKey(i)]
+    return r ? [i, r] : null
   }
   const recentlyMastered = mastered
     .map(withRecord)
-    .filter((x): x is [CommandEntry, MasteryRecord] => x !== null)
+    .filter((x): x is [StudyItem, MasteryRecord] => x !== null)
     .sort((a, b) => b[1].lastSeen - a[1].lastSeen)
     .slice(0, 5)
-  const needsWork = pool
+  const needsWork = items
     .map(withRecord)
-    .filter((x): x is [CommandEntry, MasteryRecord] => x !== null)
-    .filter(([e, r]) => r.misses > 0 && level(e) < 3)
+    .filter((x): x is [StudyItem, MasteryRecord] => x !== null)
+    .filter(([i, r]) => r.misses > 0 && level(i) < 3)
     .sort((a, b) => b[1].misses - a[1].misses)
     .slice(0, 5)
 
@@ -86,14 +102,22 @@ export function LearnOverview() {
     )
   }
 
+  const commandCount = items.filter((i) => i.kind === 'command').length
+  const flagCount = items.length - commandCount
+
   return (
     <div className="flex flex-col gap-6">
       <div>
         <div className="mb-2 flex items-baseline justify-between px-1">
           <span className="font-sans text-sm text-dim">
             <span className="font-mono font-semibold text-accent">{mastered.length}</span>
-            <span className="text-faint"> / {pool.length}</span> commands mastered in your
-            selection
+            <span className="text-faint"> / {items.length}</span> mastered in your selection
+            <span className="text-faint">
+              {' '}
+              ({commandCount > 0 && `${commandCount} commands`}
+              {commandCount > 0 && flagCount > 0 && ' · '}
+              {flagCount > 0 && `${flagCount} flags`})
+            </span>
             {learning.length > 0 && (
               <span className="text-faint"> · {learning.length} in progress</span>
             )}
@@ -116,7 +140,7 @@ export function LearnOverview() {
             {resetArmed ? 'click again to wipe all progress' : 'reset progress'}
           </button>
         </div>
-        <Bar mastered={mastered.length} learning={learning.length} total={pool.length} />
+        <Bar mastered={mastered.length} learning={learning.length} total={items.length} />
       </div>
 
       <div className="flex flex-col gap-2">
@@ -136,8 +160,8 @@ export function LearnOverview() {
           <div>
             <h3 className="mb-2 font-sans text-xs font-medium text-faint">recently mastered</h3>
             <div className="flex flex-col gap-2">
-              {recentlyMastered.map(([e]) => (
-                <CommandRow key={commandKey(e)} entry={e} note="✓" noteClass="text-accent" />
+              {recentlyMastered.map(([i]) => (
+                <ItemRow key={studyKey(i)} item={i} note="✓" noteClass="text-accent" />
               ))}
             </div>
           </div>
@@ -146,10 +170,10 @@ export function LearnOverview() {
           <div>
             <h3 className="mb-2 font-sans text-xs font-medium text-faint">needs work</h3>
             <div className="flex flex-col gap-2">
-              {needsWork.map(([e, r]) => (
-                <CommandRow
-                  key={commandKey(e)}
-                  entry={e}
+              {needsWork.map(([i, r]) => (
+                <ItemRow
+                  key={studyKey(i)}
+                  item={i}
                   note={`×${r.misses} missed`}
                   noteClass="text-err"
                 />

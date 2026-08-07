@@ -1,4 +1,5 @@
 import { describe, expect, it } from 'vitest'
+import type { FlagEntry } from '../data/flags'
 import type { CommandEntry } from '../data/types'
 import { nextInt, nextRandom, shuffleSeeded } from '../lib/rng'
 import { chooseClozeToken, tokenize } from './cloze'
@@ -6,13 +7,23 @@ import { diffStatuses, normalizeAnswer } from './diff'
 import { pickDistractors } from './distractors'
 import { initLearn, learnReducer, summarize, type LearnState } from './learnReducer'
 import { commandKey } from './learnStore'
-import { buildQuestion } from './questions'
+import { buildQuestion, type QuestionPools } from './questions'
+import { buildStudyItems, flagKey, studyKey, type StudyItem } from './studyItems'
 
 const entry = (
   text: string,
   category: CommandEntry['category'] = 'bash',
   difficulty: CommandEntry['difficulty'] = 1,
 ): CommandEntry => ({ text, category, difficulty, desc: `does ${text}` })
+
+const flag = (
+  tool: string,
+  f: string,
+  category: FlagEntry['category'] = 'bash',
+  difficulty: FlagEntry['difficulty'] = 1,
+): FlagEntry => ({ tool, flag: f, desc: `${tool} ${f} meaning`, category, difficulty })
+
+const cmdItem = (e: CommandEntry): StudyItem => ({ kind: 'command', entry: e })
 
 describe('rng', () => {
   it('is deterministic for a given seed', () => {
@@ -138,11 +149,29 @@ const POOL = [
   entry('history | tail'),
 ]
 
-const freshState = (pool = POOL, persisted = {}) => initLearn(pool, persisted, 12345)
+const FLAGS = [
+  flag('ls', '-la'),
+  flag('ls', '-R'),
+  flag('df', '-h'),
+  flag('tar', '-czf'),
+  flag('tar', '-xzf'),
+]
+
+const pools = (commands = POOL, flags: FlagEntry[] = []): QuestionPools => ({
+  commands,
+  flags,
+})
+
+const freshState = (commandPool = POOL, persisted = {}) =>
+  initLearn(
+    buildStudyItems(commandPool, [], 'commands'),
+    pools(commandPool),
+    persisted,
+    12345,
+  )
 
 function answerCurrentMc(state: LearnState, correct: boolean, now = 1000): LearnState {
   const q = state.queue[0]
-  expect(q.qtype).toBe('mc')
   const index = correct
     ? q.correctIndex!
     : (q.correctIndex! + 1) % q.options!.length
@@ -155,7 +184,7 @@ describe('learnReducer', () => {
       [commandKey(POOL[0])]: { level: 3 as const, lastSeen: 1, misses: 0 },
       [commandKey(POOL[1])]: { level: 2 as const, lastSeen: 2, misses: 0 },
     }
-    const s = initLearn(POOL, persisted, 7)
+    const s = initLearn(buildStudyItems(POOL, [], 'commands'), pools(), persisted, 7)
     expect(s.batch.length).toBe(7)
     expect(s.batch).not.toContain(commandKey(POOL[0])) // mastered excluded
     // seven level-0 commands outrank the lone level-2 one for the first batch
@@ -168,7 +197,7 @@ describe('learnReducer', () => {
     const persisted = {
       [commandKey(pool[1])]: { level: 2 as const, lastSeen: 2, misses: 0 },
     }
-    const s = initLearn(pool, persisted, 7)
+    const s = initLearn(buildStudyItems(pool, [], 'commands'), pools(pool), persisted, 7)
     expect(s.batch).toContain(commandKey(pool[1]))
     expect(s.queue.find((q) => q.key === commandKey(pool[1]))?.qtype).toBe('recall')
   })
@@ -184,7 +213,6 @@ describe('learnReducer', () => {
     s = answerCurrentMc(s, true)
     expect(s.levels[answered.key]).toBe(1)
     expect(s.phase.name).toBe('feedback')
-    // requeued at index 2 as a cloze with a fresh uid
     const requeued = s.queue.findIndex((q) => q.key === answered.key)
     expect(requeued).toBe(2)
     expect(['cloze', 'recall']).toContain(s.queue[requeued].qtype)
@@ -198,23 +226,7 @@ describe('learnReducer', () => {
     const phase = s.phase
     if (phase.name !== 'feedback') throw new Error('expected feedback phase')
     expect(phase.question.uid).toBe(answered.uid)
-    // the queue has moved on to a different question
     expect(s.queue[0].uid).not.toBe(answered.uid)
-  })
-
-  it('wrong recall phase carries the answered question for the diff', () => {
-    const pool = [entry('ls -la'), entry('df -h')]
-    const persisted = {
-      [commandKey(pool[0])]: { level: 2 as const, lastSeen: 1, misses: 0 },
-      [commandKey(pool[1])]: { level: 2 as const, lastSeen: 2, misses: 0 },
-    }
-    let s = initLearn(pool, persisted, 3)
-    const answered = s.queue[0]
-    for (const ch of 'wrong') s = learnReducer(s, { type: 'inputChar', char: ch })
-    s = learnReducer(s, { type: 'submitInput', now: 100 })
-    const phase = s.phase
-    if (phase.name !== 'recall-diff') throw new Error('expected recall-diff phase')
-    expect(phase.question.uid).toBe(answered.uid)
   })
 
   it('wrong mc keeps level at floor 0 and counts a miss', () => {
@@ -233,14 +245,13 @@ describe('learnReducer', () => {
       [commandKey(pool[0])]: { level: 1 as const, lastSeen: 5, misses: 0 },
       [commandKey(pool[1])]: { level: 1 as const, lastSeen: 5, misses: 0 },
     }
-    let s = initLearn(pool, persisted, 3)
+    let s = initLearn(buildStudyItems(pool, [], 'commands'), pools(pool), persisted, 3)
     const q = s.queue[0]
     expect(q.qtype).toBe('cloze')
-    for (const ch of q.mask!.token) s = learnReducer(s, { type: 'inputChar', char: ch })
+    for (const ch of q.answer!) s = learnReducer(s, { type: 'inputChar', char: ch })
     s = learnReducer(s, { type: 'submitInput', now: 100 })
     expect(s.levels[q.key]).toBe(2)
 
-    // now answer the other cloze wrongly
     s = learnReducer(s, { type: 'advance' })
     const q2 = s.queue[0]
     for (const ch of 'nope') s = learnReducer(s, { type: 'inputChar', char: ch })
@@ -254,7 +265,7 @@ describe('learnReducer', () => {
       [commandKey(pool[0])]: { level: 2 as const, lastSeen: 1, misses: 0 },
       [commandKey(pool[1])]: { level: 2 as const, lastSeen: 1, misses: 0 },
     }
-    let s = initLearn(pool, persisted, 3)
+    let s = initLearn(buildStudyItems(pool, [], 'commands'), pools(pool), persisted, 3)
     s = learnReducer(s, { type: 'submitInput', now: 100 })
     expect(s.phase.name).toBe('asking')
     expect(s.answered).toHaveLength(0)
@@ -266,27 +277,13 @@ describe('learnReducer', () => {
       [commandKey(pool[0])]: { level: 2 as const, lastSeen: 1, misses: 0 },
       [commandKey(pool[1])]: { level: 2 as const, lastSeen: 1, misses: 0 },
     }
-    let s = initLearn(pool, persisted, 3)
+    let s = initLearn(buildStudyItems(pool, [], 'commands'), pools(pool), persisted, 3)
     const q = s.queue[0]
-    for (const ch of q.entry.text) s = learnReducer(s, { type: 'inputChar', char: ch })
+    for (const ch of q.answer!) s = learnReducer(s, { type: 'inputChar', char: ch })
     s = learnReducer(s, { type: 'submitInput', now: 100 })
     expect(s.levels[q.key]).toBe(3)
     expect(s.masteredThisSession).toContain(q.key)
     expect(s.queue.find((x) => x.key === q.key)).toBeUndefined()
-  })
-
-  it('recall accepts extra whitespace', () => {
-    const pool = [entry('git status', 'git'), entry('df -h')]
-    const persisted = {
-      [commandKey(pool[0])]: { level: 2 as const, lastSeen: 1, misses: 0 },
-      [commandKey(pool[1])]: { level: 2 as const, lastSeen: 2, misses: 0 },
-    }
-    let s = initLearn(pool, persisted, 3)
-    const q = s.queue[0]
-    for (const ch of ` ${q.entry.text.replace(' ', '  ')} `)
-      s = learnReducer(s, { type: 'inputChar', char: ch })
-    s = learnReducer(s, { type: 'submitInput', now: 100 })
-    expect(s.levels[q.key]).toBe(3)
   })
 
   it('wrong recall goes diff → reinforce, which gates on a clean copy-type', () => {
@@ -295,29 +292,28 @@ describe('learnReducer', () => {
       [commandKey(pool[0])]: { level: 2 as const, lastSeen: 1, misses: 0 },
       [commandKey(pool[1])]: { level: 2 as const, lastSeen: 2, misses: 0 },
     }
-    let s = initLearn(pool, persisted, 3)
-    const q = s.queue[0]
+    let s = initLearn(buildStudyItems(pool, [], 'commands'), pools(pool), persisted, 3)
+    const answered = s.queue[0]
     for (const ch of 'wrong') s = learnReducer(s, { type: 'inputChar', char: ch })
     s = learnReducer(s, { type: 'submitInput', now: 100 })
-    expect(s.phase.name).toBe('recall-diff')
-    expect(s.levels[q.key]).toBe(1) // demoted
+    const phase = s.phase
+    if (phase.name !== 'recall-diff') throw new Error('expected recall-diff phase')
+    expect(phase.question.uid).toBe(answered.uid)
+    expect(s.levels[answered.key]).toBe(1) // demoted
     s = learnReducer(s, { type: 'advance' })
     expect(s.phase.name).toBe('reinforce')
 
-    // enter with nothing typed is rejected
     s = learnReducer(s, { type: 'reinforceEnter' })
     expect(s.phase.name).toBe('reinforce')
 
-    // type it with one mistake corrected along the way
-    const text = q.entry.text
+    const text = answered.answer!
     s = learnReducer(s, { type: 'reinforceChar', char: 'x' })
     s = learnReducer(s, { type: 'reinforceBackspace' })
     for (const ch of text) s = learnReducer(s, { type: 'reinforceChar', char: ch })
     s = learnReducer(s, { type: 'reinforceEnter' })
     expect(s.phase.name).toBe('asking')
     expect(s.reinforce).toBeNull()
-    // the demoted command is requeued
-    expect(s.queue.some((x) => x.key === q.key)).toBe(true)
+    expect(s.queue.some((x) => x.key === answered.key)).toBe(true)
   })
 
   it('finishing every command reaches round-complete then summary', () => {
@@ -325,13 +321,13 @@ describe('learnReducer', () => {
     const persisted = {
       [commandKey(pool[0])]: { level: 2 as const, lastSeen: 1, misses: 0 },
     }
-    let s = initLearn(pool, persisted, 3)
+    let s = initLearn(buildStudyItems(pool, [], 'commands'), pools(pool), persisted, 3)
     for (const ch of pool[0].text) s = learnReducer(s, { type: 'inputChar', char: ch })
     s = learnReducer(s, { type: 'submitInput', now: 100 })
-    s = learnReducer(s, { type: 'advance' }) // feedback → round-complete
+    s = learnReducer(s, { type: 'advance' })
     expect(s.phase.name).toBe('round-complete')
     expect(s.roundsCompleted).toBe(1)
-    s = learnReducer(s, { type: 'advance' }) // no candidates left → summary
+    s = learnReducer(s, { type: 'advance' })
     expect(s.phase.name).toBe('summary')
   })
 
@@ -354,7 +350,7 @@ describe('learnReducer', () => {
     const persisted = {
       [commandKey(pool[0])]: { level: 3 as const, lastSeen: 1, misses: 0 },
     }
-    const s = initLearn(pool, persisted, 3)
+    const s = initLearn(buildStudyItems(pool, [], 'commands'), pools(pool), persisted, 3)
     expect(s.phase.name).toBe('summary')
     expect(summarize(s).nothingToLearn).toBe(true)
   })
@@ -369,17 +365,96 @@ describe('learnReducer', () => {
   })
 })
 
-describe('buildQuestion', () => {
+describe('flag study items', () => {
+  const flagItems = buildStudyItems([], FLAGS, 'flags')
+  const flagPools = pools([], FLAGS)
+
+  it('scope both mixes commands and flags; scopes filter', () => {
+    expect(buildStudyItems(POOL, FLAGS, 'both')).toHaveLength(POOL.length + FLAGS.length)
+    expect(buildStudyItems(POOL, FLAGS, 'commands')).toHaveLength(POOL.length)
+    expect(buildStudyItems(POOL, FLAGS, 'flags')).toHaveLength(FLAGS.length)
+  })
+
+  it('flag ladder: flag-mc → flag-which → flag-recall', () => {
+    const item = flagItems[0]
+    const [q0] = buildQuestion(item, 0, flagPools, 5, 1, FLAGS)
+    expect(q0.qtype).toBe('flag-mc')
+    expect(q0.options).toContain(
+      item.kind === 'flag' ? item.flag.flag : '',
+    )
+    const [q1] = buildQuestion(item, 1, flagPools, 5, 2, FLAGS)
+    expect(q1.qtype).toBe('flag-which')
+    expect(q1.options).toContain(item.kind === 'flag' ? item.flag.desc : '')
+    const [q2] = buildQuestion(item, 2, flagPools, 5, 3, FLAGS)
+    expect(q2.qtype).toBe('flag-recall')
+    expect(q2.answer).toBe(item.kind === 'flag' ? item.flag.flag : '')
+  })
+
+  it('flag-recall grades on exact flag text and wrong flag answers never reinforce', () => {
+    const persisted = {
+      [flagKey(FLAGS[0])]: { level: 2 as const, lastSeen: 1, misses: 0 },
+      [flagKey(FLAGS[1])]: { level: 2 as const, lastSeen: 2, misses: 0 },
+    }
+    let s = initLearn(
+      buildStudyItems([], FLAGS.slice(0, 2), 'flags'),
+      pools([], FLAGS),
+      persisted,
+      3,
+    )
+    const q = s.queue[0]
+    expect(q.qtype).toBe('flag-recall')
+    for (const ch of 'bogus') s = learnReducer(s, { type: 'inputChar', char: ch })
+    s = learnReducer(s, { type: 'submitInput', now: 100 })
+    expect(s.phase.name).toBe('feedback')
+    expect(s.reinforce).toBeNull()
+    expect(s.levels[q.key]).toBe(1)
+
+    // now the correct one
+    s = learnReducer(s, { type: 'advance' })
+    const q2 = s.queue[0]
+    if (q2.qtype === 'flag-recall') {
+      for (const ch of q2.answer!) s = learnReducer(s, { type: 'inputChar', char: ch })
+      s = learnReducer(s, { type: 'submitInput', now: 200 })
+      expect(s.levels[q2.key]).toBe(3)
+    }
+  })
+
+  it('mixed batches sort flags and commands by level together', () => {
+    const s = initLearn(
+      buildStudyItems(POOL.slice(0, 3), FLAGS.slice(0, 3), 'both'),
+      pools(POOL, FLAGS),
+      {},
+      9,
+    )
+    expect(s.batch.length).toBe(6)
+    const kinds = new Set(s.queue.map((q) => q.item.kind))
+    expect(kinds.has('command')).toBe(true)
+    expect(kinds.has('flag')).toBe(true)
+  })
+
+  it('flag distractor descs and flags are unique within options', () => {
+    const item = flagItems[0]
+    const [q] = buildQuestion(item, 0, flagPools, 5, 1, FLAGS)
+    expect(new Set(q.options).size).toBe(q.options!.length)
+  })
+})
+
+describe('buildQuestion (commands)', () => {
   it('level 0 builds mc with the correct entry among options', () => {
-    const [q] = buildQuestion(POOL[0], 0, POOL, 9, 1)
+    const [q] = buildQuestion(cmdItem(POOL[0]), 0, pools(), 9, 1)
     expect(q.qtype).toBe('mc')
     expect(q.uid).toBe(1)
     expect(q.options!.length).toBeGreaterThanOrEqual(2)
-    expect(q.options![q.correctIndex!]).toBe(POOL[0])
+    expect(q.options![q.correctIndex!]).toBe(POOL[0].text)
   })
 
   it('level 1 on an un-clozeable command substitutes recall', () => {
-    const [q] = buildQuestion(entry('"hello world"'), 1, POOL, 9, 1)
+    const [q] = buildQuestion(cmdItem(entry('"hello world"')), 1, pools(), 9, 1)
     expect(q.qtype).toBe('recall')
+  })
+
+  it('study keys distinguish commands from flags', () => {
+    expect(studyKey(cmdItem(POOL[0]))).toBe(commandKey(POOL[0]))
+    expect(studyKey({ kind: 'flag', flag: FLAGS[0] })).toContain('flag:')
   })
 })

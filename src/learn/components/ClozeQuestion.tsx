@@ -20,15 +20,16 @@ export function ClozeQuestion({
   caretStyle: CaretStyle
   onContinue: () => void
 }) {
-  const { entry } = question
+  const entry = question.item.kind === 'command' ? question.item.entry : null
   const mask = question.mask!
+  if (!entry) return null
   const before = entry.text.slice(0, mask.start)
   const after = entry.text.slice(mask.start + mask.length)
   const feedback = phase.name === 'feedback' ? phase : null
 
   return (
-    <div data-qtype="cloze" data-answer={mask.token} className="flex flex-col gap-1.5">
-      <div className="terminal-text text-dim select-none"># {entry.desc}</div>
+    <div data-qtype="cloze" className="flex flex-col gap-1.5">
+      <div className="terminal-text text-dim select-none"># {question.comment}</div>
       <div className="terminal-text whitespace-pre-wrap break-words select-none">
         <span className="text-fg">{before}</span>
         {feedback ? (

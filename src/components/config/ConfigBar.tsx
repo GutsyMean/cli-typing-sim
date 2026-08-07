@@ -33,6 +33,7 @@ function Group({ label, children }: { label: string; children: React.ReactNode }
 
 export function ConfigBar() {
   const mode = useSettings((s) => s.mode)
+  const learnScope = useSettings((s) => s.learnScope)
   const duration = useSettings((s) => s.duration)
   const commandCount = useSettings((s) => s.commandCount)
   const difficulties = useSettings((s) => s.difficulties)
@@ -100,6 +101,21 @@ export function ConfigBar() {
           </motion.div>
         )}
       </AnimatePresence>
+
+      {mode === 'learn' && (
+        <Group label="study">
+          <Segment
+            groupId="learnScope"
+            options={[
+              { value: 'commands', label: 'commands', hint: 'learn whole commands' },
+              { value: 'flags', label: 'flags', hint: 'learn what individual flags do' },
+              { value: 'both', label: 'both', hint: 'commands and their flags together' },
+            ]}
+            value={learnScope}
+            onChange={(v) => set('learnScope', v)}
+          />
+        </Group>
+      )}
 
       <Group label="difficulty · pick one or more">
         <div className="inline-flex rounded-lg border border-edge bg-surface p-1">

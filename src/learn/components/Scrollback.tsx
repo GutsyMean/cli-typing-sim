@@ -24,8 +24,8 @@ export function Scrollback({
             transition={{ type: 'spring', stiffness: 500, damping: 45 }}
             className="terminal-text !text-[0.85em] whitespace-pre-wrap break-words opacity-45"
           >
-            <PromptPrefix prompt={promptFor(promptSetting, item.entry.category)} />
-            <span className="text-typed">{item.entry.text}</span>
+            <PromptPrefix prompt={promptFor(promptSetting, item.category)} />
+            <span className="text-typed">{item.label}</span>
             <span
               className={`ml-2 select-none font-sans text-xs ${
                 item.correct ? 'text-accent' : 'text-err'

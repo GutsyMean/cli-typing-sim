@@ -34,6 +34,7 @@ await page.addInitScript(() => {
     JSON.stringify({
       state: {
         mode: 'learn',
+        learnScope: 'commands',
         duration: 30,
         commandCount: 10,
         categories: ['bash'],
@@ -92,7 +93,7 @@ async function waitForFreshQuestion(prevUid, timeout = 6000) {
 
 async function answerCurrentCorrectly() {
   const t = await qtype()
-  if (t === 'mc') {
+  if (t === 'mc' || t === 'flag-mc' || t === 'flag-which') {
     const correct = Number(await attr('correctOption'))
     await page.keyboard.press(String(correct + 1))
   } else {
@@ -122,12 +123,22 @@ await page.screenshot({ path: `${SHOTS}/learn-mc.png` })
 
 // wrong mc answer shows feedback and stays level 0
 const firstUid = await currentUid()
+const correctText = await page.$$eval('[data-option]', (els, i) => els[i]?.textContent ?? '',
+  Number(await attr('correctOption')))
 const wrongIndex =
   (Number(await attr('correctOption')) + 1) % Number(await attr('optionCount'))
 await page.keyboard.press(String(wrongIndex + 1))
 check('wrong mc enters feedback', await waitForPhase('feedback'))
 // the feedback must show the ANSWERED question, not the next one
 check('feedback shows the answered question', (await currentUid()) === firstUid)
+// commands with flags get a breakdown panel in feedback
+if (/\s-/.test(correctText)) {
+  await page.waitForTimeout(400)
+  check(
+    'flag breakdown shown for flagged command',
+    (await page.textContent('body')).includes('flag breakdown'),
+  )
+}
 await page.screenshot({ path: `${SHOTS}/learn-mc-feedback.png` })
 // wrong feedback must NOT auto-advance — it waits for the user
 await page.waitForTimeout(2200)
@@ -200,6 +211,61 @@ check(
 await page.keyboard.press('Escape')
 await page.waitForTimeout(800)
 check('esc returns to config', (await page.textContent('body')).includes('command sets'))
+
+// ---- flags scope: the flag ladder (switch via the study selector UI) ----
+const clicked = await page.evaluate(() => {
+  const btn = [...document.querySelectorAll('button')].find(
+    (b) => b.textContent?.trim() === 'flags',
+  )
+  btn?.click()
+  return !!btn
+})
+check('study selector offers flags', clicked)
+await page.waitForTimeout(300)
+let flagsOpened = false
+for (let i = 0; i < 5 && !flagsOpened; i++) {
+  await page.keyboard.press('Enter')
+  flagsOpened = await waitForPhase('asking', 1500)
+}
+check('flags scope opens with a flag question', flagsOpened && (await qtype()) === 'flag-mc')
+await page.screenshot({ path: `${SHOTS}/learn-flag-mc.png` })
+
+// promote one flag to flag-which, then flag-recall
+let sawWhich = false
+for (let i = 0; i < 10 && !sawWhich; i++) {
+  const uid = await currentUid()
+  await answerCurrentCorrectly()
+  if (!(await waitForFreshQuestion(uid))) break
+  sawWhich = (await qtype()) === 'flag-which'
+}
+check('flag promotion reaches meaning question', sawWhich)
+if (sawWhich) await page.screenshot({ path: `${SHOTS}/learn-flag-which.png` })
+
+let sawFlagRecall = false
+for (let i = 0; i < 16 && !sawFlagRecall; i++) {
+  if ((await qtype()) === 'flag-recall') {
+    sawFlagRecall = true
+    break
+  }
+  const uid = await currentUid()
+  await answerCurrentCorrectly()
+  if (!(await waitForFreshQuestion(uid))) break
+}
+check('flag promotion reaches type-the-flag', sawFlagRecall)
+if (sawFlagRecall) {
+  const answer = await attr('answer')
+  await page.keyboard.type(answer, { delay: 5 })
+  await page.keyboard.press('Enter')
+  await page.waitForTimeout(300)
+  check(
+    'typed flag graded correct',
+    await page.evaluate(() => document.body.textContent.includes('✓')),
+  )
+}
+
+await browser.close()
+console.log(failures === 0 ? '\nLEARN SMOKE OK' : `\nLEARN SMOKE FAILED (${failures})`)
+process.exit(failures === 0 ? 0 : 1)
 
 await browser.close()
 console.log(failures === 0 ? '\nLEARN SMOKE OK' : `\nLEARN SMOKE FAILED (${failures})`)
