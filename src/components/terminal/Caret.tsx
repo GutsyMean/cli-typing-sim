@@ -16,10 +16,18 @@ const styleClass: Record<CaretStyle, string> = {
  * Rendered inside the current char's wrapper span; layoutId lets Motion
  * spring it between positions (and across lines) as the cursor moves.
  */
-export function Caret({ style, blink }: { style: CaretStyle; blink: boolean }) {
+export function Caret({
+  style,
+  blink,
+  layoutId = 'caret',
+}: {
+  style: CaretStyle
+  blink: boolean
+  layoutId?: string
+}) {
   return (
     <motion.span
-      layoutId="caret"
+      layoutId={layoutId}
       transition={{ type: 'spring', stiffness: 1100, damping: 70 }}
       className={`absolute z-10 ${styleClass[style]} ${blink ? 'caret-blink' : ''} ${
         style === 'block' ? 'mix-blend-difference' : ''

@@ -9,7 +9,8 @@
     "lint": "oxlint",
     "preview": "vite preview",
     "test": "vitest run",
-    "e2e": "node e2e/smoke.mjs"
+    "e2e": "node e2e/smoke.mjs",
+    "e2e:learn": "node e2e/learn.mjs"
   },
   "dependencies": {
     "@tailwindcss/vite": "^4.3.3",

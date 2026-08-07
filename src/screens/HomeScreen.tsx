@@ -31,18 +31,26 @@ function Section({
   )
 }
 
-export function HomeScreen({ onStart }: { onStart: () => void }) {
+export function HomeScreen({
+  onStart,
+  onLearn,
+}: {
+  onStart: () => void
+  onLearn: () => void
+}) {
   useEffect(() => {
     const onKey = (e: KeyboardEvent) => {
-      if (e.key !== 'Enter') return
+      if (e.ctrlKey || e.metaKey || e.altKey) return
+      if (e.key !== 'Enter' && e.key !== 'l') return
       const el = document.activeElement
       if (el && el !== document.body && el.tagName !== 'DIV') return
       e.preventDefault()
-      onStart()
+      if (e.key === 'Enter') onStart()
+      else onLearn()
     }
     window.addEventListener('keydown', onKey)
     return () => window.removeEventListener('keydown', onKey)
-  }, [onStart])
+  }, [onStart, onLearn])
 
   return (
     <div className="mx-auto w-full max-w-4xl">
@@ -61,15 +69,27 @@ export function HomeScreen({ onStart }: { onStart: () => void }) {
             muscle memory for the command line
           </p>
         </div>
-        <motion.button
-          type="button"
-          onClick={onStart}
-          whileHover={{ y: -2 }}
-          whileTap={{ scale: 0.97 }}
-          className="rounded-lg bg-accent px-6 py-3 font-sans text-[15px] font-semibold text-term shadow-lg shadow-accent/20"
-        >
-          start typing
-        </motion.button>
+        <div className="flex items-center gap-3">
+          <motion.button
+            type="button"
+            onClick={onLearn}
+            whileHover={{ y: -2 }}
+            whileTap={{ scale: 0.97 }}
+            className="rounded-lg border border-accent/50 px-6 py-3 font-sans text-[15px] font-semibold text-accent"
+            title="quizlet-style mastery: multiple choice → fill the blank → full recall"
+          >
+            learn
+          </motion.button>
+          <motion.button
+            type="button"
+            onClick={onStart}
+            whileHover={{ y: -2 }}
+            whileTap={{ scale: 0.97 }}
+            className="rounded-lg bg-accent px-6 py-3 font-sans text-[15px] font-semibold text-term shadow-lg shadow-accent/20"
+          >
+            start typing
+          </motion.button>
+        </div>
       </header>
 
       <div className="flex flex-col gap-9">
@@ -97,6 +117,7 @@ export function HomeScreen({ onStart }: { onStart: () => void }) {
 
       <footer className="mt-12 flex items-center justify-center gap-6 border-t border-edge pt-6 pb-4">
         <KeyHint keys={['enter']} label="start" />
+        <KeyHint keys={['l']} label="learn" />
         <span className="font-sans text-[13px] text-faint">
           during a test: <span className="text-dim">enter</span> runs a command ·{' '}
           <span className="text-dim">tab+enter</span> restarts ·{' '}
