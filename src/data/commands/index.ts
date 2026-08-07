@@ -14,8 +14,10 @@ import { archives } from './archives'
 import { textTools } from './text-tools'
 import { packageManagers } from './package-managers'
 import { cloud } from './cloud'
+import { curatedCommands } from './curated'
 
 export const allCommands: CommandEntry[] = [
+  ...curatedCommands,
   ...bash,
   ...git,
   ...docker,

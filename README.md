@@ -37,7 +37,8 @@ typing trainer for **real CLI commands**, rendered as a simulated terminal.
 
 ## Data pipeline
 
-All content is imported from upstream packages — nothing is hand-written:
+Content is imported from upstream packages, with small hand-curated
+supplements where upstream has no coverage:
 
 - **Command examples**: [tldr-pages](https://github.com/tldr-pages/tldr)
   (CC BY 4.0), fetched as the official release archive; `{{placeholders}}`
@@ -55,8 +56,14 @@ npx vitest run          # invariant tests gate the imported data
 ```
 
 `scripts/import-config.mjs` only routes tools to categories and fills
-placeholders; the generated files in `src/data/commands/` and
-`src/data/flags/` are never edited by hand.
+placeholders; the generated per-category files in `src/data/commands/` and
+`src/data/flags/` are never edited by hand. The exceptions are
+`commands/curated.ts` and `flags/curated.ts` — editable supplements covering
+what upstream can't: vim ex-mode commands (tldr only documents launch flags)
+and flag glossaries for tools without Fig specs (cmd.exe switches, PowerShell
+cmdlet parameters, journalctl, pacman, az, awk, openssl, …). If a future
+import gains upstream coverage for a curated tool, the duplicate test flags
+the collision.
 
 ## Stack
 
