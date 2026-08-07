@@ -58,7 +58,7 @@ export function HomeScreen({ onStart }: { onStart: () => void }) {
             />
           </h1>
           <p className="mt-2 font-sans text-[15px] text-dim">
-            muscle memory for the command line — type real commands, monkeytype-style.
+            muscle memory for the command line
           </p>
         </div>
         <motion.button
