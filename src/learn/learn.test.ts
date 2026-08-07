@@ -53,14 +53,22 @@ describe('cloze', () => {
     expect(chooseClozeToken('git status')?.token).toBe('status')
   })
 
-  it('never masks the first token or shell operators', () => {
+  it('never masks shell operators', () => {
     const mask = chooseClozeToken('ps aux | grep nginx')
-    expect(mask?.token).not.toBe('ps')
-    expect(mask?.token).not.toBe('|')
+    expect(mask?.token).toBe('aux')
   })
 
-  it('returns null for single-token commands', () => {
-    expect(chooseClozeToken('pwd')).toBeNull()
+  it('masks the command itself when the rest is filenames/paths', () => {
+    expect(chooseClozeToken('mv draft.md posts/final.md')?.token).toBe('mv')
+    expect(chooseClozeToken('cd /tmp')?.token).toBe('cd')
+  })
+
+  it('masks the whole command for single-token commands', () => {
+    expect(chooseClozeToken('pwd')).toEqual({ start: 0, length: 3, token: 'pwd' })
+  })
+
+  it('returns null only when everything is quoted or operators', () => {
+    expect(chooseClozeToken('"hello world"')).toBeNull()
   })
 
   it('mask start/length address the raw string', () => {
@@ -172,14 +180,41 @@ describe('learnReducer', () => {
 
   it('correct mc promotes to cloze and requeues with a gap of 2', () => {
     let s = freshState()
-    const key = s.queue[0].key
+    const answered = s.queue[0]
     s = answerCurrentMc(s, true)
-    expect(s.levels[key]).toBe(1)
+    expect(s.levels[answered.key]).toBe(1)
     expect(s.phase.name).toBe('feedback')
-    // requeued at index 2 as a cloze (or recall for un-clozeable commands)
-    const requeued = s.queue.findIndex((q) => q.key === key)
+    // requeued at index 2 as a cloze with a fresh uid
+    const requeued = s.queue.findIndex((q) => q.key === answered.key)
     expect(requeued).toBe(2)
     expect(['cloze', 'recall']).toContain(s.queue[requeued].qtype)
+    expect(s.queue[requeued].uid).not.toBe(answered.uid)
+  })
+
+  it('feedback carries the answered question, not the advanced queue head', () => {
+    let s = freshState()
+    const answered = s.queue[0]
+    s = answerCurrentMc(s, true)
+    const phase = s.phase
+    if (phase.name !== 'feedback') throw new Error('expected feedback phase')
+    expect(phase.question.uid).toBe(answered.uid)
+    // the queue has moved on to a different question
+    expect(s.queue[0].uid).not.toBe(answered.uid)
+  })
+
+  it('wrong recall phase carries the answered question for the diff', () => {
+    const pool = [entry('ls -la'), entry('df -h')]
+    const persisted = {
+      [commandKey(pool[0])]: { level: 2 as const, lastSeen: 1, misses: 0 },
+      [commandKey(pool[1])]: { level: 2 as const, lastSeen: 2, misses: 0 },
+    }
+    let s = initLearn(pool, persisted, 3)
+    const answered = s.queue[0]
+    for (const ch of 'wrong') s = learnReducer(s, { type: 'inputChar', char: ch })
+    s = learnReducer(s, { type: 'submitInput', now: 100 })
+    const phase = s.phase
+    if (phase.name !== 'recall-diff') throw new Error('expected recall-diff phase')
+    expect(phase.question.uid).toBe(answered.uid)
   })
 
   it('wrong mc keeps level at floor 0 and counts a miss', () => {
@@ -336,14 +371,15 @@ describe('learnReducer', () => {
 
 describe('buildQuestion', () => {
   it('level 0 builds mc with the correct entry among options', () => {
-    const [q] = buildQuestion(POOL[0], 0, POOL, 9)
+    const [q] = buildQuestion(POOL[0], 0, POOL, 9, 1)
     expect(q.qtype).toBe('mc')
+    expect(q.uid).toBe(1)
     expect(q.options!.length).toBeGreaterThanOrEqual(2)
     expect(q.options![q.correctIndex!]).toBe(POOL[0])
   })
 
   it('level 1 on an un-clozeable command substitutes recall', () => {
-    const [q] = buildQuestion(entry('pwd'), 1, POOL, 9)
+    const [q] = buildQuestion(entry('"hello world"'), 1, POOL, 9, 1)
     expect(q.qtype).toBe('recall')
   })
 })

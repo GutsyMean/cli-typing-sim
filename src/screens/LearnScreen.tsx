@@ -37,6 +37,21 @@ export function LearnScreen({
   const q = state.queue[0]
   const phase = state.phase
 
+  // During feedback the queue has already advanced — always render the
+  // question the phase carries, or the leaked next question flashes with
+  // the previous answer's highlights.
+  const displayQ =
+    phase.name === 'feedback' || phase.name === 'recall-diff' ? phase.question : q
+
+  const viewKey =
+    phase.name === 'round-complete'
+      ? `round-${state.roundsCompleted}`
+      : phase.name === 'reinforce'
+        ? `reinforce-${state.answered.length}`
+        : displayQ
+          ? `q-${displayQ.uid}`
+          : 'empty'
+
   return (
     <div className="mx-auto w-full max-w-4xl">
       <div className="mb-4 flex min-h-8 items-end justify-between px-1">
@@ -48,12 +63,26 @@ export function LearnScreen({
       </div>
 
       <TerminalFrame title="termtype — learn">
-        <div data-learn-phase={phase.name} className="flex min-h-[16rem] flex-col gap-4">
+        <div
+          data-learn-phase={phase.name}
+          data-uid={displayQ?.uid ?? ''}
+          data-qtype={displayQ?.qtype ?? ''}
+          data-answer={
+            displayQ?.qtype === 'cloze'
+              ? displayQ.mask?.token
+              : displayQ?.qtype === 'recall'
+                ? displayQ.entry.text
+                : undefined
+          }
+          data-correct-option={displayQ?.qtype === 'mc' ? displayQ.correctIndex : undefined}
+          data-option-count={displayQ?.qtype === 'mc' ? displayQ.options?.length : undefined}
+          className="flex min-h-[16rem] flex-col gap-4"
+        >
           <Scrollback items={state.scrollback} promptSetting={settings.promptStyle} />
 
           <AnimatePresence mode="wait" initial={false}>
             <motion.div
-              key={`${q?.key ?? 'done'}-${q?.qtype ?? ''}-${phase.name === 'reinforce' ? 'r' : 'q'}-${state.answered.length}`}
+              key={viewKey}
               initial={{ opacity: 0, y: 10 }}
               animate={{ opacity: 1, y: 0 }}
               exit={{ opacity: 0, y: -8 }}
@@ -71,25 +100,25 @@ export function LearnScreen({
                   promptSetting={settings.promptStyle}
                   caretStyle={settings.caretStyle}
                 />
-              ) : q && q.qtype === 'mc' ? (
+              ) : displayQ && displayQ.qtype === 'mc' ? (
                 <McQuestion
-                  question={q}
+                  question={displayQ}
                   phase={phase}
                   onChoose={choose}
                   onContinue={advance}
                 />
-              ) : q && q.qtype === 'cloze' ? (
+              ) : displayQ && displayQ.qtype === 'cloze' ? (
                 <ClozeQuestion
-                  question={q}
+                  question={displayQ}
                   input={state.input}
                   phase={phase}
                   promptSetting={settings.promptStyle}
                   caretStyle={settings.caretStyle}
                   onContinue={advance}
                 />
-              ) : q ? (
+              ) : displayQ ? (
                 <RecallQuestion
-                  question={q}
+                  question={displayQ}
                   input={state.input}
                   phase={phase}
                   promptSetting={settings.promptStyle}

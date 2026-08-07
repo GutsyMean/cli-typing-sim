@@ -11,8 +11,16 @@ const SCROLLBACK_MAX = 6
 
 export type LearnPhase =
   | { name: 'asking' }
-  | { name: 'feedback'; correct: boolean; chosenIndex?: number; typed?: string }
-  | { name: 'recall-diff'; typed: string; diff: AnswerDiff }
+  // feedback phases carry the ANSWERED question — the queue has already
+  // advanced, so rendering queue[0] here would leak the next question
+  | {
+      name: 'feedback'
+      question: Question
+      correct: boolean
+      chosenIndex?: number
+      typed?: string
+    }
+  | { name: 'recall-diff'; question: Question; typed: string; diff: AnswerDiff }
   | { name: 'reinforce' }
   | { name: 'round-complete' }
   | { name: 'summary' }
@@ -44,6 +52,7 @@ export interface LearnState {
   sessionMisses: Record<string, number>
   batch: string[]
   queue: Question[]
+  nextUid: number
   phase: LearnPhase
   input: string
   reinforce: ReinforceState | null
@@ -104,7 +113,9 @@ function startRound(state: LearnState): LearnState {
   }
   // shuffle within the take so equal-priority commands vary between rounds
   const take = pending.slice(0, BATCH_SIZE)
-  let [shuffled, seed] = shuffleSeeded(take, state.rngSeed)
+  const [shuffled, shuffleSeed] = shuffleSeeded(take, state.rngSeed)
+  let seed = shuffleSeed
+  let uid = state.nextUid
   const queue: Question[] = []
   for (const entry of shuffled) {
     const [q, nextSeed] = buildQuestion(
@@ -112,6 +123,7 @@ function startRound(state: LearnState): LearnState {
       state.levels[commandKey(entry)] ?? 0,
       state.pool,
       seed,
+      uid++,
     )
     seed = nextSeed
     queue.push(q)
@@ -120,6 +132,7 @@ function startRound(state: LearnState): LearnState {
     ...state,
     batch: shuffled.map(commandKey),
     queue,
+    nextUid: uid,
     phase: { name: 'asking' },
     input: '',
     reinforce: null,
@@ -148,6 +161,7 @@ export function initLearn(
     sessionMisses: {},
     batch: [],
     queue: [],
+    nextUid: 1,
     phase: { name: 'asking' },
     input: '',
     reinforce: null,
@@ -179,11 +193,18 @@ function grade(state: LearnState, q: Question, correct: boolean, now: number): L
   const rest = state.queue.slice(1)
   let queue = rest
   let rngSeed = state.rngSeed
+  let nextUid = state.nextUid
   let masteredThisSession = state.masteredThisSession
   if (newLevel === 3) {
     masteredThisSession = [...masteredThisSession, q.key]
   } else {
-    const [fresh, nextSeed] = buildQuestion(q.entry, newLevel, state.pool, rngSeed)
+    const [fresh, nextSeed] = buildQuestion(
+      q.entry,
+      newLevel,
+      state.pool,
+      rngSeed,
+      nextUid++,
+    )
     rngSeed = nextSeed
     const at = Math.min(rest.length, REQUEUE_GAP)
     queue = [...rest.slice(0, at), fresh, ...rest.slice(at)]
@@ -198,6 +219,7 @@ function grade(state: LearnState, q: Question, correct: boolean, now: number): L
     scrollback,
     queue,
     rngSeed,
+    nextUid,
     masteredThisSession,
     input: '',
   }
@@ -222,7 +244,10 @@ export function learnReducer(state: LearnState, action: LearnAction): LearnState
         return state
       const correct = action.index === q.correctIndex
       const next = grade(state, q, correct, action.now)
-      return { ...next, phase: { name: 'feedback', correct, chosenIndex: action.index } }
+      return {
+        ...next,
+        phase: { name: 'feedback', question: q, correct, chosenIndex: action.index },
+      }
     }
 
     case 'inputChar': {
@@ -251,18 +276,21 @@ export function learnReducer(state: LearnState, action: LearnAction): LearnState
         const next = grade(state, q, correct, action.now)
         return {
           ...next,
-          phase: { name: 'feedback', correct, typed: state.input.trim() },
+          phase: { name: 'feedback', question: q, correct, typed: state.input.trim() },
         }
       }
 
       // full recall
       const correct = normalizeAnswer(state.input) === normalizeAnswer(q.entry.text)
       const next = grade(state, q, correct, action.now)
-      if (correct) return { ...next, phase: { name: 'feedback', correct: true } }
+      if (correct) {
+        return { ...next, phase: { name: 'feedback', question: q, correct: true } }
+      }
       return {
         ...next,
         phase: {
           name: 'recall-diff',
+          question: q,
           typed: normalizeAnswer(state.input),
           diff: diffStatuses(normalizeAnswer(state.input), q.entry.text),
         },

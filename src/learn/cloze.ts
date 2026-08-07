@@ -53,29 +53,27 @@ function unclosedQuote(text: string): '"' | "'" | null {
   return open
 }
 
-/**
- * Pick the most instructive token to mask: prefer the longest flag, then the
- * subcommand (token 1), then the longest remaining candidate. Never the first
- * token, never operators/redirects, never quoted strings.
- */
+/** subcommand-shaped: a bare word like `status` or `aux` — not a path/file */
+const isWordToken = (t: string) => /^[A-Za-z][A-Za-z0-9-]*$/.test(t)
+
 export function chooseClozeToken(text: string): ClozeMask | null {
   const tokens = tokenize(text)
   const candidates = tokens.filter(
     (t) =>
-      t.index >= 1 &&
-      !OPERATORS.has(t.text) &&
-      !t.text.includes('"') &&
-      !t.text.includes("'"),
+      !OPERATORS.has(t.text) && !t.text.includes('"') && !t.text.includes("'"),
   )
   if (candidates.length === 0) return null
 
-  const flags = candidates.filter((t) => t.text.startsWith('-'))
+  // Always mask the tool, a subcommand, or a flag — never filenames/paths:
+  // longest flag first, else a word-shaped token 1 (`git status` → status),
+  // else the command itself (`mv draft.md …` → mv).
+  const flags = candidates.filter((t) => t.text.startsWith('-') && t.text.length > 1)
   let pick: Token
   if (flags.length > 0) {
     pick = flags.reduce((a, b) => (b.text.length > a.text.length ? b : a))
   } else {
-    const sub = candidates.find((t) => t.index === 1)
-    pick = sub ?? candidates.reduce((a, b) => (b.text.length > a.text.length ? b : a))
+    const sub = candidates.find((t) => t.index === 1 && isWordToken(t.text))
+    pick = sub ?? candidates.find((t) => t.index === 0) ?? candidates[0]
   }
   return { start: pick.start, length: pick.text.length, token: pick.text }
 }

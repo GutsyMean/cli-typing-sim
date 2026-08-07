@@ -55,10 +55,17 @@ await page.addInitScript(() => {
   localStorage.removeItem('termtype:learn:v1')
 })
 
-const phase = () =>
-  page.$eval('[data-learn-phase]', (el) => el.dataset.learnPhase).catch(() => null)
-const qtype = () =>
-  page.$eval('[data-qtype]', (el) => el.dataset.qtype).catch(() => null)
+// All reads go through the session container's data-* attributes — child
+// elements can transiently duplicate during view transitions.
+const attr = (name) =>
+  page.$eval(
+    '[data-learn-phase]',
+    (el, n) => el.dataset[n] ?? null,
+    name,
+  ).catch(() => null)
+const phase = () => attr('learnPhase')
+const qtype = () => attr('qtype')
+const currentUid = () => attr('uid')
 
 async function waitForPhase(name, timeout = 6000) {
   const t0 = Date.now()
@@ -69,16 +76,27 @@ async function waitForPhase(name, timeout = 6000) {
   return false
 }
 
+/** Wait until a NEW question is being asked (uid differs from prevUid). */
+async function waitForFreshQuestion(prevUid, timeout = 6000) {
+  const t0 = Date.now()
+  while (Date.now() - t0 < timeout) {
+    if ((await phase()) === 'asking' && (await currentUid()) !== prevUid) {
+      // let the exiting view finish unmounting so DOM reads hit the new one
+      await page.waitForTimeout(350)
+      return true
+    }
+    await page.waitForTimeout(100)
+  }
+  return false
+}
+
 async function answerCurrentCorrectly() {
   const t = await qtype()
   if (t === 'mc') {
-    const correct = await page.$eval(
-      '[data-option][data-correct="true"]',
-      (el) => Number(el.dataset.option),
-    )
+    const correct = Number(await attr('correctOption'))
     await page.keyboard.press(String(correct + 1))
   } else {
-    const answer = await page.$eval('[data-qtype]', (el) => el.dataset.answer)
+    const answer = await attr('answer')
     await page.keyboard.type(answer, { delay: 5 })
     await page.keyboard.press('Enter')
   }
@@ -103,12 +121,13 @@ check('first question is multiple choice', (await qtype()) === 'mc')
 await page.screenshot({ path: `${SHOTS}/learn-mc.png` })
 
 // wrong mc answer shows feedback and stays level 0
-const wrongIndex = await page.$eval(
-  '[data-option][data-correct="false"]',
-  (el) => Number(el.dataset.option),
-)
+const firstUid = await currentUid()
+const wrongIndex =
+  (Number(await attr('correctOption')) + 1) % Number(await attr('optionCount'))
 await page.keyboard.press(String(wrongIndex + 1))
 check('wrong mc enters feedback', await waitForPhase('feedback'))
+// the feedback must show the ANSWERED question, not the next one
+check('feedback shows the answered question', (await currentUid()) === firstUid)
 await page.screenshot({ path: `${SHOTS}/learn-mc-feedback.png` })
 // wrong feedback must NOT auto-advance — it waits for the user
 await page.waitForTimeout(2200)
@@ -118,14 +137,14 @@ check(
   (await page.$('[data-continue]')) !== null,
 )
 await page.click('[data-continue]')
-check('clicking continue advances', await waitForPhase('asking'))
+check('clicking continue advances', await waitForFreshQuestion(firstUid))
 
 // answer correctly until a cloze appears
 let sawCloze = false
 for (let i = 0; i < 12 && !sawCloze; i++) {
+  const uid = await currentUid()
   await answerCurrentCorrectly()
-  const ok = await waitForPhase('asking')
-  if (!ok) break
+  if (!(await waitForFreshQuestion(uid))) break
   sawCloze = (await qtype()) === 'cloze'
 }
 check('promotion reaches a cloze question', sawCloze)
@@ -138,8 +157,9 @@ for (let i = 0; i < 20 && !sawRecall; i++) {
     sawRecall = true
     break
   }
+  const uid = await currentUid()
   await answerCurrentCorrectly()
-  if (!(await waitForPhase('asking'))) break
+  if (!(await waitForFreshQuestion(uid))) break
 }
 check('promotion reaches full recall', sawRecall)
 

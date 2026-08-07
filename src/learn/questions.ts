@@ -8,6 +8,8 @@ export type QType = 'mc' | 'cloze' | 'recall'
 
 export interface Question {
   key: string
+  /** unique per built question instance — stable React key across phases */
+  uid: number
   entry: CommandEntry
   qtype: QType
   /** mc only: shuffled options including the correct entry */
@@ -25,6 +27,7 @@ export function buildQuestion(
   level: MasteryLevel,
   pool: CommandEntry[],
   seed: number,
+  uid: number,
   all?: CommandEntry[],
 ): [Question, number] {
   const key = commandKey(entry)
@@ -34,16 +37,16 @@ export function buildQuestion(
     const [distractors, s1] = pickDistractors(entry, pool, seed, all)
     const [options, s2] = shuffleSeeded([entry, ...distractors], s1)
     return [
-      { key, entry, qtype, options, correctIndex: options.indexOf(entry) },
+      { key, uid, entry, qtype, options, correctIndex: options.indexOf(entry) },
       s2,
     ]
   }
 
   if (qtype === 'cloze') {
     const mask = chooseClozeToken(entry.text)
-    // un-maskable commands (single token) skip straight to recall
-    if (mask) return [{ key, entry, qtype, mask }, seed]
+    // un-maskable commands (fully quoted) skip straight to recall
+    if (mask) return [{ key, uid, entry, qtype, mask }, seed]
   }
 
-  return [{ key, entry, qtype: 'recall' }, seed]
+  return [{ key, uid, entry, qtype: 'recall' }, seed]
 }
