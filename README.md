@@ -7,7 +7,7 @@ typing trainer for **real CLI commands**, rendered as a simulated terminal.
 
 ## Features
 
-- **689 real commands** across 15 categories — bash, git, docker, podman,
+- **~1,900 real commands** across 15 categories — bash, git, docker, podman,
   kubectl, npm, PowerShell, cmd.exe, ssh & networking, vim, systemd, archives,
   text tools (grep/sed/awk/jq), package managers, and cloud CLIs — in 3
   difficulty tiers from `ls -la` to flag-heavy one-liners.
@@ -30,11 +30,33 @@ typing trainer for **real CLI commands**, rendered as a simulated terminal.
   wrong recalls show a character diff and make you copy-type the real command
   once. Mastery persists, and the home screen shows your learning progress per
   category with recently-mastered and needs-work lists.
-- **Flag-level learning** — a ~690-entry flag glossary covers every flag the
-  command sets use. After each answered command a flag breakdown explains what
-  its flags do, and the study selector (commands / flags / both) adds a flag
-  ladder: pick the flag from its meaning → pick the meaning of a flag → type
-  the flag from memory.
+- **Flag-level learning** — a ~3,200-entry flag glossary. After each answered
+  command a flag breakdown explains what its flags do, and the study selector
+  (commands / flags / both) adds a flag ladder: pick the flag from its meaning
+  → pick the meaning of a flag → type the flag from memory.
+
+## Data pipeline
+
+All content is imported from upstream packages — nothing is hand-written:
+
+- **Command examples**: [tldr-pages](https://github.com/tldr-pages/tldr)
+  (CC BY 4.0), fetched as the official release archive; `{{placeholders}}`
+  are filled with realistic values.
+- **Flag descriptions**: [@withfig/autocomplete](https://github.com/withfig/autocomplete)
+  (ISC), read from the npm package.
+
+Regenerate after an upstream update with:
+
+```sh
+npm update @withfig/autocomplete
+rm -rf scripts/.cache   # re-fetch the latest tldr archive
+npm run import:data
+npx vitest run          # invariant tests gate the imported data
+```
+
+`scripts/import-config.mjs` only routes tools to categories and fills
+placeholders; the generated files in `src/data/commands/` and
+`src/data/flags/` are never edited by hand.
 
 ## Stack
 

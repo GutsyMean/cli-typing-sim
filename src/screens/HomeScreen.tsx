@@ -108,12 +108,35 @@ export function HomeScreen({ onStart }: { onStart: () => void }) {
         )}
       </div>
 
-      <footer className="mt-12 flex items-center justify-center gap-6 border-t border-edge pt-6 pb-4">
-        <KeyHint keys={['enter']} label={learnMode ? 'start learning' : 'start'} />
-        <span className="font-sans text-[13px] text-faint">
-          during a test: <span className="text-dim">enter</span> runs a command ·{' '}
-          <span className="text-dim">tab+enter</span> restarts ·{' '}
-          <span className="text-dim">esc</span> quits
+      <footer className="mt-12 flex flex-col items-center gap-3 border-t border-edge pt-6 pb-4">
+        <div className="flex items-center justify-center gap-6">
+          <KeyHint keys={['enter']} label={learnMode ? 'start learning' : 'start'} />
+          <span className="font-sans text-[13px] text-faint">
+            during a test: <span className="text-dim">enter</span> runs a command ·{' '}
+            <span className="text-dim">tab+enter</span> restarts ·{' '}
+            <span className="text-dim">esc</span> quits
+          </span>
+        </div>
+        <span className="font-sans text-[11px] text-faint">
+          command examples from{' '}
+          <a
+            href="https://github.com/tldr-pages/tldr"
+            target="_blank"
+            rel="noreferrer"
+            className="underline decoration-faint hover:text-dim"
+          >
+            tldr-pages
+          </a>{' '}
+          (CC BY 4.0) · flag descriptions from{' '}
+          <a
+            href="https://github.com/withfig/autocomplete"
+            target="_blank"
+            rel="noreferrer"
+            className="underline decoration-faint hover:text-dim"
+          >
+            @withfig/autocomplete
+          </a>{' '}
+          (ISC)
         </span>
       </footer>
     </div>

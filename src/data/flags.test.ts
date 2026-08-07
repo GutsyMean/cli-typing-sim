@@ -38,11 +38,12 @@ describe('flag glossary invariants', () => {
     })
   })
 
-  it('each category with flags has a reasonable spread', () => {
-    for (const cat of categories) {
-      const inCat = allFlags.filter((f) => f.category === cat.id)
-      // every category's commands use flags, so every glossary must have some
-      expect(inCat.length, `category ${cat.id}`).toBeGreaterThanOrEqual(10)
-    }
+  it('most categories have a substantial flag glossary', () => {
+    // @withfig/autocomplete has no specs for cmd.exe or PowerShell cmdlets,
+    // so those categories legitimately import zero flags
+    const covered = categories.filter(
+      (c) => allFlags.filter((f) => f.category === c.id).length >= 30,
+    )
+    expect(covered.length).toBeGreaterThanOrEqual(11)
   })
 })
