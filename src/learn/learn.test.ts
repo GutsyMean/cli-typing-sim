@@ -7,7 +7,7 @@ import { diffStatuses, normalizeAnswer } from './diff'
 import { pickDistractors } from './distractors'
 import { initLearn, learnReducer, summarize, type LearnState } from './learnReducer'
 import { commandKey } from './learnStore'
-import { buildQuestion, type QuestionPools } from './questions'
+import { buildQuestion, sanitizeQuestionText, type QuestionPools } from './questions'
 import { buildStudyItems, flagKey, studyKey, type StudyItem } from './studyItems'
 
 const entry = (
@@ -362,6 +362,37 @@ describe('learnReducer', () => {
     s = answerCurrentMc(s, true)
     expect(s.queue).toHaveLength(1)
     expect(s.queue[0].key).toBe(commandKey(pool[0]))
+  })
+})
+
+describe('sanitizeQuestionText', () => {
+  it('strips parentheticals that contain flags', () => {
+    expect(sanitizeQuestionText('long format including hidden entries (-l + -a)')).toBe(
+      'long format including hidden entries',
+    )
+    expect(sanitizeQuestionText('list subdirectories too (/s), quietly')).toBe(
+      'list subdirectories too, quietly',
+    )
+  })
+
+  it('keeps benign parentheticals and never returns empty', () => {
+    expect(sanitizeQuestionText('include hidden entries (names starting with .)')).toBe(
+      'include hidden entries (names starting with .)',
+    )
+    expect(sanitizeQuestionText('(-l + -a)')).toBe('(-l + -a)') // fallback to original
+  })
+
+  it('flag question prompts and options are sanitized', () => {
+    const leaky = flag('ls', '-la')
+    leaky.desc = 'long format including hidden (-l + -a)'
+    const item: StudyItem = { kind: 'flag', flag: leaky }
+    const fp = pools([], [leaky, ...FLAGS])
+    const [q0] = buildQuestion(item, 0, fp, 5, 1, [leaky, ...FLAGS])
+    expect(q0.comment).not.toContain('(-l')
+    const [q1] = buildQuestion(item, 1, fp, 5, 2, [leaky, ...FLAGS])
+    expect(q1.options![q1.correctIndex!]).toBe('long format including hidden')
+    const [q2] = buildQuestion(item, 2, fp, 5, 3, [leaky, ...FLAGS])
+    expect(q2.comment).not.toContain('(-l')
   })
 })
 

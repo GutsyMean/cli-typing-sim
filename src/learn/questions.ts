@@ -25,6 +25,20 @@ export interface Question {
   answer?: string
 }
 
+/**
+ * Strip parentheticals that reveal an answer — "(-l + -a)", "(/s)", etc. —
+ * from text used as a question prompt or option. Benign parentheticals
+ * ("(names starting with .)") are kept. Teaching surfaces (flag breakdown,
+ * overview, summary) keep the full description.
+ */
+export function sanitizeQuestionText(text: string): string {
+  const stripped = text
+    .replace(/\s*\([^)]*(?:-{1,2}[A-Za-z0-9]|\/[A-Za-z])[^)]*\)/g, '')
+    .replace(/ {2,}/g, ' ')
+    .trim()
+  return stripped.length > 0 ? stripped : text
+}
+
 export const qtypeForItem = (item: StudyItem, level: MasteryLevel): QType => {
   if (item.kind === 'command') {
     return level <= 0 ? 'mc' : level === 1 ? 'cloze' : 'recall'
@@ -47,7 +61,8 @@ function pickFlagDistractors(
   ]
   const picked: FlagEntry[] = []
   const usedFlags = new Set<string>([correct.flag])
-  const usedDescs = new Set<string>([correct.desc])
+  // dedupe on sanitized descs — question options are shown sanitized
+  const usedDescs = new Set<string>([sanitizeQuestionText(correct.desc)])
   let s = seed
   for (const tier of tiers) {
     if (picked.length >= 3) break
@@ -55,9 +70,10 @@ function pickFlagDistractors(
     s = nextSeed
     for (const f of shuffled) {
       if (picked.length >= 3) break
-      if (usedFlags.has(f.flag) || usedDescs.has(f.desc)) continue
+      const cleanDesc = sanitizeQuestionText(f.desc)
+      if (usedFlags.has(f.flag) || usedDescs.has(cleanDesc)) continue
       usedFlags.add(f.flag)
-      usedDescs.add(f.desc)
+      usedDescs.add(cleanDesc)
       picked.push(f)
     }
   }
@@ -82,7 +98,7 @@ export function buildQuestion(
 
   if (item.kind === 'command') {
     const entry = item.entry
-    const comment = entry.desc
+    const comment = sanitizeQuestionText(entry.desc)
 
     if (qtype === 'mc') {
       const [distractors, s1] = pickDistractors(entry, pools.commands, seed)
@@ -108,12 +124,12 @@ export function buildQuestion(
   const flag = item.flag
   if (qtype === 'flag-mc') {
     // description → pick the flag
-    const comment = `${flag.tool}: ${flag.desc}`
+    const comment = `${flag.tool}: ${sanitizeQuestionText(flag.desc)}`
     const [distractors, s1] = pickFlagDistractors(flag, pools.flags, seed, allFlagEntries)
     const [shuffled, s2] = shuffleSeeded([flag, ...distractors], s1)
     const options = shuffled.map((f) => f.flag)
     return [
-      { key, uid, item, qtype, comment, options, correctIndex: options.indexOf(flag.flag) },
+      { key, uid, item, qtype, comment, options, correctIndex: shuffled.indexOf(flag) },
       s2,
     ]
   }
@@ -123,9 +139,17 @@ export function buildQuestion(
     const comment = `what does ${flag.flag} do in ${flag.tool}?`
     const [distractors, s1] = pickFlagDistractors(flag, pools.flags, seed, allFlagEntries)
     const [shuffled, s2] = shuffleSeeded([flag, ...distractors], s1)
-    const options = shuffled.map((f) => f.desc)
+    const options = shuffled.map((f) => sanitizeQuestionText(f.desc))
     return [
-      { key, uid, item, qtype, comment, options, correctIndex: options.indexOf(flag.desc) },
+      {
+        key,
+        uid,
+        item,
+        qtype,
+        comment,
+        options,
+        correctIndex: shuffled.indexOf(flag),
+      },
       s2,
     ]
   }
@@ -137,7 +161,7 @@ export function buildQuestion(
       uid,
       item,
       qtype: 'flag-recall',
-      comment: `${flag.tool}: ${flag.desc} — type the flag`,
+      comment: `${flag.tool}: ${sanitizeQuestionText(flag.desc)} — type the flag`,
       answer: flag.flag,
     },
     seed,

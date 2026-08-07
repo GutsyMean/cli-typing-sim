@@ -7,7 +7,7 @@ export const flags: FlagEntry[] = [
   { tool: 'journalctl', flag: '-e', desc: 'jump to the end of the journal in the pager', category: 'systemd', difficulty: 2 },
   { tool: 'journalctl', flag: '-n', desc: 'show only the last N entries', category: 'systemd', difficulty: 1 },
   { tool: 'journalctl', flag: '-b', desc: 'show logs from a specific boot (no argument = current boot)', category: 'systemd', difficulty: 2 },
-  { tool: 'journalctl', flag: '-1', desc: 'boot offset used with -b: -1 selects the previous boot', category: 'systemd', difficulty: 2 },
+  { tool: 'journalctl', flag: '-1', desc: 'boot offset selecting the previous boot when paired with the boot filter', category: 'systemd', difficulty: 2 },
   { tool: 'journalctl', flag: '-p', desc: 'filter by priority (e.g. err, warning)', category: 'systemd', difficulty: 2 },
   { tool: 'journalctl', flag: '-k', desc: 'show only kernel messages (like dmesg)', category: 'systemd', difficulty: 2 },
   { tool: 'journalctl', flag: '-o', desc: 'select output format (e.g. json-pretty, short-iso)', category: 'systemd', difficulty: 2 },
