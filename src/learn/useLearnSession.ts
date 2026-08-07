@@ -10,7 +10,7 @@ import {
 } from './learnReducer'
 import { useLearn, type MasteryLevel } from './learnStore'
 
-const FEEDBACK_MS = { correct: 700, wrong: 1600, roundComplete: 1800 }
+const FEEDBACK_MS = { correct: 900, roundComplete: 1800 }
 const GRACE_MS = 300
 
 export function useLearnSession(
@@ -126,9 +126,12 @@ export function useLearnSession(
     if (phaseName === 'feedback' || phaseName === 'recall-diff' || phaseName === 'round-complete') {
       armedAtRef.current = performance.now() + GRACE_MS
     }
+    // Only CORRECT feedback auto-advances — wrong answers stay on screen
+    // until the user continues (keypress or click), so there's time to read
+    // what the right answer actually was.
     let delay: number | null = null
-    if (phaseName === 'feedback') {
-      delay = phaseCorrect ? FEEDBACK_MS.correct : FEEDBACK_MS.wrong
+    if (phaseName === 'feedback' && phaseCorrect) {
+      delay = FEEDBACK_MS.correct
     } else if (phaseName === 'round-complete') {
       delay = FEEDBACK_MS.roundComplete
     }
@@ -170,7 +173,11 @@ export function useLearnSession(
   const choose = (index: number) =>
     dispatch({ type: 'chooseMc', index, now: Date.now() })
 
-  return { state, tabArmed, choose }
+  const advance = () => {
+    if (performance.now() >= armedAtRef.current) dispatch({ type: 'advance' })
+  }
+
+  return { state, tabArmed, choose, advance }
 }
 
 export type { LearnState }

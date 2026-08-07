@@ -1,15 +1,18 @@
 import { motion } from 'motion/react'
 import type { LearnPhase } from '../learnReducer'
 import type { Question } from '../questions'
+import { ContinueHint } from './ContinueHint'
 
 export function McQuestion({
   question,
   phase,
   onChoose,
+  onContinue,
 }: {
   question: Question
   phase: LearnPhase
   onChoose: (index: number) => void
+  onContinue: () => void
 }) {
   const feedback = phase.name === 'feedback' ? phase : null
 
@@ -50,9 +53,19 @@ export function McQuestion({
           )
         })}
       </div>
-      <div className="mt-1 font-sans text-xs text-faint select-none">
-        press 1–{question.options!.length} to answer
-      </div>
+      {feedback ? (
+        feedback.correct ? (
+          <div className="mt-1 font-sans text-sm font-semibold text-accent select-none">
+            correct ✓
+          </div>
+        ) : (
+          <ContinueHint onContinue={onContinue} />
+        )
+      ) : (
+        <div className="mt-1 font-sans text-xs text-faint select-none">
+          press 1–{question.options!.length} to answer
+        </div>
+      )}
     </div>
   )
 }

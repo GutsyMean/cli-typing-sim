@@ -1,5 +1,5 @@
 import { motion } from 'motion/react'
-import { useEffect } from 'react'
+import { useEffect, useRef } from 'react'
 import { KeyHint } from '../components/ui/Kbd'
 import { fmtPercent } from '../lib/format'
 import type { LearnSummary } from '../learn/learnReducer'
@@ -13,25 +13,32 @@ const typeLabel: Record<QType, string> = {
 
 export function LearnSummaryScreen({
   summary,
+  finishedAt,
   onAgain,
   onHome,
 }: {
   summary: LearnSummary
+  /** performance.now() at the moment the session ended */
+  finishedAt: number
   onAgain: () => void
   onHome: () => void
 }) {
+  // Typing-momentum grace anchored to when the session actually finished —
+  // never to component mount, which can be delayed by screen transitions.
+  const callbacksRef = useRef({ onAgain, onHome })
+  callbacksRef.current = { onAgain, onHome }
   useEffect(() => {
-    const armedAt = performance.now() + 400
+    const armedAt = finishedAt + 400
     const onKey = (e: KeyboardEvent) => {
       if (e.key !== 'Enter' && e.key !== 'Escape') return
       e.preventDefault()
       if (performance.now() < armedAt) return
-      if (e.key === 'Enter') onAgain()
-      else onHome()
+      if (e.key === 'Enter') callbacksRef.current.onAgain()
+      else callbacksRef.current.onHome()
     }
     window.addEventListener('keydown', onKey)
     return () => window.removeEventListener('keydown', onKey)
-  }, [onAgain, onHome])
+  }, [finishedAt])
 
   if (summary.nothingToLearn) {
     return (

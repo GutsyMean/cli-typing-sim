@@ -11,7 +11,7 @@ const SCROLLBACK_MAX = 6
 
 export type LearnPhase =
   | { name: 'asking' }
-  | { name: 'feedback'; correct: boolean; chosenIndex?: number }
+  | { name: 'feedback'; correct: boolean; chosenIndex?: number; typed?: string }
   | { name: 'recall-diff'; typed: string; diff: AnswerDiff }
   | { name: 'reinforce' }
   | { name: 'round-complete' }
@@ -249,7 +249,10 @@ export function learnReducer(state: LearnState, action: LearnAction): LearnState
       if (q.qtype === 'cloze') {
         const correct = state.input.trim() === q.mask?.token
         const next = grade(state, q, correct, action.now)
-        return { ...next, phase: { name: 'feedback', correct } }
+        return {
+          ...next,
+          phase: { name: 'feedback', correct, typed: state.input.trim() },
+        }
       }
 
       // full recall

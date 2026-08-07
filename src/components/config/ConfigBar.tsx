@@ -49,6 +49,11 @@ export function ConfigBar() {
             { value: 'timed', label: 'timed', hint: 'race the clock' },
             { value: 'commands', label: 'commands', hint: 'type a fixed number of commands' },
             { value: 'endless', label: 'endless', hint: 'type as long as you like — esc shows your results' },
+            {
+              value: 'learn',
+              label: 'learn',
+              hint: 'quizlet-style mastery: multiple choice → fill the blank → full recall',
+            },
           ]}
           value={mode}
           onChange={(v) => set('mode', v)}
@@ -56,7 +61,7 @@ export function ConfigBar() {
       </Group>
 
       <AnimatePresence mode="wait" initial={false}>
-        {mode !== 'endless' && (
+        {mode !== 'endless' && mode !== 'learn' && (
           <motion.div
             key={mode}
             initial={{ opacity: 0, x: -6 }}
@@ -117,6 +122,7 @@ export function ConfigBar() {
         </div>
       </Group>
 
+      {mode !== 'learn' && (
       <Group label="on mistakes">
         <Segment
           groupId="behavior"
@@ -136,6 +142,7 @@ export function ConfigBar() {
           onChange={(v) => set('behavior', v)}
         />
       </Group>
+      )}
     </div>
   )
 }

@@ -24,11 +24,12 @@ typing trainer for **real CLI commands**, rendered as a simulated terminal.
 - **Results that teach** — WPM / raw / accuracy / consistency, a per-second
   WPM chart with error markers, most-missed keys, per-category accuracy, and a
   progress graph persisted in localStorage.
-- **Learn mode** — a Quizlet-style mastery ladder (press `l`): each command
-  climbs from multiple choice → fill-in-the-blank → full recall from its
-  description alone. Wrong recalls show a character diff and make you copy-type
-  the real command once. Mastery persists, so every session picks up where you
-  left off.
+- **Learn mode** — a Quizlet-style mastery ladder in the mode selector: each
+  command climbs from multiple choice → fill-in-the-blank → full recall from
+  its description alone. Wrong answers stay on screen until you continue, and
+  wrong recalls show a character diff and make you copy-type the real command
+  once. Mastery persists, and the home screen shows your learning progress per
+  category with recently-mastered and needs-work lists.
 
 ## Stack
 

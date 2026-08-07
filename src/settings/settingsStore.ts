@@ -5,7 +5,9 @@ import type { PromptId } from './prompts'
 import type { ThemeId } from './themes'
 import { safeStorage } from '../lib/storage'
 
-export type TestMode = 'timed' | 'commands' | 'endless'
+export type TestMode = 'timed' | 'commands' | 'endless' | 'learn'
+/** modes the typing engine runs — learn has its own session machinery */
+export type TypingMode = Exclude<TestMode, 'learn'>
 export type CaretStyle = 'block' | 'line' | 'underscore'
 export type FontSize = 'sm' | 'md' | 'lg' | 'xl'
 export type Behavior = 'forgiving' | 'stop-on-error'

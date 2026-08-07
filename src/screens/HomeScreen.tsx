@@ -7,6 +7,8 @@ import { ThemeGrid } from '../components/config/ThemeGrid'
 import { HistoryGraph } from '../components/results/HistoryGraph'
 import { KeyHint } from '../components/ui/Kbd'
 import { useHistory } from '../history/historyStore'
+import { LearnOverview } from '../learn/components/LearnOverview'
+import { useSettings } from '../settings/settingsStore'
 
 function Section({
   title,
@@ -31,26 +33,21 @@ function Section({
   )
 }
 
-export function HomeScreen({
-  onStart,
-  onLearn,
-}: {
-  onStart: () => void
-  onLearn: () => void
-}) {
+export function HomeScreen({ onStart }: { onStart: () => void }) {
+  const learnMode = useSettings((s) => s.mode === 'learn')
+
   useEffect(() => {
     const onKey = (e: KeyboardEvent) => {
       if (e.ctrlKey || e.metaKey || e.altKey) return
-      if (e.key !== 'Enter' && e.key !== 'l') return
+      if (e.key !== 'Enter') return
       const el = document.activeElement
       if (el && el !== document.body && el.tagName !== 'DIV') return
       e.preventDefault()
-      if (e.key === 'Enter') onStart()
-      else onLearn()
+      onStart()
     }
     window.addEventListener('keydown', onKey)
     return () => window.removeEventListener('keydown', onKey)
-  }, [onStart, onLearn])
+  }, [onStart])
 
   return (
     <div className="mx-auto w-full max-w-4xl">
@@ -69,27 +66,15 @@ export function HomeScreen({
             muscle memory for the command line
           </p>
         </div>
-        <div className="flex items-center gap-3">
-          <motion.button
-            type="button"
-            onClick={onLearn}
-            whileHover={{ y: -2 }}
-            whileTap={{ scale: 0.97 }}
-            className="rounded-lg border border-accent/50 px-6 py-3 font-sans text-[15px] font-semibold text-accent"
-            title="quizlet-style mastery: multiple choice → fill the blank → full recall"
-          >
-            learn
-          </motion.button>
-          <motion.button
-            type="button"
-            onClick={onStart}
-            whileHover={{ y: -2 }}
-            whileTap={{ scale: 0.97 }}
-            className="rounded-lg bg-accent px-6 py-3 font-sans text-[15px] font-semibold text-term shadow-lg shadow-accent/20"
-          >
-            start typing
-          </motion.button>
-        </div>
+        <motion.button
+          type="button"
+          onClick={onStart}
+          whileHover={{ y: -2 }}
+          whileTap={{ scale: 0.97 }}
+          className="rounded-lg bg-accent px-6 py-3 font-sans text-[15px] font-semibold text-term shadow-lg shadow-accent/20"
+        >
+          {learnMode ? 'start learning' : 'start typing'}
+        </motion.button>
       </header>
 
       <div className="flex flex-col gap-9">
@@ -101,6 +86,12 @@ export function HomeScreen({
           <CategoryPicker />
         </Section>
 
+        {learnMode && (
+          <Section title="learn progress" delay={0.075}>
+            <LearnOverview />
+          </Section>
+        )}
+
         <Section title="theme" delay={0.1}>
           <ThemeGrid />
         </Section>
@@ -109,15 +100,16 @@ export function HomeScreen({
           <OptionsPanel />
         </Section>
 
-        <Section title="history" delay={0.2}>
-          <HistoryGraph />
-          <HistoryEmptyHint />
-        </Section>
+        {!learnMode && (
+          <Section title="history" delay={0.2}>
+            <HistoryGraph />
+            <HistoryEmptyHint />
+          </Section>
+        )}
       </div>
 
       <footer className="mt-12 flex items-center justify-center gap-6 border-t border-edge pt-6 pb-4">
-        <KeyHint keys={['enter']} label="start" />
-        <KeyHint keys={['l']} label="learn" />
+        <KeyHint keys={['enter']} label={learnMode ? 'start learning' : 'start'} />
         <span className="font-sans text-[13px] text-faint">
           during a test: <span className="text-dim">enter</span> runs a command ·{' '}
           <span className="text-dim">tab+enter</span> restarts ·{' '}

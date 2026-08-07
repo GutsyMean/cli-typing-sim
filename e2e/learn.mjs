@@ -33,7 +33,7 @@ await page.addInitScript(() => {
     'termtype:settings:v1',
     JSON.stringify({
       state: {
-        mode: 'commands',
+        mode: 'learn',
         duration: 30,
         commandCount: 10,
         categories: ['bash'],
@@ -88,13 +88,17 @@ await page.goto(BASE)
 await page.waitForSelector('text=command sets', { timeout: 10_000 })
 await page.waitForTimeout(400)
 
-// 'l' starts learn mode on an mc question (retry in case mount is slow)
+// with mode=learn, the home screen shows the learn dashboard and enter starts
+check(
+  'learn mode shows start learning button',
+  (await page.textContent('body')).includes('start learning'),
+)
 let opened = false
 for (let i = 0; i < 5 && !opened; i++) {
-  await page.keyboard.press('l')
+  await page.keyboard.press('Enter')
   opened = await waitForPhase('asking', 1500)
 }
-check('l opens learn mode asking mc', opened)
+check('enter opens a learn session asking mc', opened)
 check('first question is multiple choice', (await qtype()) === 'mc')
 await page.screenshot({ path: `${SHOTS}/learn-mc.png` })
 
@@ -106,7 +110,15 @@ const wrongIndex = await page.$eval(
 await page.keyboard.press(String(wrongIndex + 1))
 check('wrong mc enters feedback', await waitForPhase('feedback'))
 await page.screenshot({ path: `${SHOTS}/learn-mc-feedback.png` })
-check('feedback auto-advances', await waitForPhase('asking'))
+// wrong feedback must NOT auto-advance — it waits for the user
+await page.waitForTimeout(2200)
+check('wrong feedback is sticky', (await phase()) === 'feedback')
+check(
+  'continue button is shown',
+  (await page.$('[data-continue]')) !== null,
+)
+await page.click('[data-continue]')
+check('clicking continue advances', await waitForPhase('asking'))
 
 // answer correctly until a cloze appears
 let sawCloze = false

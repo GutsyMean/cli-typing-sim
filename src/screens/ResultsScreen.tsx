@@ -1,5 +1,5 @@
 import { motion } from 'motion/react'
-import { useEffect } from 'react'
+import { useEffect, useRef } from 'react'
 import { ErrorBreakdown } from '../components/results/ErrorBreakdown'
 import { StatCards } from '../components/results/StatCards'
 import { WpmChart } from '../components/results/WpmChart'
@@ -9,27 +9,33 @@ import type { TestResult } from './TestScreen'
 
 export function ResultsScreen({
   result,
+  finishedAt,
   onNext,
   onHome,
 }: {
   result: TestResult
+  /** performance.now() at the moment the test ended */
+  finishedAt: number
   onNext: () => void
   onHome: () => void
 }) {
+  // Grace period so typing momentum from the final second of a test can't
+  // accidentally dismiss the results — anchored to when the test finished,
+  // never to component mount, which can be delayed by screen transitions.
+  const callbacksRef = useRef({ onNext, onHome })
+  callbacksRef.current = { onNext, onHome }
   useEffect(() => {
-    // Grace period so typing momentum from the final second of a test
-    // can't accidentally dismiss the results.
-    const armedAt = performance.now() + 400
+    const armedAt = finishedAt + 400
     const onKey = (e: KeyboardEvent) => {
       if (e.key !== 'Enter' && e.key !== 'Tab' && e.key !== 'Escape') return
       e.preventDefault()
       if (performance.now() < armedAt) return
-      if (e.key === 'Escape') onHome()
-      else onNext()
+      if (e.key === 'Escape') callbacksRef.current.onHome()
+      else callbacksRef.current.onNext()
     }
     window.addEventListener('keydown', onKey)
     return () => window.removeEventListener('keydown', onKey)
-  }, [onNext, onHome])
+  }, [finishedAt])
 
   const { metrics, settings } = result
 

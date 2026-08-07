@@ -1,5 +1,5 @@
 import type { CommandEntry } from '../data/types'
-import type { Behavior, TestMode } from '../settings/settingsStore'
+import type { Behavior, TypingMode } from '../settings/settingsStore'
 
 export type CharStatus = 'pending' | 'correct' | 'incorrect' | 'corrected'
 
@@ -26,7 +26,7 @@ export interface KeystrokeEvent {
 
 export interface EngineConfig {
   behavior: Behavior
-  mode: TestMode
+  mode: TypingMode
   /** timed mode only */
   durationMs: number
   /** commands mode only */

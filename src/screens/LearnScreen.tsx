@@ -29,7 +29,7 @@ export function LearnScreen({
     return filtered.length > 0 ? filtered : allCommands
   }, [settings])
 
-  const { state, tabArmed, choose } = useLearnSession(pool, {
+  const { state, tabArmed, choose, advance } = useLearnSession(pool, {
     onSummary,
     onQuit,
     onRestart,
@@ -72,7 +72,12 @@ export function LearnScreen({
                   caretStyle={settings.caretStyle}
                 />
               ) : q && q.qtype === 'mc' ? (
-                <McQuestion question={q} phase={phase} onChoose={choose} />
+                <McQuestion
+                  question={q}
+                  phase={phase}
+                  onChoose={choose}
+                  onContinue={advance}
+                />
               ) : q && q.qtype === 'cloze' ? (
                 <ClozeQuestion
                   question={q}
@@ -80,6 +85,7 @@ export function LearnScreen({
                   phase={phase}
                   promptSetting={settings.promptStyle}
                   caretStyle={settings.caretStyle}
+                  onContinue={advance}
                 />
               ) : q ? (
                 <RecallQuestion

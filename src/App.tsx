@@ -12,9 +12,9 @@ import { fontSizeRem, useSettings } from './settings/settingsStore'
 type Screen =
   | { name: 'home' }
   | { name: 'test'; seed: number }
-  | { name: 'results'; result: TestResult; seed: number }
+  | { name: 'results'; result: TestResult; seed: number; at: number }
   | { name: 'learn'; seed: number }
-  | { name: 'learnSummary'; summary: LearnSummary; seed: number }
+  | { name: 'learnSummary'; summary: LearnSummary; seed: number; at: number }
 
 const transition = { type: 'spring', bounce: 0, visualDuration: 0.3 } as const
 
@@ -32,7 +32,7 @@ function App() {
   }, [fontSize])
 
   return (
-    <div className="min-h-screen bg-chrome px-4 py-8 sm:px-8 sm:py-12">
+    <div data-screen={screen.name} className="min-h-screen bg-chrome px-4 py-8 sm:px-8 sm:py-12">
       <AnimatePresence mode="wait">
         {screen.name === 'home' && (
           <motion.div
@@ -43,8 +43,13 @@ function App() {
             transition={transition}
           >
             <HomeScreen
-              onStart={() => setScreen({ name: 'test', seed: 1 })}
-              onLearn={() => setScreen({ name: 'learn', seed: 1 })}
+              onStart={() =>
+                setScreen(
+                  useSettings.getState().mode === 'learn'
+                    ? { name: 'learn', seed: 1 }
+                    : { name: 'test', seed: 1 },
+                )
+              }
             />
           </motion.div>
         )}
@@ -63,7 +68,12 @@ function App() {
               onRestart={() => setScreen({ name: 'test', seed: screen.seed + 1 })}
               onExit={() => setScreen({ name: 'home' })}
               onFinish={(result) =>
-                setScreen({ name: 'results', result, seed: screen.seed })
+                setScreen({
+                  name: 'results',
+                  result,
+                  seed: screen.seed,
+                  at: performance.now(),
+                })
               }
             />
           </motion.div>
@@ -83,7 +93,12 @@ function App() {
               onQuit={() => setScreen({ name: 'home' })}
               onRestart={() => setScreen({ name: 'learn', seed: screen.seed + 1 })}
               onSummary={(summary) =>
-                setScreen({ name: 'learnSummary', summary, seed: screen.seed })
+                setScreen({
+                  name: 'learnSummary',
+                  summary,
+                  seed: screen.seed,
+                  at: performance.now(),
+                })
               }
             />
           </motion.div>
@@ -100,6 +115,7 @@ function App() {
           >
             <LearnSummaryScreen
               summary={screen.summary}
+              finishedAt={screen.at}
               onAgain={() => setScreen({ name: 'learn', seed: screen.seed + 1 })}
               onHome={() => setScreen({ name: 'home' })}
             />
@@ -117,6 +133,7 @@ function App() {
           >
             <ResultsScreen
               result={screen.result}
+              finishedAt={screen.at}
               onNext={() => setScreen({ name: 'test', seed: screen.seed + 1 })}
               onHome={() => setScreen({ name: 'home' })}
             />

@@ -49,7 +49,8 @@ export function TestScreen({
   const config = useMemo<EngineConfig>(
     () => ({
       behavior: settings.behavior,
-      mode: settings.mode,
+      // App routes learn mode to LearnScreen; this cast is safe here
+      mode: settings.mode as EngineConfig['mode'],
       durationMs: settings.duration * 1000,
       commandCount: settings.commandCount,
     }),

@@ -2,6 +2,7 @@ import type { LearnPhase } from '../learnReducer'
 import type { Question } from '../questions'
 import type { PromptId } from '../../settings/prompts'
 import type { CaretStyle } from '../../settings/settingsStore'
+import { ContinueHint } from './ContinueHint'
 import { InputLine } from './InputLine'
 
 export function ClozeQuestion({
@@ -10,12 +11,14 @@ export function ClozeQuestion({
   phase,
   promptSetting,
   caretStyle,
+  onContinue,
 }: {
   question: Question
   input: string
   phase: LearnPhase
   promptSetting: 'auto' | PromptId
   caretStyle: CaretStyle
+  onContinue: () => void
 }) {
   const { entry } = question
   const mask = question.mask!
@@ -50,11 +53,25 @@ export function ClozeQuestion({
           />
         </div>
       )}
-      {feedback && !feedback.correct && (
-        <div className="font-sans text-sm text-err select-none">
-          the answer was <span className="font-mono font-semibold">{mask.token}</span>
-        </div>
-      )}
+      {feedback &&
+        (feedback.correct ? (
+          <div className="font-sans text-sm font-semibold text-accent select-none">
+            correct ✓
+          </div>
+        ) : (
+          <div className="flex flex-col items-start gap-1">
+            <div className="font-sans text-sm text-err select-none">
+              the answer was <span className="font-mono font-semibold">{mask.token}</span>
+              {feedback.typed && (
+                <span className="text-dim">
+                  {' '}
+                  — you typed <span className="font-mono">{feedback.typed}</span>
+                </span>
+              )}
+            </div>
+            <ContinueHint onContinue={onContinue} />
+          </div>
+        ))}
     </div>
   )
 }
