@@ -3,6 +3,8 @@ import { motion } from 'motion/react'
 export interface SegmentOption<T extends string | number> {
   value: T
   label: string
+  /** shown as a native tooltip on hover */
+  hint?: string
 }
 
 export function Segment<T extends string | number>({
@@ -25,6 +27,7 @@ export function Segment<T extends string | number>({
           <button
             key={String(opt.value)}
             type="button"
+            title={opt.hint}
             onClick={() => onChange(opt.value)}
             className={`relative rounded-md px-3 py-1.5 font-sans text-[13px] font-medium transition-colors duration-150 ${
               active ? 'text-typed' : 'text-dim hover:text-fg'

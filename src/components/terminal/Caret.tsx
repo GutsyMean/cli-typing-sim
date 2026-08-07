@@ -1,10 +1,15 @@
 import { motion } from 'motion/react'
 import type { CaretStyle } from '../../settings/settingsStore'
 
+/*
+ * The caret is absolutely positioned inside an inline char wrapper, so its
+ * containing block is the char's 1em content box — size it in em units from
+ * the top edge (no CSS transforms: the layoutId FLIP animation owns transform).
+ */
 const styleClass: Record<CaretStyle, string> = {
-  block: 'inset-y-[0.28em] -inset-x-px rounded-[3px] bg-accent/80',
-  line: 'inset-y-[0.28em] -left-px w-[2.5px] rounded-full bg-accent',
-  underscore: 'bottom-[0.22em] inset-x-0 h-[2.5px] rounded-full bg-accent',
+  block: 'top-[-0.15em] h-[1.3em] -inset-x-px rounded-[3px] bg-accent/80',
+  line: 'top-[-0.15em] h-[1.3em] -left-[1.5px] w-[2.5px] rounded-full bg-accent',
+  underscore: 'top-[1.05em] h-[2.5px] inset-x-0 rounded-full bg-accent',
 }
 
 /**

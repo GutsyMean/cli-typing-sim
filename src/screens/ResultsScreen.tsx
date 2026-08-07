@@ -39,7 +39,9 @@ export function ResultsScreen({
         <span className="rounded-md bg-surface px-2 py-1">
           {settings.mode === 'timed'
             ? `${settings.duration}s sprint`
-            : `${settings.commandCount} commands`}
+            : settings.mode === 'endless'
+              ? 'endless session'
+              : `${settings.commandCount} commands`}
         </span>
         {settings.categories.map((c) => (
           <span key={c} className="rounded-md bg-surface px-2 py-1 font-mono">
@@ -73,7 +75,8 @@ export function ResultsScreen({
       </div>
 
       <p className="text-center font-sans text-[11px] text-faint">
-        wpm counts correct characters only; the enter key between commands is not counted.
+        wpm counts correct characters over active typing time — pauses between commands
+        (after the last character and before the next one) don&apos;t count against you.
       </p>
     </div>
   )

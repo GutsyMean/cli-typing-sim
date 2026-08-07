@@ -5,7 +5,7 @@ import type { PromptId } from './prompts'
 import type { ThemeId } from './themes'
 import { safeStorage } from '../lib/storage'
 
-export type TestMode = 'timed' | 'commands'
+export type TestMode = 'timed' | 'commands' | 'endless'
 export type CaretStyle = 'block' | 'line' | 'underscore'
 export type FontSize = 'sm' | 'md' | 'lg' | 'xl'
 export type Behavior = 'forgiving' | 'stop-on-error'

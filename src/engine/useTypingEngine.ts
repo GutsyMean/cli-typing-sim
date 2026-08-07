@@ -32,6 +32,8 @@ export function useTypingEngine(
   const [tabArmed, setTabArmed] = useState(false)
   const callbacksRef = useRef(callbacks)
   callbacksRef.current = callbacks
+  const stateRef = useRef(state)
+  stateRef.current = state
   const finishedRef = useRef(false)
 
   // Keyboard capture
@@ -42,7 +44,12 @@ export function useTypingEngine(
       // Restart chords are handled before the engine sees anything.
       if (e.key === 'Escape') {
         e.preventDefault()
-        callbacksRef.current.onRestart()
+        // In endless mode a running session has no natural end — esc is it.
+        if (config.mode === 'endless' && stateRef.current.status === 'running') {
+          dispatch({ type: 'finishNow', now: performance.now() })
+        } else {
+          callbacksRef.current.onRestart()
+        }
         return
       }
       if (e.key === 'Tab') {
@@ -85,7 +92,7 @@ export function useTypingEngine(
     }
     window.addEventListener('keydown', onKeyDown)
     return () => window.removeEventListener('keydown', onKeyDown)
-  }, [tabArmed])
+  }, [tabArmed, config.mode])
 
   // Error sound reacts to the keystroke log so it fires exactly once per miss.
   const missCount = state.keystrokes.reduce(
@@ -111,9 +118,9 @@ export function useTypingEngine(
     return () => window.clearInterval(id)
   }, [state.status, config.mode])
 
-  // Timed-mode lookahead: keep lines ahead of the cursor
+  // Timed/endless lookahead: keep lines ahead of the cursor
   useEffect(() => {
-    if (config.mode !== 'timed') return
+    if (config.mode === 'commands') return
     if (state.lineIndex + LOOKAHEAD >= state.lines.length) {
       dispatch({ type: 'appendLine', entry: stream.next() })
     }

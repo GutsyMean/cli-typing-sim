@@ -51,6 +51,7 @@ export type EngineAction =
   | { type: 'wordBackspace'; now: number }
   | { type: 'enter'; now: number }
   | { type: 'tick'; now: number }
+  | { type: 'finishNow'; now: number }
 
 const makeLine = (entry: CommandEntry): LineState => ({
   entry,
@@ -124,6 +125,11 @@ export function typingReducer(
     case 'tick':
       if (state.status !== 'running') return state
       return timeUp(state, action.now) ? finish(state, action.now) : state
+
+    // endless mode: the user decides when the session is over
+    case 'finishNow':
+      if (state.status !== 'running') return state
+      return finish(state, action.now)
   }
 
   if (state.status === 'finished') return state
@@ -136,6 +142,9 @@ export function typingReducer(
       const target = line.entry.text
 
       if (line.cursor >= target.length) {
+        // A trailing space is harmless in a real shell — swallow it silently
+        // so it can't block enter.
+        if (char === ' ' && line.extra.length === 0) return state
         // Past the end: only possible in forgiving mode, always an error.
         if (state.config.behavior === 'stop-on-error') return state
         let next = withKeystroke(state, now, {

@@ -76,7 +76,12 @@ export function TestScreen({
         accuracy: metrics.accuracy,
         consistency: metrics.consistency,
         mode: settings.mode,
-        amount: settings.mode === 'timed' ? settings.duration : settings.commandCount,
+        amount:
+          settings.mode === 'timed'
+            ? settings.duration
+            : settings.mode === 'endless'
+              ? Math.round(metrics.seconds)
+              : settings.commandCount,
         categories: settings.categories,
         difficulties: settings.difficulties,
       })
@@ -91,7 +96,9 @@ export function TestScreen({
   const title =
     settings.mode === 'timed'
       ? `termtype — ${settings.duration}s sprint`
-      : `termtype — ${settings.commandCount} commands`
+      : settings.mode === 'endless'
+        ? 'termtype — endless'
+        : `termtype — ${settings.commandCount} commands`
 
   return (
     <div className="mx-auto w-full max-w-4xl">
@@ -164,7 +171,10 @@ export function TestScreen({
       </TerminalFrame>
 
       <div className="mt-5 flex items-center justify-center gap-6">
-        <KeyHint keys={['esc']} label="restart" />
+        <KeyHint
+          keys={['esc']}
+          label={settings.mode === 'endless' ? 'finish & see results' : 'restart'}
+        />
         <KeyHint keys={['tab', 'enter']} label={tabArmed ? 'restart armed…' : 'restart'} />
       </div>
 

@@ -134,6 +134,28 @@ describe('typingReducer', () => {
     expect(s.lines).toHaveLength(2)
   })
 
+  it('a trailing space past the end is swallowed and never blocks enter', () => {
+    let s = typeString(initEngine([entry('ls'), entry('cd')], config()), 'ls ')
+    expect(s.lines[0].extra).toBe('')
+    expect(s.keystrokes.filter((k) => k.kind === 'char')).toHaveLength(2)
+    s = typingReducer(s, { type: 'enter', now: 500 })
+    expect(s.lineIndex).toBe(1)
+    // but a space after real overflow chars still backspaces normally
+    let s2 = typeString(initEngine([entry('ls'), entry('cd')], config()), 'lsx ')
+    expect(s2.lines[0].extra).toBe('x ')
+  })
+
+  it('endless mode never auto-finishes; finishNow ends it', () => {
+    const cfg = config({ mode: 'endless' })
+    let s = typeString(initEngine([entry('ls'), entry('cd')], cfg), 'ls')
+    s = typingReducer(s, { type: 'enter', now: 300 })
+    s = typingReducer(s, { type: 'tick', now: 999_999 })
+    expect(s.status).toBe('running')
+    s = typingReducer(s, { type: 'finishNow', now: 5000 })
+    expect(s.status).toBe('finished')
+    expect(s.endedAt).toBe(5000)
+  })
+
   it('no keystrokes mutate state after finish', () => {
     const cfg = config({ commandCount: 1 })
     let s = typeString(initEngine([entry('ls')], cfg), 'ls')
@@ -188,5 +210,33 @@ describe('computeMetrics', () => {
     const m = computeMetrics([], 10_000)
     expect(m.wpm).toBe(0)
     expect(m.accuracy).toBe(100)
+  })
+
+  it('excludes line-boundary pauses from wpm time', () => {
+    // 2 chars in 1s, then a long pre-enter pause, enter, a long post-enter
+    // pause, then 2 more chars in 1s. Active time = 2s, not 10s.
+    const keystrokes = [
+      { t: 0, kind: 'char' as const, correct: true },
+      { t: 1000, kind: 'char' as const, correct: true },
+      { t: 5000, kind: 'enter' as const },
+      { t: 9000, kind: 'char' as const, correct: true },
+      { t: 10_000, kind: 'char' as const, correct: true },
+    ]
+    const m = computeMetrics(keystrokes, 10_000)
+    // 4 correct chars / 5 = 0.8 words over 2s active = 24 wpm
+    expect(m.wpm).toBeCloseTo(24)
+    // wall-clock seconds still reported for the time stat
+    expect(m.seconds).toBe(10)
+  })
+
+  it('trailing idle after a completed line does not count against wpm', () => {
+    const keystrokes = [
+      { t: 0, kind: 'char' as const, correct: true },
+      { t: 1000, kind: 'char' as const, correct: true },
+      { t: 1200, kind: 'enter' as const },
+    ]
+    // timer ran 30s more after the enter — active time stays 1s
+    const m = computeMetrics(keystrokes, 31_200)
+    expect(m.wpm).toBeCloseTo(2 / 5 / (1 / 60))
   })
 })

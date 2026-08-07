@@ -25,11 +25,33 @@ export interface TestMetrics {
   categoryErrors: { category: CategoryId; errors: number; total: number }[]
 }
 
+/**
+ * Time actually spent typing: the pauses around line boundaries — after the
+ * last char of a command (pre-enter) and before the first char of the next
+ * one (post-enter) — don't count against WPM.
+ */
+export function activeTypingMs(
+  keystrokes: KeystrokeEvent[],
+  elapsedMs: number,
+): number {
+  if (keystrokes.length === 0) return elapsedMs
+  let active = 0
+  for (let i = 1; i < keystrokes.length; i++) {
+    const prev = keystrokes[i - 1]
+    const k = keystrokes[i]
+    if (prev.kind !== 'enter' && k.kind !== 'enter') active += k.t - prev.t
+  }
+  const last = keystrokes[keystrokes.length - 1]
+  if (last.kind !== 'enter') active += Math.max(0, elapsedMs - last.t)
+  return Math.min(active, elapsedMs)
+}
+
 export function computeMetrics(
   keystrokes: KeystrokeEvent[],
   elapsedMs: number,
 ): TestMetrics {
-  const minutes = Math.max(elapsedMs / 60000, 1 / 600)
+  const activeMs = activeTypingMs(keystrokes, elapsedMs)
+  const minutes = Math.max(activeMs / 60000, 1 / 600)
   const seconds = elapsedMs / 1000
 
   let correctChars = 0
