@@ -40,20 +40,26 @@ export function ResultsScreen({
   const { metrics, settings } = result
 
   return (
-    <div className="mx-auto flex w-full max-w-4xl flex-col gap-8">
-      <div className="flex flex-wrap items-center gap-2 font-sans text-xs text-faint">
-        <span className="rounded-md bg-surface px-2 py-1">
-          {settings.mode === 'timed'
-            ? `${settings.duration}s sprint`
-            : settings.mode === 'endless'
-              ? 'endless session'
-              : `${settings.commandCount} commands`}
-        </span>
-        {settings.categories.map((c) => (
-          <span key={c} className="rounded-md bg-surface px-2 py-1 font-mono">
-            {categoryLabel(c)}
+    <div className="mx-auto flex w-full max-w-4xl flex-col gap-7">
+      <div>
+        <div className="mb-2 flex items-center gap-3">
+          <h2 className="quoted text-xl text-nylon">receipt</h2>
+          <span aria-hidden className="hazard h-2 flex-1" />
+        </div>
+        <div className="flex flex-wrap items-center gap-1.5 text-[11px] font-extrabold uppercase">
+          <span className="bg-nylon px-2 py-0.5 text-cotton">
+            {settings.mode === 'timed'
+              ? `${settings.duration}s sprint`
+              : settings.mode === 'endless'
+                ? 'endless session'
+                : `${settings.commandCount} commands`}
           </span>
-        ))}
+          {settings.categories.map((c) => (
+            <span key={c} className="border-2 border-nylon bg-white px-2 py-0.5 font-mono text-nylon">
+              {categoryLabel(c)}
+            </span>
+          ))}
+        </div>
       </div>
 
       <StatCards metrics={metrics} />
@@ -62,7 +68,7 @@ export function ResultsScreen({
         initial={{ opacity: 0, y: 10 }}
         animate={{ opacity: 1, y: 0 }}
         transition={{ delay: 0.15 }}
-        className="rounded-xl border border-edge bg-term p-5"
+        className="plate p-5"
       >
         <WpmChart bins={metrics.bins} />
       </motion.div>
@@ -80,9 +86,9 @@ export function ResultsScreen({
         <KeyHint keys={['esc']} label="config" />
       </div>
 
-      <p className="text-center font-sans text-[11px] text-faint">
+      <p className="text-center font-mono text-[10px] text-nylon-soft uppercase">
         wpm counts correct characters over active typing time — pauses between commands
-        (after the last character and before the next one) don&apos;t count against you.
+        don&apos;t count against you.
       </p>
     </div>
   )

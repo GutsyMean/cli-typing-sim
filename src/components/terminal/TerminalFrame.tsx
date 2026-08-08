@@ -2,6 +2,10 @@ import type { ReactNode } from 'react'
 import { useSettings } from '../../settings/settingsStore'
 import { themeById } from '../../settings/themes'
 
+/**
+ * The main panel: black nylon with a stitched seam, the quoted label plate
+ * on top, hazard stripe underneath. Interior obeys --t-* vars.
+ */
 export function TerminalFrame({
   title,
   children,
@@ -10,24 +14,23 @@ export function TerminalFrame({
   children: ReactNode
 }) {
   const themeId = useSettings((s) => s.theme)
-  const crt = themeById(themeId).crt ?? false
+  const theme = themeById(themeId)
+  const crt = theme.crt ?? false
 
   return (
-    <div
-      className={`relative rounded-xl border border-edge bg-term shadow-[0_24px_80px_-24px_rgba(0,0,0,0.55)] ${
-        crt ? 'scanlines' : ''
-      }`}
-    >
-      <div className="flex items-center gap-2 rounded-t-xl border-b border-edge bg-surface px-4 py-2.5 select-none">
-        <span className="size-3 rounded-full bg-[#ff5f57]" />
-        <span className="size-3 rounded-full bg-[#febc2e]" />
-        <span className="size-3 rounded-full bg-[#28c840]" />
-        <span className="flex-1 text-center font-sans text-[13px] font-medium text-dim">
-          {title}
+    <div>
+      <div className="flex items-end justify-between px-0.5 pb-1.5 select-none">
+        <span className="quoted text-[13px] text-nylon">{title}</span>
+        <span className="font-mono text-[10px] text-nylon-soft uppercase">
+          lot: {theme.label} · size: os
         </span>
-        <span className="w-[52px]" />
       </div>
-      <div className="p-6 sm:p-8">{children}</div>
+      <div className="nylon p-2">
+        <div className={`relative bg-term ${crt ? 'scanlines' : ''}`}>
+          <div className="p-6 sm:p-8">{children}</div>
+        </div>
+      </div>
+      <div aria-hidden className="hazard mt-1.5 h-2.5" />
     </div>
   )
 }

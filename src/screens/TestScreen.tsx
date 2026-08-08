@@ -114,7 +114,7 @@ export function TestScreen({
               initial={{ opacity: 0, y: 4 }}
               animate={{ opacity: 1, y: 0 }}
               exit={{ opacity: 0, y: 4 }}
-              className="rounded-md bg-err-bg px-3 py-1 font-sans text-sm font-semibold text-err"
+              className="ziptag px-3 py-1 text-sm"
             >
               caps lock is on
             </motion.span>
@@ -183,7 +183,7 @@ export function TestScreen({
       </div>
 
       {isTouchDevice && (
-        <p className="mt-4 text-center font-sans text-sm text-dim">
+        <p className="mt-4 text-center text-sm font-semibold text-nylon-soft">
           termtype works best with a physical keyboard.
         </p>
       )}

@@ -1,5 +1,4 @@
-import { motion } from 'motion/react'
-
+/** A garment toggle: reads "ON" or "OFF" in quotes; on keeps the zip tie. */
 export function Toggle({
   checked,
   onChange,
@@ -15,21 +14,30 @@ export function Toggle({
       role="switch"
       aria-checked={checked}
       onClick={() => onChange(!checked)}
-      className="group flex w-full items-center justify-between gap-3 rounded-lg px-1 py-1.5 text-left"
+      className="group flex w-full items-center justify-between gap-3 px-1 py-1.5 text-left"
     >
-      <span className="font-sans text-[13px] text-dim transition-colors group-hover:text-fg">
-        {label}
-      </span>
       <span
-        className={`flex h-5 w-9 shrink-0 items-center rounded-full border px-0.5 transition-colors duration-200 ${
-          checked ? 'justify-end border-transparent bg-accent/90' : 'justify-start border-edge bg-raised'
+        className={`text-[13px] font-semibold ${
+          checked ? 'text-nylon' : 'text-nylon-soft group-hover:text-nylon'
         }`}
       >
-        <motion.span
-          layout
-          transition={{ type: 'spring', stiffness: 700, damping: 40 }}
-          className={`size-4 rounded-full ${checked ? 'bg-term' : 'bg-dim'}`}
-        />
+        {label}
+      </span>
+      <span className="relative inline-flex shrink-0 items-center">
+        <span
+          className={`px-2 py-0.5 text-[10px] font-extrabold tracking-wide uppercase ${
+            checked
+              ? 'bg-nylon text-cotton'
+              : 'hazard-off border border-nylon-soft bg-white text-nylon-soft'
+          }`}
+        >
+          &ldquo;{checked ? 'on' : 'off'}&rdquo;
+        </span>
+        {checked && (
+          <span aria-hidden className="ziptag absolute -top-2 -right-2 text-[7px]">
+            &nbsp;
+          </span>
+        )}
       </span>
     </button>
   )

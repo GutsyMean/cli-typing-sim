@@ -215,7 +215,7 @@ check('esc returns to config', (await page.textContent('body')).includes('comman
 // ---- flags scope: the flag ladder (switch via the study selector UI) ----
 const clicked = await page.evaluate(() => {
   const btn = [...document.querySelectorAll('button')].find(
-    (b) => b.textContent?.trim() === 'flags',
+    (b) => b.textContent?.replace(/[\u201c\u201d"]/g, '').trim() === 'flags',
   )
   btn?.click()
   return !!btn

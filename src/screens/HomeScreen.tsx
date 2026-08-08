@@ -10,7 +10,8 @@ import { useHistory } from '../history/historyStore'
 import { LearnOverview } from '../learn/components/LearnOverview'
 import { useSettings } from '../settings/settingsStore'
 
-function Section({
+/** A stenciled crate zone: quoted label, hazard stripe under what matters. */
+function Zone({
   title,
   children,
   delay = 0,
@@ -23,11 +24,12 @@ function Section({
     <motion.section
       initial={{ opacity: 0, y: 12 }}
       animate={{ opacity: 1, y: 0 }}
-      transition={{ delay, type: 'spring', bounce: 0, visualDuration: 0.4 }}
+      transition={{ delay, type: 'spring', bounce: 0, visualDuration: 0.35 }}
     >
-      <h2 className="mb-3 font-sans text-[11px] font-semibold tracking-[0.18em] text-faint uppercase">
-        {title}
-      </h2>
+      <div className="mb-3 flex items-center gap-3">
+        <h2 className="quoted text-xl text-nylon sm:text-2xl">{title}</h2>
+        <span aria-hidden className="hazard h-2 flex-1" />
+      </div>
       {children}
     </motion.section>
   )
@@ -51,93 +53,101 @@ export function HomeScreen({ onStart }: { onStart: () => void }) {
 
   return (
     <div className="mx-auto w-full max-w-4xl">
-      <header className="mb-10 flex flex-wrap items-end justify-between gap-4">
-        <div>
-          <h1 className="font-mono text-4xl font-bold text-fg">
-            <span className="text-accent">term</span>type
-            <motion.span
-              aria-hidden
-              className="ml-1 inline-block h-8 w-[0.55em] translate-y-1 rounded-[3px] bg-accent"
-              animate={{ opacity: [1, 1, 0, 0] }}
-              transition={{ duration: 1.1, times: [0, 0.45, 0.55, 1], repeat: Infinity }}
-            />
-          </h1>
-          <p className="mt-2 font-sans text-[15px] text-dim">
-            muscle memory for the command line
-          </p>
+      <header className="mb-10">
+        <div className="flex flex-wrap items-end justify-between gap-x-10 gap-y-6">
+          <div className="min-w-0">
+            <h1 className="text-[clamp(3rem,8.5vw,5rem)] leading-[0.95] font-extrabold tracking-tight text-nylon uppercase">
+              &ldquo;termtype&rdquo;
+            </h1>
+            <p className="mt-3 max-w-[46ch] text-[15px] font-semibold text-nylon">
+              &ldquo;muscle memory&rdquo; for the command line.
+              <span className="font-normal text-nylon-soft">
+                {' '}
+                real commands, per-keystroke grading, a mastery course for flags.
+              </span>
+            </p>
+          </div>
+          <div className="flex flex-col items-end gap-2.5">
+            <div className="font-mono text-[10px] text-nylon-soft uppercase">
+              № 1979 · workgrade equipment · designed to endure
+            </div>
+            <motion.button
+              type="button"
+              onClick={onStart}
+              whileTap={{ scale: 0.97 }}
+              className="ziptag px-7 py-3.5 text-[15px] shadow-[4px_4px_0_var(--w-nylon)]"
+            >
+              {learnMode ? '"start learning"' : '"start typing"'}
+            </motion.button>
+          </div>
         </div>
-        <motion.button
-          type="button"
-          onClick={onStart}
-          whileHover={{ y: -2 }}
-          whileTap={{ scale: 0.97 }}
-          className="rounded-lg bg-accent px-6 py-3 font-sans text-[15px] font-semibold text-term shadow-lg shadow-accent/20"
-        >
-          {learnMode ? 'start learning' : 'start typing'}
-        </motion.button>
+        <div aria-hidden className="hazard mt-6 h-3.5" />
       </header>
 
-      <div className="flex flex-col gap-9">
-        <Section title="test">
+      <div className="flex flex-col gap-10">
+        <Zone title="mode">
           <ConfigBar />
-        </Section>
+        </Zone>
 
-        <Section title="command sets" delay={0.05}>
+        <Zone title="command sets" delay={0.05}>
           <CategoryPicker />
-        </Section>
+        </Zone>
 
         {learnMode && (
-          <Section title="learn progress" delay={0.075}>
+          <Zone title="progress" delay={0.075}>
             <LearnOverview />
-          </Section>
+          </Zone>
         )}
 
-        <Section title="theme" delay={0.1}>
+        <Zone title="display" delay={0.1}>
           <ThemeGrid />
-        </Section>
+        </Zone>
 
-        <Section title="options" delay={0.15}>
+        <Zone title="options" delay={0.15}>
           <OptionsPanel />
-        </Section>
+        </Zone>
 
         {!learnMode && (
-          <Section title="history" delay={0.2}>
+          <Zone title="record" delay={0.2}>
             <HistoryGraph />
             <HistoryEmptyHint />
-          </Section>
+          </Zone>
         )}
       </div>
 
-      <footer className="mt-12 flex flex-col items-center gap-3 border-t border-edge pt-6 pb-4">
-        <div className="flex items-center justify-center gap-6">
-          <KeyHint keys={['enter']} label={learnMode ? 'start learning' : 'start'} />
-          <span className="font-sans text-[13px] text-faint">
-            during a test: <span className="text-dim">enter</span> runs a command ·{' '}
-            <span className="text-dim">tab+enter</span> restarts ·{' '}
-            <span className="text-dim">esc</span> quits
+      <footer className="mt-12">
+        <div aria-hidden className="hazard h-2" />
+        <div className="flex flex-col items-center gap-3 pt-5 pb-4">
+          <div className="flex flex-wrap items-center justify-center gap-x-6 gap-y-2">
+            <KeyHint keys={['enter']} label={learnMode ? 'start learning' : 'start'} />
+            <span className="text-[13px] text-nylon-soft">
+              during a test: <b className="text-nylon">enter</b> runs a command ·{' '}
+              <b className="text-nylon">tab+enter</b> restarts ·{' '}
+              <b className="text-nylon">esc</b> quits
+            </span>
+          </div>
+          <span className="font-mono text-[10px] text-nylon-soft uppercase">
+            &ldquo;materials&rdquo; — commands:{' '}
+            <a
+              href="https://github.com/tldr-pages/tldr"
+              target="_blank"
+              rel="noreferrer"
+              className="underline hover:text-nylon"
+            >
+              tldr-pages
+            </a>{' '}
+            (cc by 4.0) · flags:{' '}
+            <a
+              href="https://github.com/withfig/autocomplete"
+              target="_blank"
+              rel="noreferrer"
+              className="underline hover:text-nylon"
+            >
+              @withfig/autocomplete
+            </a>{' '}
+            (isc)
           </span>
         </div>
-        <span className="font-sans text-[11px] text-faint">
-          command examples from{' '}
-          <a
-            href="https://github.com/tldr-pages/tldr"
-            target="_blank"
-            rel="noreferrer"
-            className="underline decoration-faint hover:text-dim"
-          >
-            tldr-pages
-          </a>{' '}
-          (CC BY 4.0) · flag descriptions from{' '}
-          <a
-            href="https://github.com/withfig/autocomplete"
-            target="_blank"
-            rel="noreferrer"
-            className="underline decoration-faint hover:text-dim"
-          >
-            @withfig/autocomplete
-          </a>{' '}
-          (ISC)
-        </span>
       </footer>
     </div>
   )
@@ -147,8 +157,8 @@ function HistoryEmptyHint() {
   const count = useHistory((s) => s.entries.length)
   if (count >= 2) return null
   return (
-    <p className="rounded-lg border border-dashed border-edge px-4 py-6 text-center font-sans text-[13px] text-faint">
-      finish your first test and your progress graph will grow here.
+    <p className="plate px-4 py-6 text-center text-[13px] text-nylon-soft">
+      &ldquo;empty&rdquo; — finish your first test and your progress graph hangs here.
     </p>
   )
 }

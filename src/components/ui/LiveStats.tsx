@@ -14,6 +14,18 @@ function liveWpm(state: EngineState, now: number): number {
   return correct / 5 / minutes
 }
 
+/** Woven size-tags: black label, white figures, quoted unit. */
+function Readout({ label, value }: { label: string; value: string }) {
+  return (
+    <span className="bg-nylon inline-flex items-baseline gap-2 px-3 py-1.5 text-cotton">
+      <span className="font-mono text-xl font-bold tabular-nums">{value}</span>
+      <span className="text-[10px] font-extrabold uppercase opacity-75">
+        &ldquo;{label}&rdquo;
+      </span>
+    </span>
+  )
+}
+
 export function LiveStats({ state }: { state: EngineState }) {
   const [, force] = useState(0)
   useEffect(() => {
@@ -35,18 +47,15 @@ export function LiveStats({ state }: { state: EngineState }) {
         : `${Math.min(state.lineIndex + 1, state.config.commandCount)}/${state.config.commandCount}`
 
   return (
-    <div className="flex items-baseline gap-6 font-mono text-accent select-none">
-      <span className="text-2xl font-semibold tabular-nums">{progress}</span>
+    <div className="flex items-center gap-2 select-none">
+      <Readout
+        label={state.config.mode === 'commands' ? 'cmds' : 'time'}
+        value={progress}
+      />
       {state.config.mode === 'endless' && (
-        <span className="text-2xl font-semibold tabular-nums">
-          {state.lineIndex}
-          <span className="ml-1.5 text-sm text-dim">cmds</span>
-        </span>
+        <Readout label="cmds" value={String(state.lineIndex)} />
       )}
-      <span className="text-2xl font-semibold tabular-nums">
-        {fmtInt(wpm)}
-        <span className="ml-1.5 text-sm text-dim">wpm</span>
-      </span>
+      <Readout label="wpm" value={fmtInt(wpm)} />
     </div>
   )
 }
