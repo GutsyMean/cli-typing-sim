@@ -36,6 +36,23 @@ typography:
     fontSize: "12px"
     fontWeight: 700
     letterSpacing: "0.025em"
+  note:
+    fontFamily: "PT Sans, system-ui, sans-serif"
+    fontSize: "15px"
+    fontWeight: 400
+  ui:
+    fontFamily: "PT Sans, system-ui, sans-serif"
+    fontSize: "13px"
+    fontWeight: 400
+  caption:
+    fontFamily: "PT Sans, system-ui, sans-serif"
+    fontSize: "11px"
+    fontWeight: 400
+  micro:
+    fontFamily: "PT Sans, system-ui, sans-serif"
+    fontSize: "10px"
+    fontWeight: 700
+    letterSpacing: "0.05em"
   terminal:
     fontFamily: "B612 Mono, ui-monospace, monospace"
     fontSize: "1.125rem"
