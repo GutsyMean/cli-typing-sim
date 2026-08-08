@@ -8,8 +8,8 @@ import type { CaretStyle } from '../../settings/settingsStore'
  * swaps in and the line reflows, drifting the caret off its glyph.
  */
 const styleClass: Record<CaretStyle, string> = {
-  block: 'top-[0.13em] h-[1.3em] -inset-x-px rounded-[3px] bg-accent/80',
-  line: 'top-[0.13em] h-[1.3em] -left-[1.5px] w-[2.5px] rounded-full bg-accent',
+  block: 'top-[-0.15em] h-[1.3em] -inset-x-px rounded-[3px] bg-accent/80',
+  line: 'top-[-0.15em] h-[1.3em] -left-[1.5px] w-[2.5px] rounded-full bg-accent',
   underscore: 'top-[1.05em] h-[2.5px] inset-x-0 rounded-full bg-accent',
 }
 
