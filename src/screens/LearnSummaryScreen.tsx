@@ -46,8 +46,10 @@ export function LearnSummaryScreen({
   if (summary.nothingToLearn) {
     return (
       <div className="mx-auto flex w-full max-w-2xl flex-col items-center gap-6 pt-16 text-center">
-        <h2 className="font-mono text-3xl font-bold text-accent">all mastered ✓</h2>
-        <p className="font-sans text-[15px] text-dim">
+        <h2 className="font-display text-2xl tracking-[0.14em] text-teal-deep">
+          ALL MASTERED ✓
+        </h2>
+        <p className="font-sans text-[15px] text-ink-soft">
           every command in your selected categories and difficulties is already at full
           mastery. widen the selection on the config screen — or reset progress if you
           want to drill them again.
@@ -60,13 +62,17 @@ export function LearnSummaryScreen({
   }
 
   return (
-    <div className="mx-auto flex w-full max-w-3xl flex-col gap-8">
-      <div>
-        <div className="font-sans text-sm font-medium text-dim">commands mastered</div>
-        <div className="font-mono text-6xl font-bold text-accent tabular-nums">
-          {summary.mastered}
+    <div className="mx-auto flex w-full max-w-3xl flex-col gap-6">
+      <div className="flex items-end gap-4">
+        <div className="lcd px-5 py-3">
+          <div className="font-display text-[9px] tracking-[0.16em] text-lcd-dim uppercase">
+            commands mastered
+          </div>
+          <div className="font-mono text-6xl font-bold tabular-nums">
+            {summary.mastered}
+          </div>
         </div>
-        <div className="mt-1 font-sans text-sm text-faint">
+        <div className="pb-1 font-sans text-sm text-ink-faint">
           {summary.totalAnswered} answers across {summary.roundsCompleted} completed round
           {summary.roundsCompleted === 1 ? '' : 's'}
         </div>
@@ -83,12 +89,14 @@ export function LearnSummaryScreen({
           .map((t) => {
             const s = summary.byType[t]
             return (
-              <div key={t} className="rounded-xl border border-edge bg-term p-4">
-                <div className="font-sans text-xs font-medium text-faint">{typeLabel[t]}</div>
-                <div className="mt-1 font-mono text-2xl font-semibold text-fg tabular-nums">
+              <div key={t} className="lcd px-4 py-3">
+                <div className="font-display text-[8px] tracking-[0.16em] text-lcd-dim uppercase">
+                  {typeLabel[t]}
+                </div>
+                <div className="mt-1 font-mono text-2xl font-semibold tabular-nums">
                   {fmtPercent((s.correct / s.total) * 100)}
                 </div>
-                <div className="font-sans text-xs text-dim">
+                <div className="font-sans text-xs text-lcd-dim">
                   {s.correct}/{s.total} correct
                 </div>
               </div>
@@ -101,21 +109,20 @@ export function LearnSummaryScreen({
           initial={{ opacity: 0, y: 10 }}
           animate={{ opacity: 1, y: 0 }}
           transition={{ delay: 0.2 }}
+          className="bevel-up p-4"
         >
-          <h3 className="mb-3 font-sans text-sm font-medium text-dim">
-            needs more work
-          </h3>
+          <h3 className="engraved mb-3 text-[9px]">needs more work</h3>
           <div className="flex flex-col gap-2">
             {summary.weakest.map((w) => (
               <div
                 key={w.label}
-                className="flex items-baseline justify-between gap-4 rounded-lg border border-edge bg-surface px-3 py-2"
+                className="bevel-down flex items-baseline justify-between gap-4 px-3 py-2"
               >
                 <div className="min-w-0">
-                  <div className="truncate font-mono text-sm text-fg">{w.label}</div>
-                  <div className="truncate font-sans text-xs text-faint">{w.desc}</div>
+                  <div className="truncate font-mono text-sm text-ink">{w.label}</div>
+                  <div className="truncate font-sans text-xs text-ink-faint">{w.desc}</div>
                 </div>
-                <span className="shrink-0 font-sans text-xs text-err">
+                <span className="shrink-0 font-sans text-xs font-semibold text-[#b8402c]">
                   ×{w.misses} missed
                 </span>
               </div>

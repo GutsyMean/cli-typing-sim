@@ -22,10 +22,8 @@ const difficultyInfo = [
 
 function Group({ label, children }: { label: string; children: React.ReactNode }) {
   return (
-    <div className="flex flex-col gap-1">
-      <span className="px-1 font-sans text-[10px] font-semibold tracking-[0.14em] text-faint uppercase select-none">
-        {label}
-      </span>
+    <div className="flex flex-col gap-1.5">
+      <span className="engraved px-1 text-[9px] select-none">{label}</span>
       {children}
     </div>
   )
@@ -126,14 +124,13 @@ export function ConfigBar() {
                 key={d.value}
                 type="button"
                 title={d.hint}
+                aria-pressed={active}
                 onClick={() => toggleDifficulty(d.value)}
-                className={`rounded-lg border px-3 py-1.5 font-sans text-[13px] font-medium transition-colors duration-150 ${
-                  active
-                    ? 'border-accent/60 bg-raised text-accent'
-                    : 'border-edge bg-surface text-dim hover:border-faint hover:text-fg'
+                className={`inline-flex items-center gap-1.5 px-3 py-1.5 font-sans text-[13px] font-medium ${
+                  active ? 'key-down text-teal-deep' : 'key-up text-ink-soft'
                 }`}
               >
-                {active && <span className="mr-1.5 text-accent">✓</span>}
+                <span aria-hidden className={`led ${active ? 'led-on' : ''}`} />
                 {d.label}
               </button>
             )
@@ -142,25 +139,25 @@ export function ConfigBar() {
       </Group>
 
       {mode !== 'learn' && (
-      <Group label="on mistakes">
-        <Segment
-          groupId="behavior"
-          options={[
-            {
-              value: 'forgiving',
-              label: 'forgiving',
-              hint: 'wrong characters advance the caret; go back and fix them if you want',
-            },
-            {
-              value: 'stop-on-error',
-              label: 'stop on error',
-              hint: 'the caret sticks until you type the correct character',
-            },
-          ]}
-          value={behavior}
-          onChange={(v) => set('behavior', v)}
-        />
-      </Group>
+        <Group label="on mistakes">
+          <Segment
+            groupId="behavior"
+            options={[
+              {
+                value: 'forgiving',
+                label: 'forgiving',
+                hint: 'wrong characters advance the caret; go back and fix them if you want',
+              },
+              {
+                value: 'stop-on-error',
+                label: 'stop on error',
+                hint: 'the caret sticks until you type the correct character',
+              },
+            ]}
+            value={behavior}
+            onChange={(v) => set('behavior', v)}
+          />
+        </Group>
       )}
     </div>
   )

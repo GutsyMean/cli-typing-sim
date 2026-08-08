@@ -1,14 +1,19 @@
 @import "tailwindcss";
 
 /*
- * Every color utility maps to a --t-* custom property that applyTheme.ts
- * writes onto <html>, so switching themes restyles the whole app instantly.
+ * Two token layers:
+ *  --t-*  terminal theme vars written by applyTheme.ts — everything behind
+ *         the CRT glass (typing area, scrollback, questions) stays themed.
+ *  --w-*  the console world — molded gray panels, machined bevels, engraved
+ *         labels, teal power inlays, LCD readouts. Fixed; themes never touch it.
  */
 @theme inline {
-  --font-sans: "Outfit", system-ui, ui-sans-serif, sans-serif;
+  --font-sans: "Chakra Petch", system-ui, ui-sans-serif, sans-serif;
+  --font-display: "Michroma", "Chakra Petch", system-ui, sans-serif;
   --font-mono: "Google Sans Code", ui-monospace, "Cascadia Code", "Fira Code",
     monospace;
 
+  /* terminal-interior utilities (theme-driven) */
   --color-term: var(--t-bg);
   --color-chrome: var(--t-chrome);
   --color-surface: var(--t-surface);
@@ -24,6 +29,22 @@
   --color-p-path: var(--t-p-path);
   --color-p-sym: var(--t-p-sym);
   --color-edge: var(--t-edge);
+
+  /* console-world utilities (fixed) */
+  --color-shell: var(--w-shell);
+  --color-panel: var(--w-panel);
+  --color-panel-hi: var(--w-panel-hi);
+  --color-panel-lo: var(--w-panel-lo);
+  --color-ink: var(--w-ink);
+  --color-ink-soft: var(--w-ink-soft);
+  --color-ink-faint: var(--w-ink-faint);
+  --color-teal: var(--w-teal);
+  --color-teal-deep: var(--w-teal-deep);
+  --color-violet: var(--w-violet);
+  --color-lcd: var(--w-lcd);
+  --color-lcd-fg: var(--w-lcd-fg);
+  --color-lcd-dim: var(--w-lcd-dim);
+  --color-lcd-err: var(--w-lcd-err);
 }
 
 :root {
@@ -44,32 +65,175 @@
   --t-p-sym: #f8f8f2;
   --t-edge: #3b3d4f;
 
+  /* console world — never restyled by themes */
+  --w-shell: #999ea9;
+  --w-panel: #c6cad1;
+  --w-panel-hi: #e6e8ec;
+  --w-panel-lo: #7c8290;
+  --w-ink: #1f2128;
+  --w-ink-soft: #464b56;
+  --w-ink-faint: #6d7380;
+  --w-teal: #00695f;
+  --w-teal-deep: #004f47;
+  --w-teal-led: #00c2ae;
+  --w-violet: #5b4b8a;
+  --w-lcd: #131d19;
+  --w-lcd-fg: #7dffcf;
+  --w-lcd-dim: #48705f;
+  --w-lcd-err: #ff8a70;
+
   --terminal-font-size: 1.125rem;
 }
 
 html {
-  background: var(--t-chrome);
-  color-scheme: dark;
-}
-
-html[data-light] {
+  background: var(--w-shell);
   color-scheme: light;
 }
 
 body {
   font-family: var(--font-sans);
-  color: var(--t-fg);
+  color: var(--w-ink);
   -webkit-font-smoothing: antialiased;
-  transition: background-color 200ms ease;
+  /* molded-plastic ground: faint diagonal machining sheen on the shell */
+  background:
+    linear-gradient(165deg, rgba(255, 255, 255, 0.14), transparent 40%),
+    repeating-linear-gradient(
+      0deg,
+      transparent 0px,
+      transparent 3px,
+      rgba(0, 0, 0, 0.02) 3px,
+      rgba(0, 0, 0, 0.02) 4px
+    );
+}
+
+:focus-visible {
+  outline: 2px solid var(--w-teal);
+  outline-offset: 2px;
 }
 
 ::selection {
-  background: color-mix(in srgb, var(--t-accent) 30%, transparent);
+  background: color-mix(in srgb, var(--w-teal) 30%, transparent);
 }
 
 * {
   scrollbar-width: thin;
-  scrollbar-color: var(--t-faint) transparent;
+  scrollbar-color: var(--w-panel-lo) transparent;
+}
+
+/* ---- console hardware vocabulary ---------------------------------- */
+
+/* raised molded panel */
+.bevel-up {
+  background: var(--w-panel);
+  border: 1px solid var(--w-panel-lo);
+  box-shadow:
+    inset 1px 1px 0 var(--w-panel-hi),
+    inset -1px -1px 0 color-mix(in srgb, var(--w-panel-lo) 55%, transparent),
+    1px 2px 5px rgba(20, 22, 30, 0.28);
+}
+
+/* recessed well cut into the panel */
+.bevel-down {
+  background: color-mix(in srgb, var(--w-panel) 84%, var(--w-panel-lo));
+  border: 1px solid var(--w-panel-lo);
+  box-shadow:
+    inset 1px 2px 4px rgba(20, 22, 30, 0.3),
+    inset -1px -1px 0 var(--w-panel-hi);
+}
+
+/* physical key, resting */
+.key-up {
+  background: linear-gradient(180deg, var(--w-panel-hi), var(--w-panel));
+  border: 1px solid var(--w-panel-lo);
+  box-shadow:
+    inset 0 1px 0 rgba(255, 255, 255, 0.75),
+    0 2px 0 var(--w-panel-lo),
+    0 3px 4px rgba(20, 22, 30, 0.3);
+  transition:
+    box-shadow 120ms ease,
+    transform 120ms ease,
+    background 120ms ease;
+}
+.key-up:hover {
+  background: linear-gradient(180deg, #f0f2f5, var(--w-panel-hi));
+}
+
+/* physical key, pressed / latched */
+.key-down {
+  background: linear-gradient(
+    180deg,
+    color-mix(in srgb, var(--w-panel) 82%, var(--w-panel-lo)),
+    color-mix(in srgb, var(--w-panel) 92%, var(--w-panel-lo))
+  );
+  border: 1px solid var(--w-panel-lo);
+  box-shadow:
+    inset 0 2px 3px rgba(20, 22, 30, 0.35),
+    0 1px 0 var(--w-panel-hi);
+  transform: translateY(2px);
+  transition:
+    box-shadow 120ms ease,
+    transform 120ms ease,
+    background 120ms ease;
+}
+
+/* status LED */
+.led {
+  display: inline-block;
+  width: 7px;
+  height: 7px;
+  border-radius: 9999px;
+  background: #565b66;
+  box-shadow: inset 0 1px 1px rgba(0, 0, 0, 0.55);
+  transition: background 150ms ease, box-shadow 150ms ease;
+}
+.led-on {
+  background: var(--w-teal-led);
+  box-shadow:
+    inset 0 0 1px rgba(255, 255, 255, 0.6),
+    0 0 6px var(--w-teal-led);
+}
+.led-err {
+  background: #e2543a;
+  box-shadow:
+    inset 0 0 1px rgba(255, 255, 255, 0.6),
+    0 0 6px rgba(226, 84, 58, 0.8);
+}
+
+/* engraved plate lettering */
+.engraved {
+  font-family: var(--font-display);
+  text-transform: uppercase;
+  letter-spacing: 0.16em;
+  color: var(--w-ink-soft);
+  text-shadow: 0 1px 0 var(--w-panel-hi);
+}
+
+/* backlit LCD readout window */
+.lcd {
+  background:
+    radial-gradient(
+      120% 140% at 50% 0%,
+      color-mix(in srgb, var(--w-lcd-fg) 7%, var(--w-lcd)),
+      var(--w-lcd) 70%
+    );
+  border: 1px solid var(--w-panel-lo);
+  box-shadow:
+    inset 0 2px 6px rgba(0, 0, 0, 0.6),
+    inset 0 0 0 1px rgba(0, 0, 0, 0.4),
+    0 1px 0 var(--w-panel-hi);
+  color: var(--w-lcd-fg);
+}
+
+/* violet service stripe (decorative inlay) */
+.service-stripe {
+  background: repeating-linear-gradient(
+    -45deg,
+    var(--w-violet) 0px,
+    var(--w-violet) 8px,
+    transparent 8px,
+    transparent 16px
+  );
+  opacity: 0.55;
 }
 
 @keyframes caret-blink {
@@ -109,4 +273,16 @@ body {
   font-size: var(--terminal-font-size);
   line-height: 1.9;
   font-variant-ligatures: none;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .caret-blink {
+    animation: none;
+  }
+  *,
+  *::before,
+  *::after {
+    animation-duration: 0.01ms !important;
+    transition-duration: 0.01ms !important;
+  }
 }

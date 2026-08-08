@@ -1,4 +1,3 @@
-import { motion } from 'motion/react'
 import { categories } from '../../data/commands'
 import { useSettings } from '../../settings/settingsStore'
 
@@ -11,26 +10,27 @@ export function CategoryPicker() {
       {categories.map((cat) => {
         const active = selected.includes(cat.id)
         return (
-          <motion.button
+          <button
             key={cat.id}
             type="button"
+            aria-pressed={active}
             onClick={() => toggle(cat.id)}
-            whileTap={{ scale: 0.97 }}
-            className={`rounded-lg border px-3 py-2 text-left transition-colors duration-150 ${
-              active
-                ? 'border-accent/60 bg-raised'
-                : 'border-edge bg-surface hover:border-faint'
-            }`}
+            className={`px-3 py-2 text-left ${active ? 'key-down' : 'key-up'}`}
           >
-            <span
-              className={`block font-mono text-[13px] font-semibold ${
-                active ? 'text-accent' : 'text-fg'
-              }`}
-            >
-              {cat.label}
+            <span className="flex items-center gap-1.5">
+              <span aria-hidden className={`led ${active ? 'led-on' : ''}`} />
+              <span
+                className={`block truncate font-mono text-[13px] font-semibold ${
+                  active ? 'text-teal-deep' : 'text-ink'
+                }`}
+              >
+                {cat.label}
+              </span>
             </span>
-            <span className="block font-sans text-[11px] text-faint">{cat.blurb}</span>
-          </motion.button>
+            <span className="mt-0.5 block truncate font-sans text-[11px] text-ink-faint">
+              {cat.blurb}
+            </span>
+          </button>
         )
       })}
     </div>
