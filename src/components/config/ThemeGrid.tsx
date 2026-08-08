@@ -31,7 +31,7 @@ export function ThemeGrid() {
             </span>
             <span
               className={`flex items-center justify-between px-2 py-1 text-[12px] font-bold ${
-                active ? 'bg-sign text-board' : 'bg-white text-board-soft'
+                active ? 'bg-sign text-signink' : 'bg-panel text-board-soft'
               }`}
             >
               <span className="truncate">{theme.label}</span>

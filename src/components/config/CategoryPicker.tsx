@@ -18,8 +18,8 @@ export function CategoryPicker() {
             onClick={() => toggle(cat.id)}
             className={`flex items-center gap-2 px-3 py-2 text-left ${
               active
-                ? 'bg-sign text-board'
-                : 'border border-hall-line bg-white text-board-soft hover:border-board-soft'
+                ? 'bg-sign text-signink'
+                : 'border border-hall-line bg-panel text-board-soft hover:border-board-soft'
             }`}
           >
             <span aria-hidden className="text-[15px] leading-none font-bold">
@@ -28,14 +28,14 @@ export function CategoryPicker() {
             <span className="min-w-0">
               <span
                 className={`block truncate font-mono text-[13px] font-bold ${
-                  active ? 'text-board' : 'text-board'
+                  active ? 'text-signink' : 'text-ink'
                 }`}
               >
                 {cat.label}
               </span>
               <span
                 className={`block truncate text-[11px] ${
-                  active ? 'font-bold text-board' : 'text-board-soft'
+                  active ? 'font-bold text-signink' : 'text-board-soft'
                 }`}
               >
                 {cat.blurb}

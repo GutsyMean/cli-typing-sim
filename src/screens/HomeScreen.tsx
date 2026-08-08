@@ -93,10 +93,43 @@ function SignSection({
           →
         </span>
       </div>
-      <div className="bg-white p-4 shadow-[0_8px_20px_-12px_rgba(23,24,28,0.35)] sm:p-5">
+      <div className="bg-panel p-4 shadow-[0_8px_20px_-12px_rgba(23,24,28,0.35)] sm:p-5">
         {children}
       </div>
     </motion.section>
+  )
+}
+
+/** Hall lighting switch on the masthead band: day / night concourse. */
+function NightSwitch() {
+  const night = useSettings((s) => s.nightMode)
+  const set = useSettings((s) => s.set)
+  return (
+    <button
+      type="button"
+      role="switch"
+      aria-checked={night}
+      onClick={() => set('nightMode', !night)}
+      title="toggle the hall lights — signage stays lit"
+      className="board flex items-center gap-2 px-2.5 py-1 text-[11px] font-bold text-white hover:bg-black"
+    >
+      <svg viewBox="0 0 24 24" className="size-3.5" aria-hidden>
+        {night ? (
+          // moon
+          <path
+            d="M19 14.5A8 8 0 0 1 9.5 5 8 8 0 1 0 19 14.5z"
+            fill="currentColor"
+          />
+        ) : (
+          // sun
+          <g fill="none" stroke="currentColor" strokeWidth="2.2">
+            <circle cx="12" cy="12" r="4" fill="currentColor" />
+            <path d="M12 2.5v3M12 18.5v3M2.5 12h3M18.5 12h3M5 5l2 2M17 17l2 2M19 5l-2 2M7 17l-2 2" />
+          </g>
+        )}
+      </svg>
+      {night ? 'night' : 'day'}
+    </button>
   )
 }
 
@@ -157,12 +190,15 @@ export function HomeScreen({ onStart }: { onStart: () => void }) {
             </span>
           </button>
         </div>
-        <div className="mt-4 flex flex-wrap gap-x-6 gap-y-1 border-t-2 border-board/70 pt-2.5 text-[12px] font-bold">
+        <div className="mt-4 flex flex-wrap items-center gap-x-6 gap-y-1 border-t-2 border-board/70 pt-2.5 text-[12px] font-bold">
           <span>1,900+ commands</span>
           <span>3,500+ flags</span>
           <span>15 command sets</span>
           <span>8 displays</span>
-          <span className="ml-auto">gate TT-1</span>
+          <span className="ml-auto inline-flex items-center gap-4">
+            <NightSwitch />
+            <span>gate TT-1</span>
+          </span>
         </div>
       </motion.header>
 
@@ -201,9 +237,9 @@ export function HomeScreen({ onStart }: { onStart: () => void }) {
         <div className="flex flex-wrap items-center justify-center gap-x-6 gap-y-2">
           <KeyHint keys={['enter']} label={learnMode ? 'start learning' : 'start'} />
           <span className="text-[13px] text-board-soft">
-            during a test: <b className="text-board">enter</b> runs a command ·{' '}
-            <b className="text-board">tab+enter</b> restarts ·{' '}
-            <b className="text-board">esc</b> quits
+            during a test: <b className="text-ink">enter</b> runs a command ·{' '}
+            <b className="text-ink">tab+enter</b> restarts ·{' '}
+            <b className="text-ink">esc</b> quits
           </span>
         </div>
         <span className="text-[12px] text-board-soft">
@@ -212,7 +248,7 @@ export function HomeScreen({ onStart }: { onStart: () => void }) {
             href="https://github.com/tldr-pages/tldr"
             target="_blank"
             rel="noreferrer"
-            className="underline hover:text-board"
+            className="underline hover:text-ink"
           >
             tldr-pages
           </a>{' '}
@@ -221,7 +257,7 @@ export function HomeScreen({ onStart }: { onStart: () => void }) {
             href="https://github.com/withfig/autocomplete"
             target="_blank"
             rel="noreferrer"
-            className="underline hover:text-board"
+            className="underline hover:text-ink"
           >
             @withfig/autocomplete
           </a>{' '}

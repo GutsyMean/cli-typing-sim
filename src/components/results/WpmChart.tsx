@@ -151,7 +151,7 @@ export function WpmChart({ bins }: { bins: SecondBin[] }) {
           <span className="h-[3px] w-4 bg-sign" /> wpm
         </span>
         <span className="inline-flex items-center gap-1.5">
-          <span className="h-[2px] w-4 bg-white/50" /> raw
+          <span className="h-[2px] w-4 bg-panel/50" /> raw
         </span>
         <span className="inline-flex items-center gap-1.5">
           <span className="size-2 rounded-full bg-closed" /> errors

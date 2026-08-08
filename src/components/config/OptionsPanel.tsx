@@ -6,7 +6,7 @@ import { Toggle } from '../ui/Toggle'
 function Row({ label, children }: { label: string; children: React.ReactNode }) {
   return (
     <div className="flex flex-wrap items-center justify-between gap-2">
-      <span className="text-[14px] text-board">{label}</span>
+      <span className="text-[14px] text-ink">{label}</span>
       {children}
     </div>
   )
@@ -22,7 +22,7 @@ export function OptionsPanel() {
           <select
             value={s.promptStyle}
             onChange={(e) => s.set('promptStyle', e.target.value as typeof s.promptStyle)}
-            className="border-2 border-board bg-white px-2.5 py-1.5 font-mono text-[13px] text-board outline-none"
+            className="border-2 border-ink bg-panel px-2.5 py-1.5 font-mono text-[13px] text-ink outline-none"
           >
             <option value="auto">auto (match category)</option>
             {promptStyles.map((p) => (
@@ -60,6 +60,11 @@ export function OptionsPanel() {
       </div>
 
       <div className="flex flex-col gap-1">
+        <Toggle
+          checked={s.nightMode}
+          onChange={(v) => s.set('nightMode', v)}
+          label="night concourse — lights off in the hall"
+        />
         <Toggle checked={s.caretBlink} onChange={(v) => s.set('caretBlink', v)} label="caret blink" />
         <Toggle checked={s.showLiveStats} onChange={(v) => s.set('showLiveStats', v)} label="live wpm & timer" />
         <Toggle

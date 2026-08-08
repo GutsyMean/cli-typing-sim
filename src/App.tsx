@@ -22,8 +22,12 @@ function App() {
   const [screen, setScreen] = useState<Screen>({ name: 'home' })
   const theme = useSettings((s) => s.theme)
   const fontSize = useSettings((s) => s.fontSize)
+  const nightMode = useSettings((s) => s.nightMode)
 
   useEffect(() => applyTheme(theme), [theme])
+  useEffect(() => {
+    document.documentElement.toggleAttribute('data-night', nightMode)
+  }, [nightMode])
   useEffect(() => {
     document.documentElement.style.setProperty(
       '--terminal-font-size',

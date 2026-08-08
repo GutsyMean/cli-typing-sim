@@ -89,11 +89,11 @@ export function LearnSummaryScreen({
           .map((t) => {
             const s = summary.byType[t]
             return (
-              <div key={t} className="bg-white p-3.5 shadow-[0_8px_20px_-12px_rgba(23,24,28,0.35)]">
+              <div key={t} className="bg-panel p-3.5 shadow-[0_8px_20px_-12px_rgba(23,24,28,0.35)]">
                 <div className="text-[12px] font-bold text-board-soft uppercase tracking-wide">
                   {typeLabel[t]}
                 </div>
-                <div className="mt-1 font-mono text-2xl font-bold text-board tabular-nums">
+                <div className="mt-1 font-mono text-2xl font-bold text-ink tabular-nums">
                   {fmtPercent((s.correct / s.total) * 100)}
                 </div>
                 <div className="text-xs text-board-soft">
@@ -116,14 +116,14 @@ export function LearnSummaryScreen({
               →
             </span>
           </div>
-          <div className="flex flex-col divide-y divide-hall-line bg-white shadow-[0_8px_20px_-12px_rgba(23,24,28,0.35)]">
+          <div className="flex flex-col divide-y divide-hall-line bg-panel shadow-[0_8px_20px_-12px_rgba(23,24,28,0.35)]">
             {summary.weakest.map((w) => (
               <div
                 key={w.label}
                 className="flex items-baseline justify-between gap-4 px-4 py-2.5"
               >
                 <div className="min-w-0">
-                  <div className="truncate font-mono text-sm font-bold text-board">
+                  <div className="truncate font-mono text-sm font-bold text-ink">
                     {w.label}
                   </div>
                   <div className="truncate text-xs text-board-soft">{w.desc}</div>

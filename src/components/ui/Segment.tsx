@@ -33,7 +33,7 @@ export function Segment<T extends string | number>({
             onClick={() => onChange(opt.value)}
             className={`px-3.5 py-1.5 text-[14px] font-bold ${
               i > 0 ? 'border-l border-white/25' : ''
-            } ${active ? 'bg-sign text-board' : 'text-white hover:bg-white/15'}`}
+            } ${active ? 'bg-sign text-signink' : 'text-white hover:bg-panel/15'}`}
           >
             {active && (
               <span aria-hidden className="mr-1.5">

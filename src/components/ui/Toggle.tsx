@@ -19,7 +19,7 @@ export function Toggle({
       <span
         aria-hidden
         className={`flex size-6 shrink-0 items-center justify-center ${
-          checked ? 'picto' : 'border-2 border-board-soft bg-white'
+          checked ? 'picto' : 'border-2 border-board-soft bg-panel'
         }`}
       >
         {checked && (
@@ -35,7 +35,7 @@ export function Toggle({
       </span>
       <span
         className={`text-[14px] ${
-          checked ? 'font-bold text-board' : 'text-board-soft group-hover:text-board'
+          checked ? 'font-bold text-ink' : 'text-board-soft group-hover:text-ink'
         }`}
       >
         {label}

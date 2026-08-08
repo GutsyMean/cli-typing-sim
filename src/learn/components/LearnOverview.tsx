@@ -27,9 +27,9 @@ function Bar({ mastered, learning, total }: { mastered: number; learning: number
 
 function ItemRow({ item, note, noteClass }: { item: StudyItem; note: string; noteClass: string }) {
   return (
-    <div className="flex items-baseline justify-between gap-4 border border-hall-line bg-white px-3 py-2">
+    <div className="flex items-baseline justify-between gap-4 border border-hall-line bg-panel px-3 py-2">
       <div className="min-w-0">
-        <div className="truncate font-mono text-sm font-bold text-board">
+        <div className="truncate font-mono text-sm font-bold text-ink">
           {itemLabel(item)}
           {item.kind === 'flag' && (
             <span className="picto ml-2 px-1.5 py-0.5 font-sans text-[10px] font-bold">
@@ -109,7 +109,7 @@ export function LearnOverview() {
     <div className="flex flex-col gap-6">
       <div>
         <div className="mb-2 flex items-baseline justify-between px-1">
-          <span className="font-sans text-sm text-board">
+          <span className="font-sans text-sm text-ink">
             <b className="font-mono">{mastered.length}</b>
             <span className="text-board-soft"> / {items.length}</span> mastered in your selection
             <span className="text-board-soft">
@@ -134,7 +134,7 @@ export function LearnOverview() {
             }}
             onBlur={() => setResetArmed(false)}
             className={`font-sans text-xs font-bold transition-colors ${
-              resetArmed ? 'bg-closed px-1.5 text-white' : 'text-board-soft underline hover:text-board'
+              resetArmed ? 'bg-closed px-1.5 text-white' : 'text-board-soft underline hover:text-ink'
             }`}
           >
             {resetArmed ? 'click again to wipe all progress' : 'reset progress'}
@@ -146,7 +146,7 @@ export function LearnOverview() {
       <div className="flex flex-col gap-2">
         {byCategory.map((c) => (
           <div key={c.id} className="flex items-center gap-3">
-            <span className="w-28 shrink-0 font-mono text-xs font-bold text-board">{categoryLabel(c.id)}</span>
+            <span className="w-28 shrink-0 font-mono text-xs font-bold text-ink">{categoryLabel(c.id)}</span>
             <Bar mastered={c.mastered} learning={c.learning} total={c.total} />
             <span className="w-16 text-right font-sans text-xs text-board-soft tabular-nums">
               {c.mastered}/{c.total}
@@ -161,7 +161,7 @@ export function LearnOverview() {
             <h3 className="mb-2 font-sans text-[12px] font-bold text-board-soft uppercase tracking-wide">recently mastered</h3>
             <div className="flex flex-col gap-2">
               {recentlyMastered.map(([i]) => (
-                <ItemRow key={studyKey(i)} item={i} note="✓" noteClass="text-board" />
+                <ItemRow key={studyKey(i)} item={i} note="✓" noteClass="text-ink" />
               ))}
             </div>
           </div>

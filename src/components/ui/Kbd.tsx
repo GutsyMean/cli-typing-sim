@@ -17,7 +17,7 @@ export function KeyHint({ keys, label }: { keys: string[]; label: string }) {
           <Kbd>{k}</Kbd>
         </span>
       ))}
-      <span className="ml-0.5 text-board">{label}</span>
+      <span className="ml-0.5 text-ink">{label}</span>
     </span>
   )
 }

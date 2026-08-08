@@ -31,6 +31,8 @@ export interface Settings {
   behavior: Behavior
   showLiveStats: boolean
   showDescriptions: boolean
+  /** night concourse — dark page chrome (terminal themes unaffected) */
+  nightMode: boolean
 }
 
 interface SettingsStore extends Settings {
@@ -56,6 +58,7 @@ export const defaultSettings: Settings = {
   behavior: 'forgiving',
   showLiveStats: true,
   showDescriptions: true,
+  nightMode: false,
 }
 
 export const useSettings = create<SettingsStore>()(

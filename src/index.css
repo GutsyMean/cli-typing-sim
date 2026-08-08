@@ -29,13 +29,17 @@
   --color-p-sym: var(--t-p-sym);
   --color-edge: var(--t-edge);
 
-  /* concourse world (fixed) */
+  /* concourse world (fixed palette; day/night swaps the hall lighting) */
   --color-sign: var(--w-sign);
   --color-board: var(--w-board);
   --color-board-soft: var(--w-board-soft);
   --color-hall: var(--w-hall);
   --color-hall-line: var(--w-hall-line);
   --color-closed: var(--w-closed);
+  --color-panel: var(--w-panel);
+  --color-ink: var(--w-ink);
+  /* text on a lit yellow sign is always dark, day or night */
+  --color-signink: #17181a;
 }
 
 :root {
@@ -63,6 +67,8 @@
   --w-hall: #e9e8e4; /* concourse floor/wall */
   --w-hall-line: #c9c8c2; /* expansion joints */
   --w-closed: #cc3524; /* closed-route red */
+  --w-panel: #ffffff; /* content panel under each sign */
+  --w-ink: #17181c; /* text on hall/panels */
 
   --terminal-font-size: 1.125rem;
 }
@@ -70,6 +76,29 @@
 html {
   background: var(--w-hall);
   color-scheme: light;
+}
+
+/* the night concourse: lights off in the hall, signage stays backlit */
+html[data-night] {
+  color-scheme: dark;
+  --w-hall: #131418;
+  --w-hall-line: #26282e;
+  --w-board: #0d0e11;
+  --w-board-soft: #a3a6b0;
+  --w-panel: #1c1e24;
+  --w-ink: #eceef2;
+}
+
+html[data-night] .board {
+  box-shadow:
+    0 0 0 1px rgba(255, 255, 255, 0.14),
+    0 6px 16px -8px rgba(0, 0, 0, 0.8);
+}
+
+html[data-night] .sign-band {
+  box-shadow:
+    0 0 34px -6px rgba(255, 210, 0, 0.28),
+    0 6px 16px -8px rgba(0, 0, 0, 0.7);
 }
 
 body {
@@ -136,7 +165,8 @@ body {
 /* black board panel (departures board, gate number) */
 .board {
   background: var(--w-board);
-  color: var(--w-hall);
+  /* fixed light text — the hall goes dark at night but board lettering stays lit */
+  color: #f2f2ef;
   box-shadow: 0 6px 16px -8px rgba(23, 24, 28, 0.5);
 }
 
