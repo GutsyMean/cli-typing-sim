@@ -118,7 +118,7 @@ export function ConfigBar() {
       )}
 
       <Group label="difficulty · pick one or more">
-        <div className="inline-flex rounded-lg border border-edge bg-surface p-1">
+        <div className="flex flex-wrap gap-2">
           {difficultyInfo.map((d) => {
             const active = difficulties.includes(d.value)
             return (
@@ -127,10 +127,13 @@ export function ConfigBar() {
                 type="button"
                 title={d.hint}
                 onClick={() => toggleDifficulty(d.value)}
-                className={`rounded-md px-3 py-1.5 font-sans text-[13px] font-medium transition-colors duration-150 ${
-                  active ? 'bg-raised text-accent' : 'text-dim hover:text-fg'
+                className={`rounded-lg border px-3 py-1.5 font-sans text-[13px] font-medium transition-colors duration-150 ${
+                  active
+                    ? 'border-accent/60 bg-raised text-accent'
+                    : 'border-edge bg-surface text-dim hover:border-faint hover:text-fg'
                 }`}
               >
+                {active && <span className="mr-1.5 text-accent">✓</span>}
                 {d.label}
               </button>
             )
