@@ -1,4 +1,12 @@
-import { motion } from 'motion/react'
+const groupColor: Record<string, string> = {
+  mode: 'bg-key-red text-[#2a0507]',
+  duration: 'bg-key-orange text-[#2b1203]',
+  count: 'bg-key-orange text-[#2b1203]',
+  learnScope: 'bg-key-orange text-[#2b1203]',
+  caret: 'bg-key-white text-[#1c1c1a]',
+  fontsize: 'bg-key-white text-[#1c1c1a]',
+  behavior: 'bg-key-white text-[#1c1c1a]',
+}
 
 export interface SegmentOption<T extends string | number> {
   value: T
@@ -7,20 +15,22 @@ export interface SegmentOption<T extends string | number> {
   hint?: string
 }
 
+/** A row of step keys; the armed one's LED lights and its cap comes up to full color. */
 export function Segment<T extends string | number>({
   options,
   value,
   onChange,
-  groupId,
+  groupId = 'mode',
 }: {
   options: SegmentOption<T>[]
   value: T
   onChange: (v: T) => void
-  /** unique per group — scopes the sliding highlight */
-  groupId: string
+  /** picks the key color quarter for this bank */
+  groupId?: string
 }) {
+  const color = groupColor[groupId] ?? 'bg-key-white text-[#1c1c1a]'
   return (
-    <div className="inline-flex rounded-lg border border-edge bg-surface p-1">
+    <div className="inline-flex flex-wrap gap-1.5">
       {options.map((opt) => {
         const active = opt.value === value
         return (
@@ -28,19 +38,16 @@ export function Segment<T extends string | number>({
             key={String(opt.value)}
             type="button"
             title={opt.hint}
+            aria-pressed={active}
             onClick={() => onChange(opt.value)}
-            className={`relative rounded-md px-3 py-1.5 font-sans text-[13px] font-medium transition-colors duration-150 ${
-              active ? 'text-typed' : 'text-dim hover:text-fg'
+            className={`step flex flex-col items-center gap-1 px-3.5 pt-1.5 pb-2 ${color} ${
+              active ? '' : 'step-off'
             }`}
           >
-            {active && (
-              <motion.span
-                layoutId={`segment-${groupId}`}
-                transition={{ type: 'spring', stiffness: 600, damping: 45 }}
-                className="absolute inset-0 rounded-md bg-raised"
-              />
-            )}
-            <span className="relative">{opt.label}</span>
+            <span aria-hidden className={`sled ${active ? 'sled-lit' : ''}`} />
+            <span className="text-[12px] leading-none font-bold tracking-wide uppercase">
+              {opt.label}
+            </span>
           </button>
         )
       })}

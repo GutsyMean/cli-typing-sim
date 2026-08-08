@@ -40,9 +40,13 @@ export function ResultsScreen({
   const { metrics, settings } = result
 
   return (
-    <div className="mx-auto flex w-full max-w-4xl flex-col gap-8">
-      <div className="flex flex-wrap items-center gap-2 font-sans text-xs text-faint">
-        <span className="rounded-md bg-surface px-2 py-1">
+    <div className="mx-auto flex w-full max-w-4xl flex-col gap-6">
+      <div className="flex flex-wrap items-center gap-2">
+        <span className="silk text-[9px]">end of pattern</span>
+        <span
+          className="rounded-[3px] px-2 py-0.5 text-[11px] font-bold uppercase"
+          style={{ background: 'var(--w-key-red)', color: '#2a0507' }}
+        >
           {settings.mode === 'timed'
             ? `${settings.duration}s sprint`
             : settings.mode === 'endless'
@@ -50,7 +54,10 @@ export function ResultsScreen({
               : `${settings.commandCount} commands`}
         </span>
         {settings.categories.map((c) => (
-          <span key={c} className="rounded-md bg-surface px-2 py-1 font-mono">
+          <span
+            key={c}
+            className="rounded-[3px] border border-deck-edge bg-deck px-2 py-0.5 font-mono text-[11px] text-silk"
+          >
             {categoryLabel(c)}
           </span>
         ))}
@@ -62,8 +69,9 @@ export function ResultsScreen({
         initial={{ opacity: 0, y: 10 }}
         animate={{ opacity: 1, y: 0 }}
         transition={{ delay: 0.15 }}
-        className="rounded-xl border border-edge bg-term p-5"
+        className="deck p-4"
       >
+        <div className="silk mb-3 text-[9px]">tempo over time</div>
         <WpmChart bins={metrics.bins} />
       </motion.div>
 
@@ -80,7 +88,7 @@ export function ResultsScreen({
         <KeyHint keys={['esc']} label="config" />
       </div>
 
-      <p className="text-center font-sans text-[11px] text-faint">
+      <p className="text-center text-[12px] text-silk-dim">
         wpm counts correct characters over active typing time — pauses between commands
         (after the last character and before the next one) don&apos;t count against you.
       </p>

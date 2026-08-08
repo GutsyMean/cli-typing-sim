@@ -6,7 +6,7 @@ import { Toggle } from '../ui/Toggle'
 function Row({ label, children }: { label: string; children: React.ReactNode }) {
   return (
     <div className="flex flex-wrap items-center justify-between gap-2">
-      <span className="font-sans text-[13px] text-dim">{label}</span>
+      <span className="text-[14px] text-silk-dim">{label}</span>
       {children}
     </div>
   )
@@ -22,7 +22,7 @@ export function OptionsPanel() {
           <select
             value={s.promptStyle}
             onChange={(e) => s.set('promptStyle', e.target.value as typeof s.promptStyle)}
-            className="rounded-lg border border-edge bg-surface px-2.5 py-1.5 font-mono text-[13px] text-fg outline-none focus:border-accent/60"
+            className="rounded-[4px] border border-deck-edge bg-deck px-2.5 py-1.5 font-mono text-[13px] text-silk outline-none"
           >
             <option value="auto">auto (match category)</option>
             {promptStyles.map((p) => (
@@ -61,7 +61,7 @@ export function OptionsPanel() {
 
       <div className="flex flex-col gap-1">
         <Toggle checked={s.caretBlink} onChange={(v) => s.set('caretBlink', v)} label="caret blink" />
-        <Toggle checked={s.showLiveStats} onChange={(v) => s.set('showLiveStats', v)} label="live wpm & timer" />
+        <Toggle checked={s.showLiveStats} onChange={(v) => s.set('showLiveStats', v)} label="live wpm & cadence" />
         <Toggle
           checked={s.showDescriptions}
           onChange={(v) => s.set('showDescriptions', v)}

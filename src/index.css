@@ -1,14 +1,18 @@
 @import "tailwindcss";
 
 /*
- * Every color utility maps to a --t-* custom property that applyTheme.ts
- * writes onto <html>, so switching themes restyles the whole app instantly.
+ * Two token layers:
+ *  --t-*  terminal theme vars written by applyTheme.ts — everything behind
+ *         the terminal glass stays themed.
+ *  --w-*  the rhythm machine — charcoal chassis, candy step keys, lit LEDs
+ *         as the only glow, silkscreen labels, red segment readouts.
+ *         Fixed; themes never touch it.
  */
 @theme inline {
-  --font-sans: "Outfit", system-ui, ui-sans-serif, sans-serif;
-  --font-mono: "Google Sans Code", ui-monospace, "Cascadia Code", "Fira Code",
-    monospace;
+  --font-sans: "Barlow Semi Condensed", system-ui, ui-sans-serif, sans-serif;
+  --font-mono: "Fragment Mono", ui-monospace, monospace;
 
+  /* terminal-interior utilities (theme-driven) */
   --color-term: var(--t-bg);
   --color-chrome: var(--t-chrome);
   --color-surface: var(--t-surface);
@@ -24,6 +28,19 @@
   --color-p-path: var(--t-p-path);
   --color-p-sym: var(--t-p-sym);
   --color-edge: var(--t-edge);
+
+  /* rhythm-machine world (fixed) */
+  --color-chassis: var(--w-chassis);
+  --color-deck: var(--w-deck);
+  --color-deck-edge: var(--w-deck-edge);
+  --color-silk: var(--w-silk);
+  --color-silk-dim: var(--w-silk-dim);
+  --color-key-red: var(--w-key-red);
+  --color-key-orange: var(--w-key-orange);
+  --color-key-yellow: var(--w-key-yellow);
+  --color-key-white: var(--w-key-white);
+  --color-led: var(--w-led);
+  --color-tempo: var(--w-tempo);
 }
 
 :root {
@@ -44,32 +61,139 @@
   --t-p-sym: #f8f8f2;
   --t-edge: #3b3d4f;
 
+  /* the rhythm machine */
+  --w-chassis: #101114;
+  --w-deck: #1a1b1f; /* panel face */
+  --w-deck-edge: #2c2e34;
+  --w-silk: #ececea; /* silkscreen white */
+  --w-silk-dim: #8f9196;
+  --w-key-red: #de3f44;
+  --w-key-orange: #e87c33;
+  --w-key-yellow: #e8bc2a;
+  --w-key-white: #e8e6e0;
+  --w-led: #ff5533; /* lit LED */
+  --w-tempo: #ff4433; /* segmented readout */
+
   --terminal-font-size: 1.125rem;
 }
 
 html {
-  background: var(--t-chrome);
+  background: var(--w-chassis);
   color-scheme: dark;
-}
-
-html[data-light] {
-  color-scheme: light;
 }
 
 body {
   font-family: var(--font-sans);
-  color: var(--t-fg);
+  color: var(--w-silk);
   -webkit-font-smoothing: antialiased;
-  transition: background-color 200ms ease;
+  background: var(--w-chassis);
+}
+
+:focus-visible {
+  outline: 2px solid var(--w-led);
+  outline-offset: 2px;
 }
 
 ::selection {
-  background: color-mix(in srgb, var(--t-accent) 30%, transparent);
+  background: color-mix(in srgb, var(--w-led) 45%, transparent);
 }
 
 * {
   scrollbar-width: thin;
-  scrollbar-color: var(--t-faint) transparent;
+  scrollbar-color: var(--w-deck-edge) transparent;
+}
+
+/* ---- rhythm-machine vocabulary ------------------------------------ */
+
+/* a panel deck bolted into the chassis */
+.deck {
+  background: linear-gradient(180deg, #1e1f24, var(--w-deck));
+  border: 1px solid var(--w-deck-edge);
+  border-radius: 6px;
+  box-shadow:
+    inset 0 1px 0 rgba(255, 255, 255, 0.05),
+    0 12px 32px -20px rgba(0, 0, 0, 0.9);
+}
+
+/* silkscreen caps printed on the deck */
+.silk {
+  font-weight: 600;
+  text-transform: uppercase;
+  letter-spacing: 0.18em;
+  color: var(--w-silk-dim);
+}
+
+/* a step key: colored cap over a dark base, LED above the label */
+.step {
+  position: relative;
+  border-radius: 4px;
+  border: 1px solid rgba(0, 0, 0, 0.65);
+  box-shadow:
+    inset 0 2px 0 rgba(255, 255, 255, 0.28),
+    inset 0 -6px 0 rgba(0, 0, 0, 0.32),
+    0 2px 6px rgba(0, 0, 0, 0.55);
+  transition: filter 120ms ease, transform 80ms ease;
+}
+.step:hover {
+  filter: brightness(1.12);
+}
+.step:active {
+  transform: translateY(1px);
+  box-shadow:
+    inset 0 2px 0 rgba(255, 255, 255, 0.18),
+    inset 0 -3px 0 rgba(0, 0, 0, 0.32),
+    0 1px 3px rgba(0, 0, 0, 0.55);
+}
+/* unarmed keys sit dim; the LED does the talking */
+.step-off {
+  filter: saturate(0.42) brightness(0.62);
+}
+.step-off:hover {
+  filter: saturate(0.7) brightness(0.8);
+}
+
+/* the LED above a key */
+.sled {
+  display: inline-block;
+  width: 7px;
+  height: 7px;
+  border-radius: 9999px;
+  background: #3b2b28;
+  box-shadow: inset 0 1px 1px rgba(0, 0, 0, 0.7);
+  transition: background 120ms ease, box-shadow 120ms ease;
+}
+.sled-lit {
+  background: var(--w-led);
+  box-shadow:
+    inset 0 0 1px rgba(255, 255, 255, 0.7),
+    0 0 9px var(--w-led);
+}
+
+/* red segmented readout */
+.tempo {
+  background: #0b0b0d;
+  border: 1px solid var(--w-deck-edge);
+  border-radius: 4px;
+  box-shadow: inset 0 2px 8px rgba(0, 0, 0, 0.9);
+  color: var(--w-tempo);
+  text-shadow: 0 0 9px color-mix(in srgb, var(--w-tempo) 60%, transparent);
+}
+
+/* idle chase: the machine keeps time even before you play */
+@keyframes chase {
+  0%,
+  100% {
+    opacity: 0.18;
+  }
+  6% {
+    opacity: 1;
+  }
+  14% {
+    opacity: 0.18;
+  }
+}
+.chase-cell {
+  animation: chase 1.6s linear infinite;
 }
 
 @keyframes caret-blink {
@@ -109,4 +233,17 @@ body {
   font-size: var(--terminal-font-size);
   line-height: 1.9;
   font-variant-ligatures: none;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .caret-blink,
+  .chase-cell {
+    animation: none;
+  }
+  *,
+  *::before,
+  *::after {
+    animation-duration: 0.01ms !important;
+    transition-duration: 0.01ms !important;
+  }
 }

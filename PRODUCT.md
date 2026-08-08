@@ -30,7 +30,8 @@ keyboard-first, desktop experience. Dark ambient environments dominate.
   coloring, prompt strings, user-selectable terminal THEMES (dracula, nord,
   gruvbox, solarized, catppuccin, CRT green, paper, …) — the theme picker is
   functionality, not decoration; test/learn terminal surfaces obey the theme.
-- Google Sans Code is the terminal/monospace face (explicit user choice).
+- Each visual world chooses a period-correct terminal/monospace face of its
+  own (the earlier Google Sans Code restriction was lifted by the user).
 - Keyboard-first interaction (enter/tab+enter/esc chords, 1-4 answers).
 - Attribution footer: tldr-pages (CC BY 4.0), @withfig/autocomplete (ISC).
 - All functionality stays exactly as-is; this is a visual-world replacement.

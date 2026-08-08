@@ -22,10 +22,8 @@ const difficultyInfo = [
 
 function Group({ label, children }: { label: string; children: React.ReactNode }) {
   return (
-    <div className="flex flex-col gap-1">
-      <span className="px-1 font-sans text-[10px] font-semibold tracking-[0.14em] text-faint uppercase select-none">
-        {label}
-      </span>
+    <div className="flex flex-col gap-2">
+      <span className="silk text-[9px] select-none">{label}</span>
       {children}
     </div>
   )
@@ -42,7 +40,7 @@ export function ConfigBar() {
   const toggleDifficulty = useSettings((s) => s.toggleDifficulty)
 
   return (
-    <div className="flex flex-wrap items-end gap-x-5 gap-y-4">
+    <div className="flex flex-wrap items-end gap-x-7 gap-y-4">
       <Group label="mode">
         <Segment
           groupId="mode"
@@ -65,10 +63,10 @@ export function ConfigBar() {
         {mode !== 'endless' && mode !== 'learn' && (
           <motion.div
             key={mode}
-            initial={{ opacity: 0, x: -6 }}
-            animate={{ opacity: 1, x: 0 }}
-            exit={{ opacity: 0, x: 6 }}
-            transition={{ duration: 0.15 }}
+            initial={{ opacity: 0 }}
+            animate={{ opacity: 1 }}
+            exit={{ opacity: 0 }}
+            transition={{ duration: 0.12 }}
           >
             {mode === 'timed' ? (
               <Group label="duration">
@@ -117,8 +115,8 @@ export function ConfigBar() {
         </Group>
       )}
 
-      <Group label="difficulty · pick one or more">
-        <div className="flex flex-wrap gap-2">
+      <Group label="difficulty · arm one or more">
+        <div className="inline-flex flex-wrap gap-1.5">
           {difficultyInfo.map((d) => {
             const active = difficulties.includes(d.value)
             return (
@@ -126,15 +124,16 @@ export function ConfigBar() {
                 key={d.value}
                 type="button"
                 title={d.hint}
+                aria-pressed={active}
                 onClick={() => toggleDifficulty(d.value)}
-                className={`rounded-lg border px-3 py-1.5 font-sans text-[13px] font-medium transition-colors duration-150 ${
-                  active
-                    ? 'border-accent/60 bg-raised text-accent'
-                    : 'border-edge bg-surface text-dim hover:border-faint hover:text-fg'
+                className={`step flex flex-col items-center gap-1 bg-key-yellow px-3.5 pt-1.5 pb-2 text-[#241b02] ${
+                  active ? '' : 'step-off'
                 }`}
               >
-                {active && <span className="mr-1.5 text-accent">✓</span>}
-                {d.label}
+                <span aria-hidden className={`sled ${active ? 'sled-lit' : ''}`} />
+                <span className="text-[12px] leading-none font-bold tracking-wide uppercase">
+                  {d.label}
+                </span>
               </button>
             )
           })}
@@ -142,25 +141,25 @@ export function ConfigBar() {
       </Group>
 
       {mode !== 'learn' && (
-      <Group label="on mistakes">
-        <Segment
-          groupId="behavior"
-          options={[
-            {
-              value: 'forgiving',
-              label: 'forgiving',
-              hint: 'wrong characters advance the caret; go back and fix them if you want',
-            },
-            {
-              value: 'stop-on-error',
-              label: 'stop on error',
-              hint: 'the caret sticks until you type the correct character',
-            },
-          ]}
-          value={behavior}
-          onChange={(v) => set('behavior', v)}
-        />
-      </Group>
+        <Group label="on mistakes">
+          <Segment
+            groupId="behavior"
+            options={[
+              {
+                value: 'forgiving',
+                label: 'forgiving',
+                hint: 'wrong characters advance the caret; go back and fix them if you want',
+              },
+              {
+                value: 'stop-on-error',
+                label: 'stop on error',
+                hint: 'the caret sticks until you type the correct character',
+              },
+            ]}
+            value={behavior}
+            onChange={(v) => set('behavior', v)}
+          />
+        </Group>
       )}
     </div>
   )
