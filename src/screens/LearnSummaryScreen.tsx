@@ -45,37 +45,51 @@ export function LearnSummaryScreen({
 
   if (summary.nothingToLearn) {
     return (
-      <div className="mx-auto flex w-full max-w-2xl flex-col items-center gap-6 pt-16 text-center">
-        <h2 className="font-mono text-3xl font-bold text-accent">all mastered ✓</h2>
-        <p className="font-sans text-[15px] text-dim">
-          every command in your selected categories and difficulties is already at full
-          mastery. widen the selection on the config screen — or reset progress if you
-          want to drill them again.
-        </p>
-        <div className="flex items-center gap-6">
-          <KeyHint keys={['esc']} label="back to config" />
+      <div className="mx-auto w-full max-w-2xl pt-16">
+        <div className="window">
+          <div className="titlebar">
+            <span className="closebox" aria-hidden />
+            <span className="titlebar-chip">alert</span>
+          </div>
+          <div className="flex flex-col items-center gap-5 p-8 text-center">
+            <h2 className="font-display text-2xl text-ink">all mastered</h2>
+            <p className="text-[14px] text-ink">
+              every command in your selected categories and difficulties is already at
+              full mastery. widen the selection on the config screen — or reset progress
+              if you want to drill them again.
+            </p>
+            <KeyHint keys={['esc']} label="back to config" />
+          </div>
         </div>
       </div>
     )
   }
 
   return (
-    <div className="mx-auto flex w-full max-w-3xl flex-col gap-8">
-      <div>
-        <div className="font-sans text-sm font-medium text-dim">commands mastered</div>
-        <div className="font-mono text-6xl font-bold text-accent tabular-nums">
-          {summary.mastered}
+    <div className="mx-auto flex w-full max-w-3xl flex-col gap-6">
+      <div className="window">
+        <div className="titlebar">
+          <span className="closebox" aria-hidden />
+          <span className="titlebar-chip">session report</span>
         </div>
-        <div className="mt-1 font-sans text-sm text-faint">
-          {summary.totalAnswered} answers across {summary.roundsCompleted} completed round
-          {summary.roundsCompleted === 1 ? '' : 's'}
+        <div className="flex flex-wrap items-end gap-x-8 gap-y-3 p-5">
+          <div>
+            <div className="font-display text-6xl leading-none text-ink tabular-nums">
+              {summary.mastered}
+            </div>
+            <div className="mt-1 text-[12px] text-ink">commands mastered</div>
+          </div>
+          <div className="pb-1 text-[12px] text-ink">
+            {summary.totalAnswered} answers across {summary.roundsCompleted} completed
+            round{summary.roundsCompleted === 1 ? '' : 's'}
+          </div>
         </div>
       </div>
 
       <motion.div
-        initial={{ opacity: 0, y: 10 }}
-        animate={{ opacity: 1, y: 0 }}
-        transition={{ delay: 0.1 }}
+        initial={{ opacity: 0, scale: 0.98 }}
+        animate={{ opacity: 1, scale: 1 }}
+        transition={{ delay: 0.1, duration: 0.18, ease: 'easeOut' }}
         className="grid gap-3 sm:grid-cols-3"
       >
         {(Object.keys(typeLabel) as QType[])
@@ -83,12 +97,12 @@ export function LearnSummaryScreen({
           .map((t) => {
             const s = summary.byType[t]
             return (
-              <div key={t} className="rounded-xl border border-edge bg-term p-4">
-                <div className="font-sans text-xs font-medium text-faint">{typeLabel[t]}</div>
-                <div className="mt-1 font-mono text-2xl font-semibold text-fg tabular-nums">
+              <div key={t} className="border-2 border-ink bg-paper p-3">
+                <div className="text-[11px] text-ink">{typeLabel[t]}</div>
+                <div className="mt-1 font-display text-2xl text-ink tabular-nums">
                   {fmtPercent((s.correct / s.total) * 100)}
                 </div>
-                <div className="font-sans text-xs text-dim">
+                <div className="text-[11px] text-ink">
                   {s.correct}/{s.total} correct
                 </div>
               </div>
@@ -98,24 +112,28 @@ export function LearnSummaryScreen({
 
       {summary.weakest.length > 0 && (
         <motion.div
-          initial={{ opacity: 0, y: 10 }}
-          animate={{ opacity: 1, y: 0 }}
-          transition={{ delay: 0.2 }}
+          initial={{ opacity: 0, scale: 0.98 }}
+          animate={{ opacity: 1, scale: 1 }}
+          transition={{ delay: 0.2, duration: 0.18, ease: 'easeOut' }}
+          className="window"
         >
-          <h3 className="mb-3 font-sans text-sm font-medium text-dim">
-            needs more work
-          </h3>
-          <div className="flex flex-col gap-2">
+          <div className="titlebar">
+            <span className="closebox" aria-hidden />
+            <span className="titlebar-chip">needs more work</span>
+          </div>
+          <div className="flex flex-col divide-y-2 divide-ink/20">
             {summary.weakest.map((w) => (
               <div
                 key={w.label}
-                className="flex items-baseline justify-between gap-4 rounded-lg border border-edge bg-surface px-3 py-2"
+                className="flex items-baseline justify-between gap-4 px-4 py-2.5"
               >
                 <div className="min-w-0">
-                  <div className="truncate font-mono text-sm text-fg">{w.label}</div>
-                  <div className="truncate font-sans text-xs text-faint">{w.desc}</div>
+                  <div className="truncate font-mono text-sm font-bold text-ink">
+                    {w.label}
+                  </div>
+                  <div className="truncate text-xs text-ink">{w.desc}</div>
                 </div>
-                <span className="shrink-0 font-sans text-xs text-err">
+                <span className="invert shrink-0 px-1.5 text-xs">
                   ×{w.misses} missed
                 </span>
               </div>
@@ -124,7 +142,7 @@ export function LearnSummaryScreen({
         </motion.div>
       )}
 
-      <div className="flex items-center justify-center gap-6 pt-2">
+      <div className="window flex items-center justify-center gap-6 p-3">
         <KeyHint keys={['enter']} label="learn more" />
         <KeyHint keys={['esc']} label="config" />
       </div>

@@ -25,52 +25,47 @@ function CountUp({
   return <>{format(display)}</>
 }
 
-function BigStat({
-  label,
-  value,
-  format,
-  delay,
-}: {
-  label: string
-  value: number
-  format: (n: number) => string
-  delay?: number
-}) {
-  return (
-    <div>
-      <div className="font-sans text-sm font-medium text-dim">{label}</div>
-      <div className="font-mono text-6xl font-bold text-accent tabular-nums">
-        <CountUp value={value} format={format} delay={delay} />
-      </div>
-    </div>
-  )
-}
-
-function SmallStat({ label, children }: { label: string; children: React.ReactNode }) {
-  return (
-    <div>
-      <div className="font-sans text-xs font-medium text-faint">{label}</div>
-      <div className="font-mono text-2xl font-semibold text-fg tabular-nums">{children}</div>
-    </div>
-  )
-}
-
+/** The Get Info window: big bitmap numerals over a ruled spec table. */
 export function StatCards({ metrics }: { metrics: TestMetrics }) {
   return (
-    <div className="flex flex-wrap items-end gap-x-12 gap-y-6">
-      <BigStat label="wpm" value={metrics.wpm} format={fmtInt} />
-      <BigStat label="acc" value={metrics.accuracy} format={fmtPercent} delay={0.1} />
-      <div className="flex gap-x-10">
-        <SmallStat label="raw">
-          <CountUp value={metrics.raw} format={fmtInt} delay={0.2} />
-        </SmallStat>
-        <SmallStat label="consistency">
-          <CountUp value={metrics.consistency} format={fmtPercent} delay={0.25} />
-        </SmallStat>
-        <SmallStat label="time">{fmtClock(metrics.seconds)}</SmallStat>
-        <SmallStat label="chars">
-          {metrics.correctChars}/{metrics.totalChars}
-        </SmallStat>
+    <div className="window">
+      <div className="titlebar">
+        <span className="closebox" aria-hidden />
+        <span className="titlebar-chip">test info</span>
+      </div>
+      <div className="flex flex-wrap items-end gap-x-10 gap-y-4 p-5">
+        <div>
+          <div className="font-display text-6xl leading-none text-ink tabular-nums">
+            <CountUp value={metrics.wpm} format={fmtInt} />
+          </div>
+          <div className="mt-1 text-[12px] text-ink">words per minute</div>
+        </div>
+        <div>
+          <div className="font-display text-6xl leading-none text-ink tabular-nums">
+            <CountUp value={metrics.accuracy} format={fmtPercent} delay={0.1} />
+          </div>
+          <div className="mt-1 text-[12px] text-ink">accuracy</div>
+        </div>
+        <table className="text-[13px] text-ink">
+          <tbody>
+            {(
+              [
+                ['raw', <CountUp key="r" value={metrics.raw} format={fmtInt} delay={0.2} />],
+                [
+                  'consistency',
+                  <CountUp key="c" value={metrics.consistency} format={fmtPercent} delay={0.25} />,
+                ],
+                ['time', fmtClock(metrics.seconds)],
+                ['chars', `${metrics.correctChars}/${metrics.totalChars}`],
+              ] as const
+            ).map(([label, v]) => (
+              <tr key={label} className="border-b border-ink/25 last:border-0">
+                <td className="pr-6 py-0.5">{label}</td>
+                <td className="py-0.5 text-right font-bold tabular-nums">{v}</td>
+              </tr>
+            ))}
+          </tbody>
+        </table>
       </div>
     </div>
   )

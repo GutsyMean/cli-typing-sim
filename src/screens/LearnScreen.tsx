@@ -78,11 +78,11 @@ export function LearnScreen({
 
   return (
     <div className="mx-auto w-full max-w-4xl">
-      <div className="mb-4 flex min-h-8 items-end justify-between px-1">
+      <div className="window mb-4 flex min-h-8 items-center justify-between gap-4 px-4 py-2">
         <RoundProgress batch={state.batch} levels={state.levels} />
-        <span className="font-sans text-sm text-dim select-none">
+        <span className="font-sans text-sm text-ink select-none">
           round {state.roundsCompleted + 1} ·{' '}
-          <span className="text-accent">{state.masteredThisSession.length}</span> mastered
+          <b>{state.masteredThisSession.length}</b> mastered
         </span>
       </div>
 
@@ -168,7 +168,7 @@ export function LearnScreen({
         </div>
       </TerminalFrame>
 
-      <div className="mt-5 flex items-center justify-center gap-6">
+      <div className="window mx-auto mt-5 flex w-fit items-center justify-center gap-6 px-5 py-2.5">
         <KeyHint
           keys={['esc']}
           label={state.answered.length > 0 ? 'finish & see summary' : 'quit'}

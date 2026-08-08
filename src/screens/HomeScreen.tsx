@@ -10,7 +10,8 @@ import { useHistory } from '../history/historyStore'
 import { LearnOverview } from '../learn/components/LearnOverview'
 import { useSettings } from '../settings/settingsStore'
 
-function Section({
+/** Every section is its own window on the desktop. */
+function WindowSection({
   title,
   children,
   delay = 0,
@@ -21,15 +22,29 @@ function Section({
 }) {
   return (
     <motion.section
-      initial={{ opacity: 0, y: 12 }}
-      animate={{ opacity: 1, y: 0 }}
-      transition={{ delay, type: 'spring', bounce: 0, visualDuration: 0.4 }}
+      initial={{ opacity: 0, scale: 0.98 }}
+      animate={{ opacity: 1, scale: 1 }}
+      transition={{ delay, duration: 0.18, ease: 'easeOut' }}
+      className="window"
     >
-      <h2 className="mb-3 font-sans text-[11px] font-semibold tracking-[0.18em] text-faint uppercase">
-        {title}
-      </h2>
-      {children}
+      <div className="titlebar">
+        <span className="closebox" aria-hidden />
+        <span className="titlebar-chip">{title}</span>
+      </div>
+      <div className="p-4 sm:p-5">{children}</div>
     </motion.section>
+  )
+}
+
+/** 16px pixel terminal mark drawn in the world's own grammar. */
+function PixelMark() {
+  return (
+    <svg viewBox="0 0 16 16" className="size-8" aria-hidden shapeRendering="crispEdges">
+      <rect x="0" y="1" width="16" height="14" fill="var(--w-ink)" />
+      <rect x="2" y="3" width="12" height="10" fill="var(--w-paper)" />
+      <path d="M4 5h2v2H4zM6 7h2v2H6zM4 9h2v2H4z" fill="var(--w-ink)" />
+      <rect x="9" y="10" width="4" height="1" fill="var(--w-ink)" />
+    </svg>
   )
 }
 
@@ -51,79 +66,88 @@ export function HomeScreen({ onStart }: { onStart: () => void }) {
 
   return (
     <div className="mx-auto w-full max-w-4xl">
-      <header className="mb-10 flex flex-wrap items-end justify-between gap-4">
-        <div>
-          <h1 className="font-mono text-4xl font-bold text-fg">
-            <span className="text-accent">term</span>type
-            <motion.span
-              aria-hidden
-              className="ml-1 inline-block h-8 w-[0.55em] translate-y-1 rounded-[3px] bg-accent"
-              animate={{ opacity: [1, 1, 0, 0] }}
-              transition={{ duration: 1.1, times: [0, 0.45, 0.55, 1], repeat: Infinity }}
-            />
-          </h1>
-          <p className="mt-2 font-sans text-[15px] text-dim">
-            muscle memory for the command line
-          </p>
+      {/* the title window */}
+      <motion.header
+        initial={{ opacity: 0, scale: 0.97 }}
+        animate={{ opacity: 1, scale: 1 }}
+        transition={{ duration: 0.18, ease: 'easeOut' }}
+        className="window mb-6"
+      >
+        <div className="titlebar">
+          <span className="closebox" aria-hidden />
+          <span className="titlebar-chip">about this trainer</span>
         </div>
-        <motion.button
-          type="button"
-          onClick={onStart}
-          whileHover={{ y: -2 }}
-          whileTap={{ scale: 0.97 }}
-          className="rounded-lg bg-accent px-6 py-3 font-sans text-[15px] font-semibold text-term shadow-lg shadow-accent/20"
-        >
-          {learnMode ? 'start learning' : 'start typing'}
-        </motion.button>
-      </header>
+        <div className="flex flex-wrap items-center justify-between gap-x-8 gap-y-5 p-5 sm:p-6">
+          <div className="flex min-w-0 items-center gap-4">
+            <PixelMark />
+            <div>
+              <h1 className="font-display text-3xl leading-none text-ink sm:text-4xl">
+                termtype
+              </h1>
+              <p className="mt-2 text-[13px] text-ink">
+                muscle memory for the command line
+              </p>
+              <p className="mt-0.5 text-[11px] text-ink">
+                version 1.0 · 1,900+ commands · 3,500+ flags · one color window
+              </p>
+            </div>
+          </div>
+          <button
+            type="button"
+            onClick={onStart}
+            className="btn btn-default px-7 py-2.5 font-display text-[13px] text-ink"
+          >
+            {learnMode ? 'start learn' : 'start'}
+          </button>
+        </div>
+      </motion.header>
 
-      <div className="flex flex-col gap-9">
-        <Section title="test">
+      <div className="flex flex-col gap-7">
+        <WindowSection title="test setup">
           <ConfigBar />
-        </Section>
+        </WindowSection>
 
-        <Section title="command sets" delay={0.05}>
+        <WindowSection title="command sets" delay={0.04}>
           <CategoryPicker />
-        </Section>
+        </WindowSection>
 
         {learnMode && (
-          <Section title="learn progress" delay={0.075}>
+          <WindowSection title="learn progress" delay={0.06}>
             <LearnOverview />
-          </Section>
+          </WindowSection>
         )}
 
-        <Section title="theme" delay={0.1}>
+        <WindowSection title="monitors" delay={0.08}>
           <ThemeGrid />
-        </Section>
+        </WindowSection>
 
-        <Section title="options" delay={0.15}>
+        <WindowSection title="control panel" delay={0.12}>
           <OptionsPanel />
-        </Section>
+        </WindowSection>
 
         {!learnMode && (
-          <Section title="history" delay={0.2}>
+          <WindowSection title="scrapbook — past tests" delay={0.16}>
             <HistoryGraph />
             <HistoryEmptyHint />
-          </Section>
+          </WindowSection>
         )}
       </div>
 
-      <footer className="mt-12 flex flex-col items-center gap-3 border-t border-edge pt-6 pb-4">
-        <div className="flex items-center justify-center gap-6">
+      <footer className="window mt-8 flex flex-col items-center gap-2.5 p-4">
+        <div className="flex flex-wrap items-center justify-center gap-x-6 gap-y-2">
           <KeyHint keys={['enter']} label={learnMode ? 'start learning' : 'start'} />
-          <span className="font-sans text-[13px] text-faint">
-            during a test: <span className="text-dim">enter</span> runs a command ·{' '}
-            <span className="text-dim">tab+enter</span> restarts ·{' '}
-            <span className="text-dim">esc</span> quits
+          <span className="text-[12px] text-ink">
+            during a test: <b>enter</b> runs a command · <b>tab+enter</b> restarts ·{' '}
+            <b>esc</b> quits
           </span>
         </div>
-        <span className="font-sans text-[11px] text-faint">
+        <span className="text-[11px] text-ink">
           command examples from{' '}
           <a
             href="https://github.com/tldr-pages/tldr"
             target="_blank"
             rel="noreferrer"
-            className="underline decoration-faint hover:text-dim"
+            className="underline hover:font-bold"
           >
             tldr-pages
           </a>{' '}
@@ -132,7 +156,7 @@ export function HomeScreen({ onStart }: { onStart: () => void }) {
             href="https://github.com/withfig/autocomplete"
             target="_blank"
             rel="noreferrer"
-            className="underline decoration-faint hover:text-dim"
+            className="underline hover:font-bold"
           >
             @withfig/autocomplete
           </a>{' '}
@@ -147,8 +171,8 @@ function HistoryEmptyHint() {
   const count = useHistory((s) => s.entries.length)
   if (count >= 2) return null
   return (
-    <p className="rounded-lg border border-dashed border-edge px-4 py-6 text-center font-sans text-[13px] text-faint">
-      finish your first test and your progress graph will grow here.
+    <p className="border-2 border-dashed border-ink px-4 py-6 text-center text-[13px] text-ink">
+      no tests on file — finish your first test and your progress graph is saved here.
     </p>
   )
 }

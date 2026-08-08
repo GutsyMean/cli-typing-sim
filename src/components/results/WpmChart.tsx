@@ -50,16 +50,16 @@ export function WpmChart({ bins }: { bins: SecondBin[] }) {
                 x2={W - PAD.right}
                 y1={gy}
                 y2={gy}
-                stroke="var(--t-edge)"
+                stroke="var(--w-ink)" strokeOpacity="0.18"
                 strokeWidth="1"
               />
               <text
                 x={PAD.left - 8}
                 y={gy + 3}
                 textAnchor="end"
-                className="font-sans"
+                className="font-mono"
                 fontSize="10"
-                fill="var(--t-dim)"
+                fill="var(--w-ink)"
               >
                 {fmtInt(value)}
               </text>
@@ -73,9 +73,9 @@ export function WpmChart({ bins }: { bins: SecondBin[] }) {
               x={x(b.sec)}
               y={H - 8}
               textAnchor="middle"
-              className="font-sans"
+              className="font-mono"
               fontSize="10"
-              fill="var(--t-dim)"
+              fill="var(--w-ink)"
             >
               {b.sec}
             </text>
@@ -86,8 +86,9 @@ export function WpmChart({ bins }: { bins: SecondBin[] }) {
         <motion.path
           d={smoothPath(rawPts)}
           fill="none"
-          stroke="var(--t-faint)"
-          strokeWidth="1.5"
+          stroke="var(--w-ink)"
+          strokeWidth="1"
+          strokeDasharray="3 3"
           initial={{ pathLength: 0 }}
           animate={{ pathLength: 1 }}
           transition={{ duration: 0.9, ease: 'easeOut' }}
@@ -96,7 +97,7 @@ export function WpmChart({ bins }: { bins: SecondBin[] }) {
         <motion.path
           d={smoothPath(smoothPts)}
           fill="none"
-          stroke="var(--t-accent)"
+          stroke="var(--w-ink)"
           strokeWidth="2.5"
           strokeLinecap="round"
           initial={{ pathLength: 0 }}
@@ -113,7 +114,7 @@ export function WpmChart({ bins }: { bins: SecondBin[] }) {
               animate={{ opacity: 1, scale: 1 }}
               transition={{ delay: 0.7 }}
             >
-              <circle cx={x(b.sec)} cy={y(b.raw)} r="3.5" fill="var(--t-err)" />
+              <rect x={x(b.sec) - 3} y={y(b.raw) - 3} width="6" height="6" fill="var(--w-ink)" />
             </motion.g>
           ))}
 
@@ -123,7 +124,7 @@ export function WpmChart({ bins }: { bins: SecondBin[] }) {
             x2={x(hovered.sec)}
             y1={PAD.top}
             y2={PAD.top + innerH}
-            stroke="var(--t-dim)"
+            stroke="var(--w-ink)"
             strokeWidth="1"
             strokeDasharray="3 3"
           />
@@ -132,29 +133,29 @@ export function WpmChart({ bins }: { bins: SecondBin[] }) {
 
       {hovered && (
         <div
-          className="pointer-events-none absolute -translate-x-1/2 rounded-lg border border-edge bg-surface px-3 py-1.5 font-sans text-xs shadow-lg"
+          className="window pointer-events-none absolute -translate-x-1/2 px-3 py-1.5 text-xs"
           style={{
             left: `${(x(hovered.sec) / W) * 100}%`,
             top: 0,
           }}
         >
-          <span className="text-dim">{hovered.sec}s · </span>
-          <span className="font-semibold text-accent">{fmtInt(hovered.smooth)} wpm</span>
+          <span className="text-ink">{hovered.sec}s · </span>
+          <span className="font-bold text-ink">{fmtInt(hovered.smooth)} wpm</span>
           {hovered.errors > 0 && (
-            <span className="text-err"> · {hovered.errors} err</span>
+            <span className="text-ink"> · {hovered.errors} err</span>
           )}
         </div>
       )}
 
-      <div className="mt-1 flex justify-center gap-5 font-sans text-[11px] text-faint">
+      <div className="mt-1 flex justify-center gap-5 text-[11px] text-ink">
         <span className="inline-flex items-center gap-1.5">
-          <span className="h-0.5 w-4 rounded bg-accent" /> wpm
+          <span className="h-[2px] w-4 bg-ink" /> wpm
         </span>
         <span className="inline-flex items-center gap-1.5">
-          <span className="h-0.5 w-4 rounded bg-faint" /> raw
+          <span className="h-px w-4 border-t border-dashed border-ink" /> raw
         </span>
         <span className="inline-flex items-center gap-1.5">
-          <span className="size-2 rounded-full bg-err" /> errors
+          <span className="size-2 bg-ink" /> errors
         </span>
       </div>
     </div>

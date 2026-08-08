@@ -1,5 +1,4 @@
-import { motion } from 'motion/react'
-
+/** Classic checkbox row: 2px square box, X mark when checked. */
 export function Toggle({
   checked,
   onChange,
@@ -15,21 +14,24 @@ export function Toggle({
       role="switch"
       aria-checked={checked}
       onClick={() => onChange(!checked)}
-      className="group flex w-full items-center justify-between gap-3 rounded-lg px-1 py-1.5 text-left"
+      className="group flex w-full items-center gap-2.5 px-1 py-1.5 text-left"
     >
-      <span className="font-sans text-[13px] text-dim transition-colors group-hover:text-fg">
-        {label}
-      </span>
       <span
-        className={`flex h-5 w-9 shrink-0 items-center rounded-full border px-0.5 transition-colors duration-200 ${
-          checked ? 'justify-end border-transparent bg-accent/90' : 'justify-start border-edge bg-raised'
-        }`}
+        aria-hidden
+        className="flex size-[15px] shrink-0 items-center justify-center border-2 border-ink bg-paper"
       >
-        <motion.span
-          layout
-          transition={{ type: 'spring', stiffness: 700, damping: 40 }}
-          className={`size-4 rounded-full ${checked ? 'bg-term' : 'bg-dim'}`}
-        />
+        {checked && (
+          <svg viewBox="0 0 10 10" className="size-[9px]">
+            <path
+              d="M1.5 1.5l7 7M8.5 1.5l-7 7"
+              stroke="var(--w-ink)"
+              strokeWidth="2"
+            />
+          </svg>
+        )}
+      </span>
+      <span className={`text-[13px] text-ink ${checked ? 'font-bold' : 'group-hover:underline'}`}>
+        {label}
       </span>
     </button>
   )

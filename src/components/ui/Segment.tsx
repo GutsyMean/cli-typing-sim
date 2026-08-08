@@ -1,5 +1,3 @@
-import { motion } from 'motion/react'
-
 export interface SegmentOption<T extends string | number> {
   value: T
   label: string
@@ -7,20 +5,20 @@ export interface SegmentOption<T extends string | number> {
   hint?: string
 }
 
+/** Classic radio-button row: one filled dot per group, labels in data text. */
 export function Segment<T extends string | number>({
   options,
   value,
   onChange,
-  groupId,
 }: {
   options: SegmentOption<T>[]
   value: T
   onChange: (v: T) => void
-  /** unique per group — scopes the sliding highlight */
-  groupId: string
+  /** kept for call-site compatibility */
+  groupId?: string
 }) {
   return (
-    <div className="inline-flex rounded-lg border border-edge bg-surface p-1">
+    <div className="inline-flex flex-wrap gap-x-4 gap-y-1.5">
       {options.map((opt) => {
         const active = opt.value === value
         return (
@@ -28,19 +26,19 @@ export function Segment<T extends string | number>({
             key={String(opt.value)}
             type="button"
             title={opt.hint}
+            aria-pressed={active}
             onClick={() => onChange(opt.value)}
-            className={`relative rounded-md px-3 py-1.5 font-sans text-[13px] font-medium transition-colors duration-150 ${
-              active ? 'text-typed' : 'text-dim hover:text-fg'
-            }`}
+            className="group inline-flex items-center gap-1.5 py-0.5 text-[13px] text-ink"
           >
-            {active && (
-              <motion.span
-                layoutId={`segment-${groupId}`}
-                transition={{ type: 'spring', stiffness: 600, damping: 45 }}
-                className="absolute inset-0 rounded-md bg-raised"
-              />
-            )}
-            <span className="relative">{opt.label}</span>
+            <span
+              aria-hidden
+              className="flex size-[15px] items-center justify-center rounded-full border-2 border-ink bg-paper"
+            >
+              {active && <span className="size-[7px] rounded-full bg-ink" />}
+            </span>
+            <span className={active ? 'font-bold' : 'group-hover:underline'}>
+              {opt.label}
+            </span>
           </button>
         )
       })}

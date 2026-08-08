@@ -1,14 +1,20 @@
 @import "tailwindcss";
 
 /*
- * Every color utility maps to a --t-* custom property that applyTheme.ts
- * writes onto <html>, so switching themes restyles the whole app instantly.
+ * Two token layers:
+ *  --t-*  terminal theme vars written by applyTheme.ts — everything behind
+ *         the terminal glass stays themed. The terminal is the ONE color
+ *         object in this world.
+ *  --w-*  the one-bit desktop — pure black and white, dither for every gray,
+ *         window chrome, inversion for selection. Fixed; themes never touch it.
  */
 @theme inline {
-  --font-sans: "Outfit", system-ui, ui-sans-serif, sans-serif;
+  --font-sans: "Google Sans Code", ui-monospace, monospace;
+  --font-display: "Silkscreen", "Google Sans Code", monospace;
   --font-mono: "Google Sans Code", ui-monospace, "Cascadia Code", "Fira Code",
     monospace;
 
+  /* terminal-interior utilities (theme-driven) */
   --color-term: var(--t-bg);
   --color-chrome: var(--t-chrome);
   --color-surface: var(--t-surface);
@@ -24,6 +30,10 @@
   --color-p-path: var(--t-p-path);
   --color-p-sym: var(--t-p-sym);
   --color-edge: var(--t-edge);
+
+  /* one-bit world (fixed) */
+  --color-paper: var(--w-paper);
+  --color-ink: var(--w-ink);
 }
 
 :root {
@@ -44,32 +54,165 @@
   --t-p-sym: #f8f8f2;
   --t-edge: #3b3d4f;
 
+  /* the one-bit world: two inks, no third */
+  --w-paper: #ffffff;
+  --w-ink: #111111;
+
   --terminal-font-size: 1.125rem;
 }
 
 html {
-  background: var(--t-chrome);
-  color-scheme: dark;
-}
-
-html[data-light] {
+  background: var(--w-paper);
   color-scheme: light;
 }
 
 body {
   font-family: var(--font-sans);
-  color: var(--t-fg);
+  color: var(--w-ink);
   -webkit-font-smoothing: antialiased;
-  transition: background-color 200ms ease;
+  /* the desktop: 50% ordered dither, 2px pixels */
+  background-image: repeating-conic-gradient(
+    var(--w-ink) 0% 25%,
+    var(--w-paper) 0% 50%
+  );
+  background-size: 4px 4px;
+}
+
+:focus-visible {
+  outline: 2px solid var(--w-ink);
+  outline-offset: 2px;
 }
 
 ::selection {
-  background: color-mix(in srgb, var(--t-accent) 30%, transparent);
+  background: var(--w-ink);
+  color: var(--w-paper);
 }
 
 * {
   scrollbar-width: thin;
-  scrollbar-color: var(--t-faint) transparent;
+  scrollbar-color: var(--w-ink) var(--w-paper);
+}
+
+/* ---- window chrome vocabulary ------------------------------------- */
+
+.window {
+  background: var(--w-paper);
+  border: 2px solid var(--w-ink);
+  box-shadow: 3px 3px 0 var(--w-ink);
+}
+
+/* classic pinstriped title bar; the title text sits on a paper chip */
+.titlebar {
+  position: relative;
+  display: flex;
+  align-items: center;
+  border-bottom: 2px solid var(--w-ink);
+  background-image: repeating-linear-gradient(
+    0deg,
+    var(--w-ink) 0px,
+    var(--w-ink) 1px,
+    var(--w-paper) 1px,
+    var(--w-paper) 3px
+  );
+  padding: 5px 8px;
+  user-select: none;
+}
+
+.titlebar-chip {
+  margin-inline: auto;
+  background: var(--w-paper);
+  padding: 0 10px;
+  font-family: var(--font-display);
+  font-size: 11px;
+  letter-spacing: 0.04em;
+  text-transform: lowercase;
+  white-space: nowrap;
+}
+
+.closebox {
+  position: absolute;
+  left: 8px;
+  top: 50%;
+  transform: translateY(-50%);
+  width: 13px;
+  height: 13px;
+  border: 2px solid var(--w-ink);
+  background: var(--w-paper);
+}
+
+/* 25% dither — disabled / secondary fills */
+.dither-25 {
+  background-image: radial-gradient(var(--w-ink) 24%, transparent 26%);
+  background-size: 4px 4px;
+}
+
+/* Mac push button */
+.btn {
+  background: var(--w-paper);
+  border: 2px solid var(--w-ink);
+  border-radius: 8px;
+}
+.btn:hover,
+.btn:active {
+  background: var(--w-ink);
+  color: var(--w-paper);
+}
+
+/* the default button wears the heavy triple outline */
+.btn-default {
+  position: relative;
+}
+.btn-default::before {
+  content: "";
+  position: absolute;
+  inset: -7px;
+  border: 3px solid var(--w-ink);
+  border-radius: 14px;
+  pointer-events: none;
+}
+
+/* selection = inversion */
+.invert {
+  background: var(--w-ink);
+  color: var(--w-paper);
+}
+
+/* marching ants around the selected object */
+.ants {
+  position: relative;
+}
+.ants::after {
+  content: "";
+  position: absolute;
+  inset: -6px;
+  pointer-events: none;
+  background-image:
+    repeating-linear-gradient(90deg, var(--w-ink) 0 3px, transparent 3px 6px),
+    repeating-linear-gradient(90deg, var(--w-ink) 0 3px, transparent 3px 6px),
+    repeating-linear-gradient(0deg, var(--w-ink) 0 3px, transparent 3px 6px),
+    repeating-linear-gradient(0deg, var(--w-ink) 0 3px, transparent 3px 6px);
+  background-size:
+    100% 2px,
+    100% 2px,
+    2px 100%,
+    2px 100%;
+  background-position:
+    0 0,
+    0 100%,
+    0 0,
+    100% 0;
+  background-repeat: no-repeat;
+  animation: march 0.45s linear infinite;
+}
+
+@keyframes march {
+  to {
+    background-position:
+      6px 0,
+      -6px 100%,
+      0 -6px,
+      100% 6px;
+  }
 }
 
 @keyframes caret-blink {
@@ -109,4 +252,17 @@ body {
   font-size: var(--terminal-font-size);
   line-height: 1.9;
   font-variant-ligatures: none;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .caret-blink,
+  .ants::after {
+    animation: none;
+  }
+  *,
+  *::before,
+  *::after {
+    animation-duration: 0.01ms !important;
+    transition-duration: 0.01ms !important;
+  }
 }

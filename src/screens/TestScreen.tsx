@@ -114,7 +114,7 @@ export function TestScreen({
               initial={{ opacity: 0, y: 4 }}
               animate={{ opacity: 1, y: 0 }}
               exit={{ opacity: 0, y: 4 }}
-              className="rounded-md bg-err-bg px-3 py-1 font-sans text-sm font-semibold text-err"
+              className="invert px-3 py-1 font-sans text-sm font-bold"
             >
               caps lock is on
             </motion.span>
@@ -174,7 +174,7 @@ export function TestScreen({
         </div>
       </TerminalFrame>
 
-      <div className="mt-5 flex items-center justify-center gap-6">
+      <div className="window mx-auto mt-5 flex w-fit items-center justify-center gap-6 px-5 py-2.5">
         <KeyHint
           keys={['esc']}
           label={settings.mode === 'endless' ? 'finish & see results' : 'quit'}
@@ -183,7 +183,7 @@ export function TestScreen({
       </div>
 
       {isTouchDevice && (
-        <p className="mt-4 text-center font-sans text-sm text-dim">
+        <p className="window mx-auto mt-4 w-fit px-4 py-2 text-center font-sans text-sm text-ink">
           termtype works best with a physical keyboard.
         </p>
       )}
