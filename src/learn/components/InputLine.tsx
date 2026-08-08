@@ -23,10 +23,8 @@ export function InputLine({
       <PromptPrefix prompt={promptFor(promptSetting, category)} />
       <span className="text-typed">{value}</span>
       {active && (
-        // inline-block: see CommandLine — WebKit misplaces abs-pos children
-        // of plain inline boxes in wrapped text
-        <span className="relative inline-block">
-          <Caret style={caretStyle} blink={value.length === 0} layoutId="caret-input" />
+        <span className="relative">
+          <Caret style={caretStyle} blink={value.length === 0} />
           <span className="text-faint">&nbsp;</span>
         </span>
       )}

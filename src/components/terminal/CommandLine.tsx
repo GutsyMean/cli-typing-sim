@@ -46,21 +46,16 @@ export const CommandLine = memo(function CommandLine({
     >
       <div className="terminal-text whitespace-pre-wrap break-words">
         <PromptPrefix prompt={prompt} />
-        {[...entry.text].map((char, i) => {
-          // The caret-bearing char is an atomic inline-block: WebKit resolves
-          // an absolutely positioned child of a plain inline box against the
-          // wrong fragment in wrapped pre-wrap text, drifting the caret off
-          // its glyph on iOS.
-          const hasCaret = active && showCaret && i === cursor && extra.length === 0
-          return (
-            <span key={i} className={hasCaret ? 'relative inline-block' : 'relative'}>
-              {hasCaret && <Caret style={caretStyle} blink={caretBlink} />}
-              <Char char={char} status={typed[i]} />
-            </span>
-          )
-        })}
+        {[...entry.text].map((char, i) => (
+          <span key={i} className="relative">
+            {active && showCaret && i === cursor && extra.length === 0 && (
+              <Caret style={caretStyle} blink={caretBlink} />
+            )}
+            <Char char={char} status={typed[i]} />
+          </span>
+        ))}
         {extra.length > 0 && (
-          <span className="relative inline-block text-err/80 bg-err-bg rounded-[3px]">
+          <span className="relative text-err/80 bg-err-bg rounded-[3px]">
             {extra}
             {active && showCaret && (
               <Caret style={caretStyle} blink={caretBlink} />
@@ -68,7 +63,7 @@ export const CommandLine = memo(function CommandLine({
           </span>
         )}
         {active && showCaret && cursor >= entry.text.length && extra.length === 0 && (
-          <span className="relative inline-block">
+          <span className="relative">
             <Caret style={caretStyle} blink={caretBlink} />
             <span className="text-faint">&nbsp;</span>
           </span>

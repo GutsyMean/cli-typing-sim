@@ -1,10 +1,11 @@
-import { motion } from 'motion/react'
 import type { CaretStyle } from '../../settings/settingsStore'
 
 /*
  * The caret is absolutely positioned inside an inline char wrapper, so its
  * containing block is the char's 1em content box — size it in em units from
- * the top edge (no CSS transforms: the layoutId FLIP animation owns transform).
+ * the top edge. Pure CSS positioning, no animated transforms: a layout
+ * projection here holds stale offsets on iOS when the self-hosted mono
+ * swaps in and the line reflows, drifting the caret off its glyph.
  */
 const styleClass: Record<CaretStyle, string> = {
   block: 'top-[-0.15em] h-[1.3em] -inset-x-px rounded-[3px] bg-accent/80',
@@ -12,23 +13,18 @@ const styleClass: Record<CaretStyle, string> = {
   underscore: 'top-[1.05em] h-[2.5px] inset-x-0 rounded-full bg-accent',
 }
 
-/**
- * Rendered inside the current char's wrapper span; layoutId lets Motion
- * spring it between positions (and across lines) as the cursor moves.
- */
+/** Rendered inside the current char's wrapper span. */
 export function Caret({
   style,
   blink,
-  layoutId = 'caret',
 }: {
   style: CaretStyle
   blink: boolean
+  /** retained for call-site compatibility; the caret no longer animates between chars */
   layoutId?: string
 }) {
   return (
-    <motion.span
-      layoutId={layoutId}
-      transition={{ type: 'spring', stiffness: 1100, damping: 70 }}
+    <span
       className={`absolute z-10 ${styleClass[style]} ${blink ? 'caret-blink' : ''} ${
         style === 'block' ? 'mix-blend-difference' : ''
       }`}
