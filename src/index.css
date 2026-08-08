@@ -10,8 +10,7 @@
  */
 @theme inline {
   --font-sans: "Archivo", system-ui, ui-sans-serif, sans-serif;
-  --font-mono: "Google Sans Code", ui-monospace, "Cascadia Code", "Fira Code",
-    monospace;
+  --font-mono: "Overpass Mono", ui-monospace, monospace;
 
   /* terminal-interior utilities (theme-driven) */
   --color-term: var(--t-bg);
