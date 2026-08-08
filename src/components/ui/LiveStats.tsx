@@ -14,6 +14,19 @@ function liveWpm(state: EngineState, now: number): number {
   return correct / 5 / minutes
 }
 
+function Meter({ label, value }: { label: string; value: string }) {
+  return (
+    <div className="border border-ink bg-paper-hi px-3 py-1">
+      <div className="font-sans text-[9px] font-bold tracking-[0.16em] text-ink-soft uppercase">
+        {label}
+      </div>
+      <div className="font-mono text-xl leading-tight font-semibold text-ink tabular-nums">
+        {value}
+      </div>
+    </div>
+  )
+}
+
 export function LiveStats({ state }: { state: EngineState }) {
   const [, force] = useState(0)
   useEffect(() => {
@@ -35,18 +48,21 @@ export function LiveStats({ state }: { state: EngineState }) {
         : `${Math.min(state.lineIndex + 1, state.config.commandCount)}/${state.config.commandCount}`
 
   return (
-    <div className="flex items-baseline gap-6 font-mono text-accent select-none">
-      <span className="text-2xl font-semibold tabular-nums">{progress}</span>
+    <div className="flex items-stretch gap-2 select-none">
+      <Meter
+        label={
+          state.config.mode === 'timed'
+            ? 'time left'
+            : state.config.mode === 'endless'
+              ? 'elapsed'
+              : 'progress'
+        }
+        value={progress}
+      />
       {state.config.mode === 'endless' && (
-        <span className="text-2xl font-semibold tabular-nums">
-          {state.lineIndex}
-          <span className="ml-1.5 text-sm text-dim">cmds</span>
-        </span>
+        <Meter label="commands" value={String(state.lineIndex)} />
       )}
-      <span className="text-2xl font-semibold tabular-nums">
-        {fmtInt(wpm)}
-        <span className="ml-1.5 text-sm text-dim">wpm</span>
-      </span>
+      <Meter label="words/min" value={fmtInt(wpm)} />
     </div>
   )
 }

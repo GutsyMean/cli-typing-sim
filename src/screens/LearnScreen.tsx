@@ -80,9 +80,10 @@ export function LearnScreen({
     <div className="mx-auto w-full max-w-4xl">
       <div className="mb-4 flex min-h-8 items-end justify-between px-1">
         <RoundProgress batch={state.batch} levels={state.levels} />
-        <span className="font-sans text-sm text-dim select-none">
+        <span className="font-sans text-[12px] tracking-wide text-ink-soft uppercase select-none">
           round {state.roundsCompleted + 1} ·{' '}
-          <span className="text-accent">{state.masteredThisSession.length}</span> mastered
+          <span className="font-bold text-safety">{state.masteredThisSession.length}</span>{' '}
+          mastered
         </span>
       </div>
 

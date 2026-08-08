@@ -14,12 +14,12 @@ export function RoundProgress({
       {batch.map((key) => {
         const level = levels[key] ?? 0
         return (
-          <span key={key} className="flex h-1.5 w-7 gap-px overflow-hidden rounded-full bg-raised">
+          <span key={key} className="flex h-1.5 w-7 gap-px overflow-hidden bg-ink/15">
             {[0, 1, 2].map((seg) => (
               <span
                 key={seg}
                 className={`h-full flex-1 transition-colors duration-300 ${
-                  level > seg ? 'bg-accent' : 'bg-transparent'
+                  level > seg ? 'bg-safety' : 'bg-transparent'
                 }`}
               />
             ))}

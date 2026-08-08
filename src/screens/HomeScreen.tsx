@@ -10,24 +10,30 @@ import { useHistory } from '../history/historyStore'
 import { LearnOverview } from '../learn/components/LearnOverview'
 import { useSettings } from '../settings/settingsStore'
 
-function Section({
+let sectionCounter = 0
+
+function FormSection({
+  code,
   title,
   children,
-  delay = 0,
 }: {
+  code: string
   title: string
   children: React.ReactNode
-  delay?: number
 }) {
   return (
     <motion.section
-      initial={{ opacity: 0, y: 12 }}
+      initial={{ opacity: 0, y: 10 }}
       animate={{ opacity: 1, y: 0 }}
-      transition={{ delay, type: 'spring', bounce: 0, visualDuration: 0.4 }}
+      transition={{ delay: 0.04 * sectionCounter++, type: 'spring', bounce: 0, visualDuration: 0.35 }}
+      className="form-rule pt-2"
     >
-      <h2 className="mb-3 font-sans text-[11px] font-semibold tracking-[0.18em] text-faint uppercase">
-        {title}
-      </h2>
+      <div className="mb-3 flex items-baseline justify-between gap-4">
+        <h2 className="font-sans text-[13px] font-bold tracking-[0.16em] text-ink uppercase">
+          {title}
+        </h2>
+        <span className="font-mono text-[11px] text-ink-soft">{code}</span>
+      </div>
       {children}
     </motion.section>
   )
@@ -35,6 +41,7 @@ function Section({
 
 export function HomeScreen({ onStart }: { onStart: () => void }) {
   const learnMode = useSettings((s) => s.mode === 'learn')
+  sectionCounter = 0
 
   useEffect(() => {
     const onKey = (e: KeyboardEvent) => {
@@ -51,104 +58,123 @@ export function HomeScreen({ onStart }: { onStart: () => void }) {
 
   return (
     <div className="mx-auto w-full max-w-4xl">
-      <header className="mb-10 flex flex-wrap items-end justify-between gap-4">
-        <div>
-          <h1 className="font-mono text-4xl font-bold text-fg">
-            <span className="text-accent">term</span>type
-            <motion.span
-              aria-hidden
-              className="ml-1 inline-block h-8 w-[0.55em] translate-y-1 rounded-[3px] bg-accent"
-              animate={{ opacity: [1, 1, 0, 0] }}
-              transition={{ duration: 1.1, times: [0, 0.45, 0.55, 1], repeat: Infinity }}
-            />
-          </h1>
-          <p className="mt-2 font-sans text-[15px] text-dim">
-            muscle memory for the command line
-          </p>
+      <header className="border-y-[3px] border-ink">
+        <div className="flex flex-wrap items-stretch justify-between gap-x-8">
+          <div className="min-w-0 py-4">
+            <h1 className="headline text-[clamp(3.2rem,9vw,5.5rem)] text-ink">
+              termtype
+            </h1>
+            <p className="mt-2 max-w-[42ch] font-sans text-[15px] leading-snug font-medium text-ink">
+              muscle memory for the command line.
+              <span className="text-ink-soft">
+                {' '}
+                real commands, per-keystroke scoring, and a mastery course for
+                flags — on the terminal you already use.
+              </span>
+            </p>
+          </div>
+          <div className="flex flex-col justify-between gap-3 border-l border-ink/40 py-4 pl-6">
+            <div className="fine-print font-mono">
+              <div>MODEL NO. TT-1979</div>
+              <div>1,900+ COMMANDS · 3,500+ FLAGS</div>
+              <div>15 COMMAND SETS · 8 DISPLAY MODES</div>
+            </div>
+            <motion.button
+              type="button"
+              onClick={onStart}
+              whileTap={{ scale: 0.98 }}
+              className="group bg-safety px-6 py-3 text-left font-sans text-[15px] font-bold tracking-wide text-paper-hi uppercase shadow-[3px_3px_0_var(--w-ink)] transition-transform hover:-translate-y-0.5"
+            >
+              {learnMode ? 'start learning' : 'start typing'}
+              <span aria-hidden className="ml-2 inline-block transition-transform group-hover:translate-x-1">
+                →
+              </span>
+            </motion.button>
+          </div>
         </div>
-        <motion.button
-          type="button"
-          onClick={onStart}
-          whileHover={{ y: -2 }}
-          whileTap={{ scale: 0.97 }}
-          className="rounded-lg bg-accent px-6 py-3 font-sans text-[15px] font-semibold text-term shadow-lg shadow-accent/20"
-        >
-          {learnMode ? 'start learning' : 'start typing'}
-        </motion.button>
       </header>
 
-      <div className="flex flex-col gap-9">
-        <Section title="test">
-          <ConfigBar />
-        </Section>
+      <p className="mt-2 mb-8 text-right font-sans text-[11px] tracking-[0.2em] text-ink-soft uppercase">
+        order form — complete sections A–{learnMode ? 'E' : 'D'}, then press enter
+      </p>
 
-        <Section title="command sets" delay={0.05}>
+      <div className="flex flex-col gap-9">
+        <FormSection code="SEC. A" title="test configuration">
+          <ConfigBar />
+        </FormSection>
+
+        <FormSection code="SEC. B" title="command sets — mark all that apply">
           <CategoryPicker />
-        </Section>
+        </FormSection>
 
         {learnMode && (
-          <Section title="learn progress" delay={0.075}>
+          <FormSection code="SEC. C" title="course progress">
             <LearnOverview />
-          </Section>
+          </FormSection>
         )}
 
-        <Section title="theme" delay={0.1}>
+        <FormSection code={learnMode ? 'SEC. D' : 'SEC. C'} title="display mode">
           <ThemeGrid />
-        </Section>
+        </FormSection>
 
-        <Section title="options" delay={0.15}>
+        <FormSection code={learnMode ? 'SEC. E' : 'SEC. D'} title="options">
           <OptionsPanel />
-        </Section>
+        </FormSection>
 
         {!learnMode && (
-          <Section title="history" delay={0.2}>
+          <FormSection code="FIG. 1" title="operator record">
             <HistoryGraph />
             <HistoryEmptyHint />
-          </Section>
+          </FormSection>
         )}
       </div>
 
-      <footer className="mt-12 flex flex-col items-center gap-3 border-t border-edge pt-6 pb-4">
-        <div className="flex items-center justify-center gap-6">
-          <KeyHint keys={['enter']} label={learnMode ? 'start learning' : 'start'} />
-          <span className="font-sans text-[13px] text-faint">
-            during a test: <span className="text-dim">enter</span> runs a command ·{' '}
-            <span className="text-dim">tab+enter</span> restarts ·{' '}
-            <span className="text-dim">esc</span> quits
+      <footer className="mt-12 border-t-[3px] border-ink pt-3 pb-4">
+        <div className="flex flex-wrap items-center justify-between gap-3">
+          <div className="flex items-center gap-5">
+            <KeyHint keys={['enter']} label={learnMode ? 'start learning' : 'start'} />
+            <span className="font-sans text-[12px] text-ink-soft">
+              in a test: <Em>enter</Em> runs a command · <Em>tab+enter</Em> restarts ·{' '}
+              <Em>esc</Em> quits
+            </span>
+          </div>
+          <span className="fine-print">
+            command examples from{' '}
+            <a
+              href="https://github.com/tldr-pages/tldr"
+              target="_blank"
+              rel="noreferrer"
+              className="underline underline-offset-2 hover:text-ink"
+            >
+              tldr-pages
+            </a>{' '}
+            (CC BY 4.0) · flag descriptions from{' '}
+            <a
+              href="https://github.com/withfig/autocomplete"
+              target="_blank"
+              rel="noreferrer"
+              className="underline underline-offset-2 hover:text-ink"
+            >
+              @withfig/autocomplete
+            </a>{' '}
+            (ISC)
           </span>
         </div>
-        <span className="font-sans text-[11px] text-faint">
-          command examples from{' '}
-          <a
-            href="https://github.com/tldr-pages/tldr"
-            target="_blank"
-            rel="noreferrer"
-            className="underline decoration-faint hover:text-dim"
-          >
-            tldr-pages
-          </a>{' '}
-          (CC BY 4.0) · flag descriptions from{' '}
-          <a
-            href="https://github.com/withfig/autocomplete"
-            target="_blank"
-            rel="noreferrer"
-            className="underline decoration-faint hover:text-dim"
-          >
-            @withfig/autocomplete
-          </a>{' '}
-          (ISC)
-        </span>
       </footer>
     </div>
   )
+}
+
+function Em({ children }: { children: React.ReactNode }) {
+  return <span className="font-semibold text-ink">{children}</span>
 }
 
 function HistoryEmptyHint() {
   const count = useHistory((s) => s.entries.length)
   if (count >= 2) return null
   return (
-    <p className="rounded-lg border border-dashed border-edge px-4 py-6 text-center font-sans text-[13px] text-faint">
-      finish your first test and your progress graph will grow here.
+    <p className="border border-dashed border-ink/40 px-4 py-6 text-center font-sans text-[13px] text-ink-soft">
+      no tests on record — finish your first test and your progress graph prints here.
     </p>
   )
 }

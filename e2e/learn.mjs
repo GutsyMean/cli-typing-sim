@@ -197,7 +197,7 @@ if (sawRecall) {
 await page.keyboard.press('Escape')
 await page.waitForTimeout(900)
 const body = await page.textContent('body')
-check('summary shows mastered count', body.includes('commands mastered'))
+check('summary shows mastered count', /mastered/i.test(body))
 await page.screenshot({ path: `${SHOTS}/learn-summary.png`, fullPage: true })
 
 // mastery persisted

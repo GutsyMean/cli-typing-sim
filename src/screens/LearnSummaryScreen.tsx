@@ -46,8 +46,8 @@ export function LearnSummaryScreen({
   if (summary.nothingToLearn) {
     return (
       <div className="mx-auto flex w-full max-w-2xl flex-col items-center gap-6 pt-16 text-center">
-        <h2 className="font-mono text-3xl font-bold text-accent">all mastered ✓</h2>
-        <p className="font-sans text-[15px] text-dim">
+        <h2 className="font-mono text-3xl font-bold text-safety">all mastered ✓</h2>
+        <p className="font-sans text-[15px] text-ink-soft">
           every command in your selected categories and difficulties is already at full
           mastery. widen the selection on the config screen — or reset progress if you
           want to drill them again.
@@ -61,12 +61,14 @@ export function LearnSummaryScreen({
 
   return (
     <div className="mx-auto flex w-full max-w-3xl flex-col gap-8">
-      <div>
-        <div className="font-sans text-sm font-medium text-dim">commands mastered</div>
-        <div className="font-mono text-6xl font-bold text-accent tabular-nums">
+      <div className="form-rule pt-3">
+        <div className="font-sans text-[12px] font-bold tracking-[0.16em] text-ink-soft uppercase">
+          score report — items mastered
+        </div>
+        <div className="headline text-[clamp(4rem,10vw,6rem)] text-safety tabular-nums">
           {summary.mastered}
         </div>
-        <div className="mt-1 font-sans text-sm text-faint">
+        <div className="mt-1 font-sans text-sm text-ink-soft">
           {summary.totalAnswered} answers across {summary.roundsCompleted} completed round
           {summary.roundsCompleted === 1 ? '' : 's'}
         </div>
@@ -83,12 +85,12 @@ export function LearnSummaryScreen({
           .map((t) => {
             const s = summary.byType[t]
             return (
-              <div key={t} className="rounded-xl border border-edge bg-term p-4">
-                <div className="font-sans text-xs font-medium text-faint">{typeLabel[t]}</div>
-                <div className="mt-1 font-mono text-2xl font-semibold text-fg tabular-nums">
+              <div key={t} className="border border-ink/40 bg-paper-hi p-4">
+                <div className="font-sans text-xs font-medium text-ink-soft">{typeLabel[t]}</div>
+                <div className="mt-1 font-mono text-2xl font-semibold text-ink tabular-nums">
                   {fmtPercent((s.correct / s.total) * 100)}
                 </div>
-                <div className="font-sans text-xs text-dim">
+                <div className="font-sans text-xs text-ink-soft">
                   {s.correct}/{s.total} correct
                 </div>
               </div>
@@ -102,20 +104,20 @@ export function LearnSummaryScreen({
           animate={{ opacity: 1, y: 0 }}
           transition={{ delay: 0.2 }}
         >
-          <h3 className="mb-3 font-sans text-sm font-medium text-dim">
+          <h3 className="mb-3 font-sans text-sm font-medium text-ink-soft">
             needs more work
           </h3>
           <div className="flex flex-col gap-2">
             {summary.weakest.map((w) => (
               <div
                 key={w.label}
-                className="flex items-baseline justify-between gap-4 rounded-lg border border-edge bg-surface px-3 py-2"
+                className="flex items-baseline justify-between gap-4 border border-ink/40 bg-paper-hi px-3 py-2"
               >
                 <div className="min-w-0">
-                  <div className="truncate font-mono text-sm text-fg">{w.label}</div>
-                  <div className="truncate font-sans text-xs text-faint">{w.desc}</div>
+                  <div className="truncate font-mono text-sm text-ink">{w.label}</div>
+                  <div className="truncate font-sans text-xs text-ink-soft">{w.desc}</div>
                 </div>
-                <span className="shrink-0 font-sans text-xs text-err">
+                <span className="shrink-0 font-sans text-xs text-spec-blue">
                   ×{w.misses} missed
                 </span>
               </div>

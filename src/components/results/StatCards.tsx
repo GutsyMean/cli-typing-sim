@@ -25,53 +25,41 @@ function CountUp({
   return <>{format(display)}</>
 }
 
-function BigStat({
-  label,
-  value,
-  format,
-  delay,
-}: {
-  label: string
-  value: number
-  format: (n: number) => string
-  delay?: number
-}) {
-  return (
-    <div>
-      <div className="font-sans text-sm font-medium text-dim">{label}</div>
-      <div className="font-mono text-6xl font-bold text-accent tabular-nums">
-        <CountUp value={value} format={format} delay={delay} />
-      </div>
-    </div>
-  )
-}
-
-function SmallStat({ label, children }: { label: string; children: React.ReactNode }) {
-  return (
-    <div>
-      <div className="font-sans text-xs font-medium text-faint">{label}</div>
-      <div className="font-mono text-2xl font-semibold text-fg tabular-nums">{children}</div>
-    </div>
-  )
-}
-
+/** Results printed as the catalog's specification table. */
 export function StatCards({ metrics }: { metrics: TestMetrics }) {
+  const rows: [string, React.ReactNode][] = [
+    ['words per minute', <CountUp key="w" value={metrics.wpm} format={fmtInt} />],
+    ['accuracy', <CountUp key="a" value={metrics.accuracy} format={fmtPercent} delay={0.08} />],
+    ['raw rate', <CountUp key="r" value={metrics.raw} format={fmtInt} delay={0.16} />],
+    ['consistency', <CountUp key="c" value={metrics.consistency} format={fmtPercent} delay={0.24} />],
+    ['duration', fmtClock(metrics.seconds)],
+    ['characters', `${metrics.correctChars}/${metrics.totalChars}`],
+  ]
+
   return (
-    <div className="flex flex-wrap items-end gap-x-12 gap-y-6">
-      <BigStat label="wpm" value={metrics.wpm} format={fmtInt} />
-      <BigStat label="acc" value={metrics.accuracy} format={fmtPercent} delay={0.1} />
-      <div className="flex gap-x-10">
-        <SmallStat label="raw">
-          <CountUp value={metrics.raw} format={fmtInt} delay={0.2} />
-        </SmallStat>
-        <SmallStat label="consistency">
-          <CountUp value={metrics.consistency} format={fmtPercent} delay={0.25} />
-        </SmallStat>
-        <SmallStat label="time">{fmtClock(metrics.seconds)}</SmallStat>
-        <SmallStat label="chars">
-          {metrics.correctChars}/{metrics.totalChars}
-        </SmallStat>
+    <div className="flex flex-wrap items-end gap-x-10 gap-y-5">
+      <div>
+        <div className="font-sans text-[11px] font-bold tracking-[0.16em] text-ink-soft uppercase">
+          words per minute
+        </div>
+        <div className="headline text-[clamp(4rem,10vw,6rem)] text-safety">
+          <CountUp value={metrics.wpm} format={fmtInt} />
+        </div>
       </div>
+      <table className="border-2 border-ink">
+        <tbody>
+          {rows.slice(1).map(([label, value], i) => (
+            <tr key={label} className={i > 0 ? 'border-t border-ink/40' : ''}>
+              <td className="border-r border-ink/40 bg-paper-hi px-3 py-1 font-sans text-[11px] font-bold tracking-wide text-ink-soft uppercase">
+                {label}
+              </td>
+              <td className="px-3 py-1 text-right font-mono text-lg font-semibold text-ink tabular-nums">
+                {value}
+              </td>
+            </tr>
+          ))}
+        </tbody>
+      </table>
     </div>
   )
 }

@@ -26,12 +26,12 @@ export function HistoryGraph() {
   return (
     <div>
       <div className="mb-2 flex items-baseline justify-between px-1">
-        <h3 className="font-sans text-sm font-medium text-dim">
-          progress <span className="text-faint">· last {recent.length} tests</span>
+        <h3 className="font-sans text-sm font-medium text-ink-soft">
+          progress <span className="text-ink-soft">· last {recent.length} tests</span>
         </h3>
-        <span className="font-sans text-xs text-faint">
-          best <span className="font-mono font-semibold text-accent">{fmtInt(best)}</span> · latest{' '}
-          <span className="font-mono font-semibold text-fg">{fmtInt(last.wpm)}</span> wpm
+        <span className="font-sans text-xs text-ink-soft">
+          best <span className="font-mono font-semibold text-safety">{fmtInt(best)}</span> · latest{' '}
+          <span className="font-mono font-semibold text-ink">{fmtInt(last.wpm)}</span> wpm
         </span>
       </div>
       <svg viewBox={`0 0 ${W} ${H}`} className="w-full">
@@ -44,7 +44,7 @@ export function HistoryGraph() {
                 x2={W - PAD.right}
                 y1={gy}
                 y2={gy}
-                stroke="var(--t-edge)"
+                stroke="var(--w-ink-faint)"
                 strokeWidth="1"
               />
               <text
@@ -53,7 +53,7 @@ export function HistoryGraph() {
                 textAnchor="end"
                 fontSize="9"
                 className="font-sans"
-                fill="var(--t-dim)"
+                fill="var(--w-ink-soft)"
               >
                 {fmtInt(value)}
               </text>
@@ -63,7 +63,7 @@ export function HistoryGraph() {
         <motion.path
           d={smoothPath(pts)}
           fill="none"
-          stroke="var(--t-accent)"
+          stroke="var(--w-safety)"
           strokeWidth="2"
           strokeLinecap="round"
           initial={{ pathLength: 0 }}
@@ -71,7 +71,7 @@ export function HistoryGraph() {
           transition={{ duration: 0.8, ease: 'easeOut' }}
         />
         {pts.map((p, i) => (
-          <circle key={i} cx={p.x} cy={p.y} r="2.2" fill="var(--t-accent)" />
+          <circle key={i} cx={p.x} cy={p.y} r="2.2" fill="var(--w-safety)" />
         ))}
       </svg>
     </div>

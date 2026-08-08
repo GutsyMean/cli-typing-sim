@@ -5,8 +5,8 @@ import { Toggle } from '../ui/Toggle'
 
 function Row({ label, children }: { label: string; children: React.ReactNode }) {
   return (
-    <div className="flex flex-wrap items-center justify-between gap-2">
-      <span className="font-sans text-[13px] text-dim">{label}</span>
+    <div className="flex flex-wrap items-center justify-between gap-2 border-b border-ink/25 py-2">
+      <span className="font-sans text-[13px] text-ink-soft">{label}</span>
       {children}
     </div>
   )
@@ -16,13 +16,13 @@ export function OptionsPanel() {
   const s = useSettings()
 
   return (
-    <div className="grid gap-x-10 gap-y-4 sm:grid-cols-2">
-      <div className="flex flex-col gap-4">
+    <div className="grid gap-x-10 sm:grid-cols-2">
+      <div className="flex flex-col">
         <Row label="prompt">
           <select
             value={s.promptStyle}
             onChange={(e) => s.set('promptStyle', e.target.value as typeof s.promptStyle)}
-            className="rounded-lg border border-edge bg-surface px-2.5 py-1.5 font-mono text-[13px] text-fg outline-none focus:border-accent/60"
+            className="border border-ink bg-paper-hi px-2.5 py-1.5 font-mono text-[13px] text-ink outline-none"
           >
             <option value="auto">auto (match category)</option>
             {promptStyles.map((p) => (
@@ -34,7 +34,6 @@ export function OptionsPanel() {
         </Row>
         <Row label="caret">
           <Segment
-            groupId="caret"
             options={[
               { value: 'block', label: '█' },
               { value: 'line', label: '|' },
@@ -46,7 +45,6 @@ export function OptionsPanel() {
         </Row>
         <Row label="font size">
           <Segment
-            groupId="fontsize"
             options={[
               { value: 'sm', label: 'sm' },
               { value: 'md', label: 'md' },
@@ -59,7 +57,7 @@ export function OptionsPanel() {
         </Row>
       </div>
 
-      <div className="flex flex-col gap-1">
+      <div className="flex flex-col">
         <Toggle checked={s.caretBlink} onChange={(v) => s.set('caretBlink', v)} label="caret blink" />
         <Toggle checked={s.showLiveStats} onChange={(v) => s.set('showLiveStats', v)} label="live wpm & timer" />
         <Toggle

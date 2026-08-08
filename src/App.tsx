@@ -32,7 +32,7 @@ function App() {
   }, [fontSize])
 
   return (
-    <div data-screen={screen.name} className="min-h-screen bg-chrome px-4 py-8 sm:px-8 sm:py-12">
+    <div data-screen={screen.name} className="min-h-screen px-4 py-8 sm:px-8 sm:py-10">
       <AnimatePresence mode="wait">
         {screen.name === 'home' && (
           <motion.div

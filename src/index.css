@@ -5,9 +5,20 @@
  * writes onto <html>, so switching themes restyles the whole app instantly.
  */
 @theme inline {
-  --font-sans: "Outfit", system-ui, ui-sans-serif, sans-serif;
+  --font-sans: "Archivo", system-ui, ui-sans-serif, sans-serif;
+  --font-display: "Anton", "Archivo", sans-serif;
   --font-mono: "Google Sans Code", ui-monospace, "Cascadia Code", "Fira Code",
     monospace;
+
+  /* spec-sheet chrome world — fixed print palette, independent of the
+     user-selectable terminal themes (--t-*) that rule inside the terminal */
+  --color-paper: var(--w-paper);
+  --color-paper-hi: var(--w-paper-hi);
+  --color-ink: var(--w-ink);
+  --color-ink-soft: var(--w-ink-soft);
+  --color-ink-faint: var(--w-ink-faint);
+  --color-safety: var(--w-safety);
+  --color-spec-blue: var(--w-spec-blue);
 
   --color-term: var(--t-bg);
   --color-chrome: var(--t-chrome);
@@ -45,31 +56,74 @@
   --t-edge: #3b3d4f;
 
   --terminal-font-size: 1.125rem;
+
+  /* the print world */
+  --w-paper: #e3ded0;
+  --w-paper-hi: #ece8dc;
+  --w-ink: #191713;
+  --w-ink-soft: #55503f;
+  --w-ink-faint: #a49d87;
+  --w-safety: #e8500f;
+  --w-spec-blue: #1c3f94;
 }
 
 html {
-  background: var(--t-chrome);
-  color-scheme: dark;
-}
-
-html[data-light] {
+  background: var(--w-paper);
   color-scheme: light;
 }
 
 body {
   font-family: var(--font-sans);
-  color: var(--t-fg);
+  color: var(--w-ink);
   -webkit-font-smoothing: antialiased;
-  transition: background-color 200ms ease;
+  background:
+    repeating-linear-gradient(
+      0deg,
+      transparent 0,
+      transparent 3px,
+      rgba(25, 23, 19, 0.012) 3px,
+      rgba(25, 23, 19, 0.012) 4px
+    ),
+    var(--w-paper);
 }
 
 ::selection {
-  background: color-mix(in srgb, var(--t-accent) 30%, transparent);
+  background: color-mix(in srgb, var(--w-safety) 35%, transparent);
 }
 
 * {
   scrollbar-width: thin;
-  scrollbar-color: var(--t-faint) transparent;
+  scrollbar-color: var(--w-ink-soft) transparent;
+}
+
+:focus-visible {
+  outline: 2px solid var(--w-safety);
+  outline-offset: 2px;
+}
+
+/* display headline treatment */
+.headline {
+  font-family: var(--font-display);
+  text-transform: uppercase;
+  letter-spacing: 0.01em;
+  line-height: 0.92;
+}
+
+/* order-form section: heavy rule above, hairline below the label row */
+.form-rule {
+  border-top: 3px solid var(--w-ink);
+}
+
+.fine-print {
+  font-size: 11px;
+  line-height: 1.5;
+  color: var(--w-ink-soft);
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .caret-blink {
+    animation: none;
+  }
 }
 
 @keyframes caret-blink {
