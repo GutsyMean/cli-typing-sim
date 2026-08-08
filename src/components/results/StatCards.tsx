@@ -25,52 +25,36 @@ function CountUp({
   return <>{format(display)}</>
 }
 
-function BigStat({
-  label,
-  value,
-  format,
-  delay,
-}: {
-  label: string
-  value: number
-  format: (n: number) => string
-  delay?: number
-}) {
-  return (
-    <div>
-      <div className="font-sans text-sm font-medium text-dim">{label}</div>
-      <div className="font-mono text-6xl font-bold text-accent tabular-nums">
-        <CountUp value={value} format={format} delay={delay} />
-      </div>
-    </div>
-  )
-}
-
-function SmallStat({ label, children }: { label: string; children: React.ReactNode }) {
-  return (
-    <div>
-      <div className="font-sans text-xs font-medium text-faint">{label}</div>
-      <div className="font-mono text-2xl font-semibold text-fg tabular-nums">{children}</div>
-    </div>
-  )
-}
-
+/** The departures board: monumental gate-number WPM, split-flap rows below. */
 export function StatCards({ metrics }: { metrics: TestMetrics }) {
   return (
-    <div className="flex flex-wrap items-end gap-x-12 gap-y-6">
-      <BigStat label="wpm" value={metrics.wpm} format={fmtInt} />
-      <BigStat label="acc" value={metrics.accuracy} format={fmtPercent} delay={0.1} />
-      <div className="flex gap-x-10">
-        <SmallStat label="raw">
-          <CountUp value={metrics.raw} format={fmtInt} delay={0.2} />
-        </SmallStat>
-        <SmallStat label="consistency">
-          <CountUp value={metrics.consistency} format={fmtPercent} delay={0.25} />
-        </SmallStat>
-        <SmallStat label="time">{fmtClock(metrics.seconds)}</SmallStat>
-        <SmallStat label="chars">
-          {metrics.correctChars}/{metrics.totalChars}
-        </SmallStat>
+    <div className="board flex flex-wrap items-stretch gap-x-10 gap-y-4 px-6 py-5">
+      <div className="flap">
+        <div className="font-mono text-8xl leading-none font-bold text-sign tabular-nums">
+          <CountUp value={metrics.wpm} format={fmtInt} />
+        </div>
+        <div className="mt-1 text-[13px] font-bold text-white uppercase">
+          wpm — your gate
+        </div>
+      </div>
+      <div className="grid flex-1 content-center gap-y-1 text-[15px]">
+        {(
+          [
+            ['accuracy', <CountUp key="a" value={metrics.accuracy} format={fmtPercent} delay={0.1} />],
+            ['raw wpm', <CountUp key="r" value={metrics.raw} format={fmtInt} delay={0.2} />],
+            ['consistency', <CountUp key="c" value={metrics.consistency} format={fmtPercent} delay={0.25} />],
+            ['time', fmtClock(metrics.seconds)],
+            ['characters', `${metrics.correctChars}/${metrics.totalChars}`],
+          ] as const
+        ).map(([label, v]) => (
+          <div
+            key={label}
+            className="flex items-baseline justify-between gap-6 border-b border-white/20 pb-1 last:border-0"
+          >
+            <span className="text-white">{label}</span>
+            <span className="font-mono font-bold text-sign tabular-nums">{v}</span>
+          </div>
+        ))}
       </div>
     </div>
   )

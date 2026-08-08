@@ -1,40 +1,43 @@
-import { motion } from 'motion/react'
 import { useSettings } from '../../settings/settingsStore'
 import { themes } from '../../settings/themes'
 
+/** Each display is a small gate screen; the boarding one gets the yellow band. */
 export function ThemeGrid() {
   const current = useSettings((s) => s.theme)
   const set = useSettings((s) => s.set)
 
   return (
-    <div className="grid grid-cols-2 gap-2 sm:grid-cols-4">
+    <div className="grid grid-cols-2 gap-2.5 sm:grid-cols-4">
       {themes.map((theme) => {
         const active = theme.id === current
         const v = theme.vars
         return (
-          <motion.button
+          <button
             key={theme.id}
             type="button"
+            aria-pressed={active}
             onClick={() => set('theme', theme.id)}
-            whileHover={{ y: -2 }}
-            whileTap={{ scale: 0.97 }}
-            className={`overflow-hidden rounded-lg border text-left transition-colors duration-150 ${
-              active ? 'border-accent/70' : 'border-edge hover:border-faint'
+            className={`text-left ${
+              active ? '' : 'opacity-90 hover:opacity-100'
             }`}
-            style={{ background: v['--t-bg'] }}
           >
-            <span className="flex items-center gap-1.5 px-3 pt-2.5">
-              <span className="size-2.5 rounded-full" style={{ background: v['--t-accent'] }} />
-              <span className="size-2.5 rounded-full" style={{ background: v['--t-p-path'] }} />
-              <span className="size-2.5 rounded-full" style={{ background: v['--t-err'] }} />
+            <span
+              className="block px-2.5 py-2.5 font-mono text-[11px]"
+              style={{ background: v['--t-bg'] }}
+            >
+              <span style={{ color: v['--t-p-user'] }}>$</span>{' '}
+              <span style={{ color: v['--t-fg'] }}>ls</span>{' '}
+              <span style={{ color: v['--t-accent'] }}>-la</span>
             </span>
             <span
-              className="block px-3 pb-2.5 pt-1.5 font-mono text-xs font-medium"
-              style={{ color: v['--t-fg'] }}
+              className={`flex items-center justify-between px-2 py-1 text-[12px] font-bold ${
+                active ? 'bg-sign text-board' : 'bg-white text-board-soft'
+              }`}
             >
-              {theme.label}
+              <span className="truncate">{theme.label}</span>
+              {active && <span aria-hidden>→</span>}
             </span>
-          </motion.button>
+          </button>
         )
       })}
     </div>

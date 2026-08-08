@@ -22,8 +22,8 @@ const difficultyInfo = [
 
 function Group({ label, children }: { label: string; children: React.ReactNode }) {
   return (
-    <div className="flex flex-col gap-1">
-      <span className="px-1 font-sans text-[10px] font-semibold tracking-[0.14em] text-faint uppercase select-none">
+    <div className="flex flex-col gap-1.5">
+      <span className="text-[12px] font-bold text-board-soft uppercase tracking-wide select-none">
         {label}
       </span>
       {children}
@@ -42,8 +42,8 @@ export function ConfigBar() {
   const toggleDifficulty = useSettings((s) => s.toggleDifficulty)
 
   return (
-    <div className="flex flex-wrap items-end gap-x-5 gap-y-4">
-      <Group label="mode">
+    <div className="flex flex-wrap items-end gap-x-6 gap-y-4">
+      <Group label="Mode">
         <Segment
           groupId="mode"
           options={[
@@ -65,13 +65,13 @@ export function ConfigBar() {
         {mode !== 'endless' && mode !== 'learn' && (
           <motion.div
             key={mode}
-            initial={{ opacity: 0, x: -6 }}
-            animate={{ opacity: 1, x: 0 }}
-            exit={{ opacity: 0, x: 6 }}
-            transition={{ duration: 0.15 }}
+            initial={{ opacity: 0 }}
+            animate={{ opacity: 1 }}
+            exit={{ opacity: 0 }}
+            transition={{ duration: 0.12 }}
           >
             {mode === 'timed' ? (
-              <Group label="duration">
+              <Group label="Duration">
                 <Segment
                   groupId="duration"
                   options={[
@@ -85,7 +85,7 @@ export function ConfigBar() {
                 />
               </Group>
             ) : (
-              <Group label="length">
+              <Group label="Length">
                 <Segment
                   groupId="count"
                   options={[
@@ -103,7 +103,7 @@ export function ConfigBar() {
       </AnimatePresence>
 
       {mode === 'learn' && (
-        <Group label="study">
+        <Group label="Study">
           <Segment
             groupId="learnScope"
             options={[
@@ -117,23 +117,26 @@ export function ConfigBar() {
         </Group>
       )}
 
-      <Group label="difficulty · pick one or more">
-        <div className="flex flex-wrap gap-2">
-          {difficultyInfo.map((d) => {
+      <Group label="Difficulty — pick one or more">
+        <div className="board inline-flex flex-wrap">
+          {difficultyInfo.map((d, i) => {
             const active = difficulties.includes(d.value)
             return (
               <button
                 key={d.value}
                 type="button"
                 title={d.hint}
+                aria-pressed={active}
                 onClick={() => toggleDifficulty(d.value)}
-                className={`rounded-lg border px-3 py-1.5 font-sans text-[13px] font-medium transition-colors duration-150 ${
-                  active
-                    ? 'border-accent/60 bg-raised text-accent'
-                    : 'border-edge bg-surface text-dim hover:border-faint hover:text-fg'
-                }`}
+                className={`px-3.5 py-1.5 text-[14px] font-bold ${
+                  i > 0 ? 'border-l border-white/25' : ''
+                } ${active ? 'bg-sign text-board' : 'text-white hover:bg-white/15'}`}
               >
-                {active && <span className="mr-1.5 text-accent">✓</span>}
+                {active && (
+                  <span aria-hidden className="mr-1.5">
+                    ✓
+                  </span>
+                )}
                 {d.label}
               </button>
             )
@@ -142,25 +145,25 @@ export function ConfigBar() {
       </Group>
 
       {mode !== 'learn' && (
-      <Group label="on mistakes">
-        <Segment
-          groupId="behavior"
-          options={[
-            {
-              value: 'forgiving',
-              label: 'forgiving',
-              hint: 'wrong characters advance the caret; go back and fix them if you want',
-            },
-            {
-              value: 'stop-on-error',
-              label: 'stop on error',
-              hint: 'the caret sticks until you type the correct character',
-            },
-          ]}
-          value={behavior}
-          onChange={(v) => set('behavior', v)}
-        />
-      </Group>
+        <Group label="On mistakes">
+          <Segment
+            groupId="behavior"
+            options={[
+              {
+                value: 'forgiving',
+                label: 'forgiving',
+                hint: 'wrong characters advance the caret; go back and fix them if you want',
+              },
+              {
+                value: 'stop-on-error',
+                label: 'stop on error',
+                hint: 'the caret sticks until you type the correct character',
+              },
+            ]}
+            value={behavior}
+            onChange={(v) => set('behavior', v)}
+          />
+        </Group>
       )}
     </div>
   )

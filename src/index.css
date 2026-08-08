@@ -1,14 +1,19 @@
 @import "tailwindcss";
 
 /*
- * Every color utility maps to a --t-* custom property that applyTheme.ts
- * writes onto <html>, so switching themes restyles the whole app instantly.
+ * Two token layers:
+ *  --t-*  terminal theme vars written by applyTheme.ts — everything behind
+ *         the terminal glass (the gate) stays themed.
+ *  --w-*  the concourse — signage yellow hung on black rails over a gray
+ *         terminal-building ground. Yellow is wayfinding only. Fixed;
+ *         themes never touch it.
  */
 @theme inline {
-  --font-sans: "Outfit", system-ui, ui-sans-serif, sans-serif;
+  --font-sans: "PT Sans", system-ui, ui-sans-serif, sans-serif;
   --font-mono: "Google Sans Code", ui-monospace, "Cascadia Code", "Fira Code",
     monospace;
 
+  /* terminal-interior utilities (theme-driven) */
   --color-term: var(--t-bg);
   --color-chrome: var(--t-chrome);
   --color-surface: var(--t-surface);
@@ -24,6 +29,14 @@
   --color-p-path: var(--t-p-path);
   --color-p-sym: var(--t-p-sym);
   --color-edge: var(--t-edge);
+
+  /* concourse world (fixed) */
+  --color-sign: var(--w-sign);
+  --color-board: var(--w-board);
+  --color-board-soft: var(--w-board-soft);
+  --color-hall: var(--w-hall);
+  --color-hall-line: var(--w-hall-line);
+  --color-closed: var(--w-closed);
 }
 
 :root {
@@ -44,32 +57,98 @@
   --t-p-sym: #f8f8f2;
   --t-edge: #3b3d4f;
 
+  /* the concourse */
+  --w-sign: #ffd200; /* signage yellow — wayfinding only */
+  --w-board: #17181c; /* sign black */
+  --w-board-soft: #4c4e56; /* secondary on light ground */
+  --w-hall: #e9e8e4; /* concourse floor/wall */
+  --w-hall-line: #c9c8c2; /* expansion joints */
+  --w-closed: #cc3524; /* closed-route red */
+
   --terminal-font-size: 1.125rem;
 }
 
 html {
-  background: var(--t-chrome);
-  color-scheme: dark;
-}
-
-html[data-light] {
+  background: var(--w-hall);
   color-scheme: light;
 }
 
 body {
   font-family: var(--font-sans);
-  color: var(--t-fg);
+  color: var(--w-board);
   -webkit-font-smoothing: antialiased;
-  transition: background-color 200ms ease;
+  /* the hall: faint floor joints */
+  background:
+    repeating-linear-gradient(
+      90deg,
+      transparent 0px,
+      transparent 119px,
+      rgba(23, 24, 28, 0.05) 119px,
+      rgba(23, 24, 28, 0.05) 120px
+    ),
+    var(--w-hall);
+}
+
+:focus-visible {
+  outline: 3px solid var(--w-board);
+  outline-offset: 2px;
 }
 
 ::selection {
-  background: color-mix(in srgb, var(--t-accent) 30%, transparent);
+  background: var(--w-sign);
+  color: var(--w-board);
 }
 
 * {
   scrollbar-width: thin;
-  scrollbar-color: var(--t-faint) transparent;
+  scrollbar-color: var(--w-board-soft) transparent;
+}
+
+/* ---- signage vocabulary ------------------------------------------- */
+
+/* a yellow band hung from the ceiling rail */
+.sign-band {
+  position: relative;
+  background: var(--w-sign);
+  color: var(--w-board);
+  box-shadow: 0 6px 16px -8px rgba(23, 24, 28, 0.4);
+}
+
+/* the two hangers */
+.sign-hung {
+  margin-top: 14px;
+}
+.sign-hung::before,
+.sign-hung::after {
+  content: "";
+  position: absolute;
+  top: -14px;
+  width: 4px;
+  height: 14px;
+  background: var(--w-board);
+}
+.sign-hung::before {
+  left: 12%;
+}
+.sign-hung::after {
+  right: 12%;
+}
+
+/* black board panel (departures board, gate number) */
+.board {
+  background: var(--w-board);
+  color: var(--w-hall);
+  box-shadow: 0 6px 16px -8px rgba(23, 24, 28, 0.5);
+}
+
+/* pictogram frame: white glyph on black inset square */
+.picto {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  background: var(--w-board);
+  color: #ffffff;
+  flex-shrink: 0;
 }
 
 @keyframes caret-blink {
@@ -85,6 +164,26 @@ body {
 
 .caret-blink {
   animation: caret-blink 1.1s steps(1) infinite;
+}
+
+/* split-flap: the one authored motion — labels flip in like a departures board */
+@keyframes flap {
+  0% {
+    transform: rotateX(90deg);
+    opacity: 0;
+  }
+  55% {
+    transform: rotateX(-14deg);
+    opacity: 1;
+  }
+  100% {
+    transform: rotateX(0deg);
+  }
+}
+.flap {
+  animation: flap 0.28s ease-out;
+  transform-origin: top center;
+  backface-visibility: hidden;
 }
 
 /* CRT scanline overlay for the classic-green theme */
@@ -109,4 +208,17 @@ body {
   font-size: var(--terminal-font-size);
   line-height: 1.9;
   font-variant-ligatures: none;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .caret-blink,
+  .flap {
+    animation: none;
+  }
+  *,
+  *::before,
+  *::after {
+    animation-duration: 0.01ms !important;
+    transition-duration: 0.01ms !important;
+  }
 }

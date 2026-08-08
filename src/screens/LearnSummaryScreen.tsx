@@ -45,28 +45,34 @@ export function LearnSummaryScreen({
 
   if (summary.nothingToLearn) {
     return (
-      <div className="mx-auto flex w-full max-w-2xl flex-col items-center gap-6 pt-16 text-center">
-        <h2 className="font-mono text-3xl font-bold text-accent">all mastered ✓</h2>
-        <p className="font-sans text-[15px] text-dim">
-          every command in your selected categories and difficulties is already at full
-          mastery. widen the selection on the config screen — or reset progress if you
-          want to drill them again.
-        </p>
-        <div className="flex items-center gap-6">
-          <KeyHint keys={['esc']} label="back to config" />
+      <div className="mx-auto w-full max-w-2xl pt-16">
+        <div className="sign-band sign-hung px-6 py-6 text-center">
+          <h2 className="text-3xl font-bold">All routes cleared ✓</h2>
+          <p className="mt-3 text-[15px] font-bold">
+            every command in your selected categories and difficulties is already at full
+            mastery. widen the selection on the config screen — or reset progress if you
+            want to drill them again.
+          </p>
+          <div className="mt-5 flex items-center justify-center">
+            <KeyHint keys={['esc']} label="back to config" />
+          </div>
         </div>
       </div>
     )
   }
 
   return (
-    <div className="mx-auto flex w-full max-w-3xl flex-col gap-8">
-      <div>
-        <div className="font-sans text-sm font-medium text-dim">commands mastered</div>
-        <div className="font-mono text-6xl font-bold text-accent tabular-nums">
-          {summary.mastered}
+    <div className="mx-auto flex w-full max-w-3xl flex-col gap-6">
+      <div className="board flex flex-wrap items-end gap-x-8 gap-y-3 px-6 py-5">
+        <div className="flap">
+          <div className="font-mono text-8xl leading-none font-bold text-sign tabular-nums">
+            {summary.mastered}
+          </div>
+          <div className="mt-1 text-[13px] font-bold text-white uppercase">
+            commands mastered
+          </div>
         </div>
-        <div className="mt-1 font-sans text-sm text-faint">
+        <div className="pb-1 text-[13px] text-white">
           {summary.totalAnswered} answers across {summary.roundsCompleted} completed round
           {summary.roundsCompleted === 1 ? '' : 's'}
         </div>
@@ -83,12 +89,14 @@ export function LearnSummaryScreen({
           .map((t) => {
             const s = summary.byType[t]
             return (
-              <div key={t} className="rounded-xl border border-edge bg-term p-4">
-                <div className="font-sans text-xs font-medium text-faint">{typeLabel[t]}</div>
-                <div className="mt-1 font-mono text-2xl font-semibold text-fg tabular-nums">
+              <div key={t} className="bg-white p-3.5 shadow-[0_8px_20px_-12px_rgba(23,24,28,0.35)]">
+                <div className="text-[12px] font-bold text-board-soft uppercase tracking-wide">
+                  {typeLabel[t]}
+                </div>
+                <div className="mt-1 font-mono text-2xl font-bold text-board tabular-nums">
                   {fmtPercent((s.correct / s.total) * 100)}
                 </div>
-                <div className="font-sans text-xs text-dim">
+                <div className="text-xs text-board-soft">
                   {s.correct}/{s.total} correct
                 </div>
               </div>
@@ -102,20 +110,25 @@ export function LearnSummaryScreen({
           animate={{ opacity: 1, y: 0 }}
           transition={{ delay: 0.2 }}
         >
-          <h3 className="mb-3 font-sans text-sm font-medium text-dim">
-            needs more work
-          </h3>
-          <div className="flex flex-col gap-2">
+          <div className="sign-band flex items-center justify-between px-4 py-2">
+            <h3 className="text-[15px] font-bold">Needs more work</h3>
+            <span aria-hidden className="text-lg leading-none font-bold">
+              →
+            </span>
+          </div>
+          <div className="flex flex-col divide-y divide-hall-line bg-white shadow-[0_8px_20px_-12px_rgba(23,24,28,0.35)]">
             {summary.weakest.map((w) => (
               <div
                 key={w.label}
-                className="flex items-baseline justify-between gap-4 rounded-lg border border-edge bg-surface px-3 py-2"
+                className="flex items-baseline justify-between gap-4 px-4 py-2.5"
               >
                 <div className="min-w-0">
-                  <div className="truncate font-mono text-sm text-fg">{w.label}</div>
-                  <div className="truncate font-sans text-xs text-faint">{w.desc}</div>
+                  <div className="truncate font-mono text-sm font-bold text-board">
+                    {w.label}
+                  </div>
+                  <div className="truncate text-xs text-board-soft">{w.desc}</div>
                 </div>
-                <span className="shrink-0 font-sans text-xs text-err">
+                <span className="shrink-0 bg-closed px-1.5 py-0.5 text-xs font-bold text-white">
                   ×{w.misses} missed
                 </span>
               </div>
