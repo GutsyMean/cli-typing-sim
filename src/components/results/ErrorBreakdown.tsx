@@ -43,7 +43,7 @@ export function ErrorBreakdown({ metrics }: { metrics: TestMetrics }) {
                   <span className="w-28 shrink-0 font-mono text-xs font-bold text-ink">
                     {categoryLabel(c.category)}
                   </span>
-                  <span className="board h-3 flex-1 overflow-hidden shadow-none">
+                  <span className="board h-3 flex-1 overflow-hidden p-px shadow-none">
                     <span
                       className="block h-full bg-white"
                       style={{ width: `${acc}%` }}

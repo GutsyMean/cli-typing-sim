@@ -19,7 +19,7 @@ function Bar({ mastered, learning, total }: { mastered: number; learning: number
   const m = total === 0 ? 0 : (mastered / total) * 100
   const l = total === 0 ? 0 : (learning / total) * 100
   return (
-    <span className="board flex h-3 flex-1 overflow-hidden shadow-none">
+    <span className="board flex h-3 flex-1 overflow-hidden p-px shadow-none">
       <span className="h-full bg-white" style={{ width: `${m}%` }} />
       <span className="h-full bg-white/40" style={{ width: `${l}%` }} />
     </span>
