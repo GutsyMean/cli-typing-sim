@@ -96,7 +96,7 @@ export function WpmChart({ bins }: { bins: SecondBin[] }) {
         <motion.path
           d={smoothPath(smoothPts)}
           fill="none"
-          stroke="var(--w-sign)"
+          stroke="#f2f2ef"
           strokeWidth="2.5"
           strokeLinecap="round"
           initial={{ pathLength: 0 }}
@@ -148,7 +148,7 @@ export function WpmChart({ bins }: { bins: SecondBin[] }) {
 
       <div className="mt-1 flex justify-center gap-5 text-[11px] font-bold text-white">
         <span className="inline-flex items-center gap-1.5">
-          <span className="h-[3px] w-4 bg-sign" /> wpm
+          <span className="h-[3px] w-4 bg-white" /> wpm
         </span>
         <span className="inline-flex items-center gap-1.5">
           <span className="h-[2px] w-4 bg-panel/50" /> raw

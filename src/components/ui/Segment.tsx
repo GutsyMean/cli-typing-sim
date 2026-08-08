@@ -1,3 +1,5 @@
+import { SignChevron } from './signage'
+
 export interface SegmentOption<T extends string | number> {
   value: T
   label: string
@@ -35,11 +37,7 @@ export function Segment<T extends string | number>({
               i > 0 ? 'border-l border-white/25' : ''
             } ${active ? 'bg-sign text-signink' : 'text-white hover:bg-panel/15'}`}
           >
-            {active && (
-              <span aria-hidden className="mr-1.5">
-                ▸
-              </span>
-            )}
+            {active && <SignChevron className="mr-1.5 inline size-3 align-[-1px]" />}
             {opt.label}
           </button>
         )

@@ -6,6 +6,7 @@ import { WpmChart } from '../components/results/WpmChart'
 import { KeyHint } from '../components/ui/Kbd'
 import { categoryLabel } from '../data/commands'
 import type { TestResult } from './TestScreen'
+import { SignArrow } from '../components/ui/signage'
 
 export function ResultsScreen({
   result,
@@ -56,9 +57,7 @@ export function ResultsScreen({
             {categoryLabel(c)}
           </span>
         ))}
-        <span aria-hidden className="ml-auto text-lg leading-none">
-          →
-        </span>
+        <SignArrow className="ml-auto size-5 shrink-0" />
       </div>
 
       <StatCards metrics={metrics} />

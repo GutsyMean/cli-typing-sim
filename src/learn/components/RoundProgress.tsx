@@ -14,7 +14,7 @@ export function RoundProgress({
       {batch.map((key) => {
         const level = levels[key] ?? 0
         return (
-          <span key={key} className="board flex h-2.5 w-8 gap-px overflow-hidden p-px shadow-none">
+          <span key={key} className="board pip-track flex h-2.5 w-8 gap-px overflow-hidden p-px shadow-none">
             {[0, 1, 2].map((seg) => (
               <span
                 key={seg}

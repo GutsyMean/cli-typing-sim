@@ -6,6 +6,7 @@ import type { CategoryId } from '../../data/types'
 import { useSettings } from '../../settings/settingsStore'
 import { useLearn, type MasteryRecord } from '../learnStore'
 import { buildStudyItems, itemDesc, itemLabel, studyKey, type StudyItem } from '../studyItems'
+import { SignCheck, SignCross } from '../../components/ui/signage'
 
 interface CategoryProgress {
   id: CategoryId
@@ -19,13 +20,13 @@ function Bar({ mastered, learning, total }: { mastered: number; learning: number
   const l = total === 0 ? 0 : (learning / total) * 100
   return (
     <span className="board flex h-3 flex-1 overflow-hidden shadow-none">
-      <span className="h-full bg-sign" style={{ width: `${m}%` }} />
-      <span className="h-full bg-sign/40" style={{ width: `${l}%` }} />
+      <span className="h-full bg-white" style={{ width: `${m}%` }} />
+      <span className="h-full bg-white/40" style={{ width: `${l}%` }} />
     </span>
   )
 }
 
-function ItemRow({ item, note, noteClass }: { item: StudyItem; note: string; noteClass: string }) {
+function ItemRow({ item, note, noteClass }: { item: StudyItem; note: React.ReactNode; noteClass: string }) {
   return (
     <div className="flex items-baseline justify-between gap-4 border border-hall-line bg-panel px-3 py-2">
       <div className="min-w-0">
@@ -39,7 +40,7 @@ function ItemRow({ item, note, noteClass }: { item: StudyItem; note: string; not
         </div>
         <div className="truncate font-sans text-xs text-board-soft">{itemDesc(item)}</div>
       </div>
-      <span className={`shrink-0 font-sans text-xs font-bold ${noteClass}`}>{note}</span>
+      <span className={`inline-flex shrink-0 items-center gap-1 font-sans text-xs font-bold ${noteClass}`}>{note}</span>
     </div>
   )
 }
@@ -161,7 +162,7 @@ export function LearnOverview() {
             <h3 className="mb-2 font-sans text-[12px] font-bold text-board-soft uppercase tracking-wide">recently mastered</h3>
             <div className="flex flex-col gap-2">
               {recentlyMastered.map(([i]) => (
-                <ItemRow key={studyKey(i)} item={i} note="✓" noteClass="text-ink" />
+                <ItemRow key={studyKey(i)} item={i} note={<SignCheck className="size-3" />} noteClass="text-ink" />
               ))}
             </div>
           </div>
@@ -174,7 +175,12 @@ export function LearnOverview() {
                 <ItemRow
                   key={studyKey(i)}
                   item={i}
-                  note={`×${r.misses} missed`}
+                  note={
+                    <>
+                      <SignCross className="size-2.5" />
+                      {r.misses} missed
+                    </>
+                  }
                   noteClass="text-closed"
                 />
               ))}

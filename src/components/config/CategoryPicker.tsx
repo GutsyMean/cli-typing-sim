@@ -1,5 +1,6 @@
 import { categories } from '../../data/commands'
 import { useSettings } from '../../settings/settingsStore'
+import { SignArrow } from '../ui/signage'
 
 /** Destinations list: followed routes stay lit in yellow with a filled arrow. */
 export function CategoryPicker() {
@@ -22,9 +23,7 @@ export function CategoryPicker() {
                 : 'border border-hall-line bg-panel text-board-soft hover:border-board-soft'
             }`}
           >
-            <span aria-hidden className="text-[15px] leading-none font-bold">
-              {active ? '→' : ''}
-            </span>
+            {active && <SignArrow className="size-4 shrink-0" />}
             <span className="min-w-0">
               <span
                 className={`block truncate font-mono text-[13px] font-bold ${

@@ -1,6 +1,7 @@
 import { AnimatePresence, motion } from 'motion/react'
 import { useSettings } from '../../settings/settingsStore'
 import { Segment } from '../ui/Segment'
+import { SignCheck } from '../ui/signage'
 
 const difficultyInfo = [
   {
@@ -132,11 +133,7 @@ export function ConfigBar() {
                   i > 0 ? 'border-l border-white/25' : ''
                 } ${active ? 'bg-sign text-signink' : 'text-white hover:bg-panel/15'}`}
               >
-                {active && (
-                  <span aria-hidden className="mr-1.5">
-                    ✓
-                  </span>
-                )}
+                {active && <SignCheck className="mr-1.5 inline size-3.5 align-[-2px]" />}
                 {d.label}
               </button>
             )

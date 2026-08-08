@@ -64,7 +64,7 @@ export function HistoryGraph() {
         <motion.path
           d={smoothPath(pts)}
           fill="none"
-          stroke="var(--w-sign)"
+          stroke="#f2f2ef"
           strokeWidth="2"
           strokeLinecap="round"
           initial={{ pathLength: 0 }}
@@ -72,7 +72,7 @@ export function HistoryGraph() {
           transition={{ duration: 0.8, ease: 'easeOut' }}
         />
         {pts.map((p, i) => (
-          <circle key={i} cx={p.x} cy={p.y} r="2.2" fill="var(--w-sign)" />
+          <circle key={i} cx={p.x} cy={p.y} r="2.2" fill="#f2f2ef" />
         ))}
       </svg>
       </div>

@@ -1,6 +1,7 @@
 import type { TestMetrics } from '../../engine/metrics'
 import { categoryLabel } from '../../data/commands'
 import { fmtPercent } from '../../lib/format'
+import { SignCross } from '../ui/signage'
 
 export function ErrorBreakdown({ metrics }: { metrics: TestMetrics }) {
   const { missedChars, categoryErrors } = metrics
@@ -19,7 +20,10 @@ export function ErrorBreakdown({ metrics }: { metrics: TestMetrics }) {
                 <kbd className="picto min-w-8 px-2 py-1 text-center font-mono text-base font-bold">
                   {m.char === ' ' ? '␣' : m.char}
                 </kbd>
-                <span className="text-xs text-board-soft">×{m.count}</span>
+                <span className="inline-flex items-center gap-0.5 text-xs text-board-soft">
+                  <SignCross className="size-2" />
+                  {m.count}
+                </span>
               </span>
             ))}
           </div>
@@ -41,7 +45,7 @@ export function ErrorBreakdown({ metrics }: { metrics: TestMetrics }) {
                   </span>
                   <span className="board h-3 flex-1 overflow-hidden shadow-none">
                     <span
-                      className="block h-full bg-sign"
+                      className="block h-full bg-white"
                       style={{ width: `${acc}%` }}
                     />
                   </span>

@@ -9,6 +9,7 @@ import { KeyHint } from '../components/ui/Kbd'
 import { useHistory } from '../history/historyStore'
 import { LearnOverview } from '../learn/components/LearnOverview'
 import { useSettings } from '../settings/settingsStore'
+import { SignArrow } from '../components/ui/signage'
 
 /** Pictograms drawn in one 2.2-stroke grammar, white on the black inset square. */
 const pictos: Record<string, React.ReactNode> = {
@@ -89,9 +90,7 @@ function SignSection({
         </span>
         <h2 className="text-[16px] font-bold">{title}</h2>
         {note && <span className="ml-auto hidden text-[12px] font-bold sm:block">{note}</span>}
-        <span aria-hidden className={`text-lg leading-none font-bold ${note ? '' : 'ml-auto'}`}>
-          →
-        </span>
+        <SignArrow className={`size-5 shrink-0 ${note ? '' : 'ml-auto'}`} />
       </div>
       <div className="bg-panel p-4 shadow-[0_8px_20px_-12px_rgba(23,24,28,0.35)] sm:p-5">
         {children}
@@ -182,12 +181,7 @@ export function HomeScreen({ onStart }: { onStart: () => void }) {
             className="board group flex items-center gap-3 px-6 py-3.5 text-[16px] font-bold text-white hover:bg-black"
           >
             {learnMode ? 'Start learning' : 'Start typing'}
-            <span
-              aria-hidden
-              className="text-xl leading-none transition-transform group-hover:translate-x-1"
-            >
-              →
-            </span>
+            <SignArrow className="size-5 shrink-0 transition-transform group-hover:translate-x-1" />
           </button>
         </div>
         <div className="mt-4 flex flex-wrap items-center gap-x-6 gap-y-1 border-t-2 border-board/70 pt-2.5 text-[12px] font-bold">

@@ -1,5 +1,6 @@
 import { useSettings } from '../../settings/settingsStore'
 import { themes } from '../../settings/themes'
+import { SignArrow } from '../ui/signage'
 
 /** Each display is a small gate screen; the boarding one gets the yellow band. */
 export function ThemeGrid() {
@@ -35,7 +36,7 @@ export function ThemeGrid() {
               }`}
             >
               <span className="truncate">{theme.label}</span>
-              {active && <span aria-hidden>→</span>}
+              {active && <SignArrow className="size-3.5 shrink-0" />}
             </span>
           </button>
         )

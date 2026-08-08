@@ -1,6 +1,7 @@
 import type { ReactNode } from 'react'
 import { useSettings } from '../../settings/settingsStore'
 import { themeById } from '../../settings/themes'
+import { SignArrow } from '../ui/signage'
 
 /**
  * The gate: a yellow overhead band names the destination, and the themed
@@ -20,9 +21,7 @@ export function TerminalFrame({
     <div>
       <div className="sign-band sign-hung flex items-center justify-between gap-4 px-4 py-2.5 select-none">
         <span className="text-[15px] font-bold">{title}</span>
-        <span aria-hidden className="text-xl leading-none font-bold">
-          →
-        </span>
+        <SignArrow className="size-5 shrink-0" />
       </div>
       <div
         className={`relative bg-term shadow-[0_10px_28px_-12px_rgba(23,24,28,0.55)] ${

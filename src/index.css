@@ -89,6 +89,10 @@ html[data-night] {
   --w-ink: #eceef2;
 }
 
+html[data-night] .pip-track {
+  box-shadow: 0 0 0 1px rgba(255, 255, 255, 0.4);
+}
+
 html[data-night] .board {
   box-shadow:
     0 0 0 1px rgba(255, 255, 255, 0.14),

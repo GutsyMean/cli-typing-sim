@@ -4,6 +4,7 @@ import { KeyHint } from '../components/ui/Kbd'
 import { fmtPercent } from '../lib/format'
 import type { LearnSummary } from '../learn/learnReducer'
 import type { QType } from '../learn/questions'
+import { SignArrow, SignCheck, SignCross } from '../components/ui/signage'
 
 const typeLabel: Record<QType, string> = {
   mc: 'multiple choice',
@@ -47,7 +48,9 @@ export function LearnSummaryScreen({
     return (
       <div className="mx-auto w-full max-w-2xl pt-16">
         <div className="sign-band sign-hung px-6 py-6 text-center">
-          <h2 className="text-3xl font-bold">All routes cleared ✓</h2>
+          <h2 className="flex items-center justify-center gap-2.5 text-3xl font-bold">
+            All routes cleared <SignCheck className="size-7" />
+          </h2>
           <p className="mt-3 text-[15px] font-bold">
             every command in your selected categories and difficulties is already at full
             mastery. widen the selection on the config screen — or reset progress if you
@@ -112,9 +115,7 @@ export function LearnSummaryScreen({
         >
           <div className="sign-band flex items-center justify-between px-4 py-2">
             <h3 className="text-[15px] font-bold">Needs more work</h3>
-            <span aria-hidden className="text-lg leading-none font-bold">
-              →
-            </span>
+            <SignArrow className="size-5 shrink-0" />
           </div>
           <div className="flex flex-col divide-y divide-hall-line bg-panel shadow-[0_8px_20px_-12px_rgba(23,24,28,0.35)]">
             {summary.weakest.map((w) => (
@@ -128,8 +129,9 @@ export function LearnSummaryScreen({
                   </div>
                   <div className="truncate text-xs text-board-soft">{w.desc}</div>
                 </div>
-                <span className="shrink-0 bg-closed px-1.5 py-0.5 text-xs font-bold text-white">
-                  ×{w.misses} missed
+                <span className="inline-flex shrink-0 items-center gap-1 bg-closed px-1.5 py-0.5 text-xs font-bold text-white">
+                  <SignCross className="size-2.5" />
+                  {w.misses} missed
                 </span>
               </div>
             ))}
