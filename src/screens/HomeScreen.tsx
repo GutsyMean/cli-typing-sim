@@ -169,7 +169,13 @@ export function HomeScreen({ onStart }: { onStart: () => void }) {
               </svg>
             </span>
             <div className="min-w-0">
-              <h1 className="text-4xl font-bold tracking-tight sm:text-5xl">termtype</h1>
+              <h1 className="text-4xl font-bold tracking-tight sm:text-5xl">
+                termtype
+                <span
+                  aria-hidden
+                  className="caret-blink ml-1.5 inline-block h-[0.85em] w-[0.45em] translate-y-[0.08em] bg-signink"
+                />
+              </h1>
               <p className="mt-1 text-[15px] font-bold">
                 muscle memory for the command line
               </p>
