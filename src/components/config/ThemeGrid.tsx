@@ -23,7 +23,7 @@ export function ThemeGrid() {
             className={`group text-left ${active ? 'ants' : ''}`}
           >
             <span
-              className="block border-2 border-ink px-2.5 py-2 font-mono text-[11px]"
+              className="block border-2 border-ink px-2.5 py-2 font-mono text-[14px]"
               style={{ background: v['--t-bg'] }}
             >
               <span style={{ color: v['--t-p-user'] }}>$</span>{' '}
@@ -31,7 +31,7 @@ export function ThemeGrid() {
               <span style={{ color: v['--t-accent'] }}>-la</span>
             </span>
             <span
-              className={`mt-1 block truncate text-center text-[11px] text-ink ${
+              className={`mt-1 block truncate text-center text-[14px] text-ink ${
                 active ? 'font-bold' : 'group-hover:underline'
               }`}
             >

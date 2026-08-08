@@ -34,13 +34,13 @@ export function CategoryPicker() {
             </span>
             <span className="min-w-0">
               <span
-                className={`block truncate font-mono text-[13px] text-ink ${
+                className={`block truncate font-mono text-[16px] text-ink ${
                   active ? 'font-bold' : 'group-hover:underline'
                 }`}
               >
                 {cat.label}
               </span>
-              <span className="block truncate text-[11px] text-ink">{cat.blurb}</span>
+              <span className="block truncate text-[14px] text-ink">{cat.blurb}</span>
             </span>
           </button>
         )

@@ -30,7 +30,7 @@ function ItemRow({ item, note, invertNote }: { item: StudyItem; note: string; in
   return (
     <div className="flex items-baseline justify-between gap-4 border-2 border-ink bg-paper px-3 py-1.5">
       <div className="min-w-0">
-        <div className="truncate font-mono text-sm font-bold text-ink">
+        <div className="truncate font-mono text-[16px] font-bold text-ink">
           {itemLabel(item)}
           {item.kind === 'flag' && (
             <span className="ml-2 border border-ink px-1 font-sans text-[10px] font-normal">
@@ -38,9 +38,9 @@ function ItemRow({ item, note, invertNote }: { item: StudyItem; note: string; in
             </span>
           )}
         </div>
-        <div className="truncate text-xs text-ink">{itemDesc(item)}</div>
+        <div className="truncate text-[14px] text-ink">{itemDesc(item)}</div>
       </div>
-      <span className={`shrink-0 text-xs ${invertNote ? 'invert px-1.5' : 'font-bold'}`}>
+      <span className={`shrink-0 text-[14px] ${invertNote ? 'invert px-1.5' : 'font-bold'}`}>
         {note}
       </span>
     </div>
@@ -99,7 +99,7 @@ export function LearnOverview() {
 
   if (!anyProgress) {
     return (
-      <p className="border-2 border-dashed border-ink px-4 py-6 text-center text-[13px] text-ink">
+      <p className="border-2 border-dashed border-ink px-4 py-6 text-center text-[16px] text-ink">
         nothing learned yet — hit start learning and your mastery progress will build here.
       </p>
     )
@@ -112,7 +112,7 @@ export function LearnOverview() {
     <div className="flex flex-col gap-6">
       <div>
         <div className="mb-2 flex items-baseline justify-between px-1">
-          <span className="text-sm text-ink">
+          <span className="text-[16px] text-ink">
             <b className="font-mono">{mastered.length}</b> / {items.length} mastered in
             your selection{' '}
             ({commandCount > 0 && `${commandCount} commands`}
@@ -131,7 +131,7 @@ export function LearnOverview() {
               }
             }}
             onBlur={() => setResetArmed(false)}
-            className={`text-xs text-ink ${resetArmed ? 'invert px-1.5 font-bold' : 'underline'}`}
+            className={`text-[14px] text-ink ${resetArmed ? 'invert px-1.5 font-bold' : 'underline'}`}
           >
             {resetArmed ? 'click again to wipe all progress' : 'reset progress'}
           </button>
@@ -142,9 +142,9 @@ export function LearnOverview() {
       <div className="flex flex-col gap-2">
         {byCategory.map((c) => (
           <div key={c.id} className="flex items-center gap-3">
-            <span className="w-28 shrink-0 font-mono text-xs text-ink">{categoryLabel(c.id)}</span>
+            <span className="w-28 shrink-0 font-mono text-[14px] text-ink">{categoryLabel(c.id)}</span>
             <Bar mastered={c.mastered} learning={c.learning} total={c.total} />
-            <span className="w-16 text-right text-xs text-ink tabular-nums">
+            <span className="w-16 text-right text-[14px] text-ink tabular-nums">
               {c.mastered}/{c.total}
             </span>
           </div>

@@ -26,10 +26,10 @@ export function HistoryGraph() {
   return (
     <div>
       <div className="mb-2 flex items-baseline justify-between px-1">
-        <h3 className="text-sm text-ink">
+        <h3 className="text-[16px] text-ink">
           progress · last {recent.length} tests
         </h3>
-        <span className="text-xs text-ink">
+        <span className="text-[14px] text-ink">
           best <b className="font-mono">{fmtInt(best)}</b> · latest{' '}
           <b className="font-mono">{fmtInt(last.wpm)}</b> wpm
         </span>

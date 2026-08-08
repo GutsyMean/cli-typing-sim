@@ -30,7 +30,7 @@ export function Toggle({
           </svg>
         )}
       </span>
-      <span className={`text-[13px] text-ink ${checked ? 'font-bold' : 'group-hover:underline'}`}>
+      <span className={`text-[16px] text-ink ${checked ? 'font-bold' : 'group-hover:underline'}`}>
         {label}
       </span>
     </button>

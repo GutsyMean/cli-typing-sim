@@ -77,9 +77,9 @@ export function LearnSummaryScreen({
             <div className="font-display text-6xl leading-none text-ink tabular-nums">
               {summary.mastered}
             </div>
-            <div className="mt-1 text-[12px] text-ink">commands mastered</div>
+            <div className="mt-1 text-[15px] text-ink">commands mastered</div>
           </div>
-          <div className="pb-1 text-[12px] text-ink">
+          <div className="pb-1 text-[15px] text-ink">
             {summary.totalAnswered} answers across {summary.roundsCompleted} completed
             round{summary.roundsCompleted === 1 ? '' : 's'}
           </div>
@@ -98,11 +98,11 @@ export function LearnSummaryScreen({
             const s = summary.byType[t]
             return (
               <div key={t} className="border-2 border-ink bg-paper p-3">
-                <div className="text-[11px] text-ink">{typeLabel[t]}</div>
+                <div className="text-[14px] text-ink">{typeLabel[t]}</div>
                 <div className="mt-1 font-display text-2xl text-ink tabular-nums">
                   {fmtPercent((s.correct / s.total) * 100)}
                 </div>
-                <div className="text-[11px] text-ink">
+                <div className="text-[14px] text-ink">
                   {s.correct}/{s.total} correct
                 </div>
               </div>
@@ -128,12 +128,12 @@ export function LearnSummaryScreen({
                 className="flex items-baseline justify-between gap-4 px-4 py-2.5"
               >
                 <div className="min-w-0">
-                  <div className="truncate font-mono text-sm font-bold text-ink">
+                  <div className="truncate font-mono text-[16px] font-bold text-ink">
                     {w.label}
                   </div>
-                  <div className="truncate text-xs text-ink">{w.desc}</div>
+                  <div className="truncate text-[14px] text-ink">{w.desc}</div>
                 </div>
-                <span className="invert shrink-0 px-1.5 text-xs">
+                <span className="invert shrink-0 px-1.5 text-[14px]">
                   ×{w.misses} missed
                 </span>
               </div>

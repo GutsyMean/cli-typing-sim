@@ -41,7 +41,7 @@ export function ResultsScreen({
 
   return (
     <div className="mx-auto flex w-full max-w-4xl flex-col gap-6">
-      <div className="flex flex-wrap items-center gap-2 text-[11px]">
+      <div className="flex flex-wrap items-center gap-2 text-[14px]">
         <span className="invert px-2 py-0.5">
           {settings.mode === 'timed'
             ? `${settings.duration}s sprint`
@@ -86,7 +86,7 @@ export function ResultsScreen({
         <KeyHint keys={['esc']} label="config" />
       </div>
 
-      <p className="window mx-auto w-fit px-4 py-2 text-center text-[11px] text-ink">
+      <p className="window mx-auto w-fit px-4 py-2 text-center text-[14px] text-ink">
         wpm counts correct characters over active typing time — pauses between commands
         (after the last character and before the next one) don&apos;t count against you.
       </p>

@@ -114,7 +114,7 @@ export function TestScreen({
               initial={{ opacity: 0, y: 4 }}
               animate={{ opacity: 1, y: 0 }}
               exit={{ opacity: 0, y: 4 }}
-              className="invert px-3 py-1 font-sans text-sm font-bold"
+              className="invert px-3 py-1 font-sans text-[16px] font-bold"
             >
               caps lock is on
             </motion.span>
@@ -164,7 +164,7 @@ export function TestScreen({
                 initial={{ opacity: 0 }}
                 animate={{ opacity: 1 }}
                 exit={{ opacity: 0 }}
-                className="pointer-events-none absolute inset-x-0 bottom-0 pb-1 text-center font-sans text-sm text-faint select-none"
+                className="pointer-events-none absolute inset-x-0 bottom-0 pb-1 text-center font-sans text-[16px] text-faint select-none"
               >
                 start typing to begin — press{' '}
                 <span className="font-semibold text-dim">enter</span> after each command
@@ -183,7 +183,7 @@ export function TestScreen({
       </div>
 
       {isTouchDevice && (
-        <p className="window mx-auto mt-4 w-fit px-4 py-2 text-center font-sans text-sm text-ink">
+        <p className="window mx-auto mt-4 w-fit px-4 py-2 text-center font-sans text-[16px] text-ink">
           termtype works best with a physical keyboard.
         </p>
       )}

@@ -80,7 +80,7 @@ export function LearnScreen({
     <div className="mx-auto w-full max-w-4xl">
       <div className="window mb-4 flex min-h-8 items-center justify-between gap-4 px-4 py-2">
         <RoundProgress batch={state.batch} levels={state.levels} />
-        <span className="font-sans text-sm text-ink select-none">
+        <span className="font-sans text-[16px] text-ink select-none">
           round {state.roundsCompleted + 1} ·{' '}
           <b>{state.masteredThisSession.length}</b> mastered
         </span>

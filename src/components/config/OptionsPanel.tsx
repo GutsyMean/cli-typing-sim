@@ -6,7 +6,7 @@ import { Toggle } from '../ui/Toggle'
 function Row({ label, children }: { label: string; children: React.ReactNode }) {
   return (
     <div className="flex flex-wrap items-center justify-between gap-2">
-      <span className="text-[13px] text-ink">{label}</span>
+      <span className="text-[16px] text-ink">{label}</span>
       {children}
     </div>
   )
@@ -22,7 +22,7 @@ export function OptionsPanel() {
           <select
             value={s.promptStyle}
             onChange={(e) => s.set('promptStyle', e.target.value as typeof s.promptStyle)}
-            className="border-2 border-ink bg-paper px-2.5 py-1 font-mono text-[13px] text-ink shadow-[1px_1px_0_var(--w-ink)] outline-none"
+            className="border-2 border-ink bg-paper px-2.5 py-1 font-mono text-[16px] text-ink shadow-[1px_1px_0_var(--w-ink)] outline-none"
           >
             <option value="auto">auto (match category)</option>
             {promptStyles.map((p) => (

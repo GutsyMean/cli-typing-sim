@@ -9,10 +9,9 @@
  *         window chrome, inversion for selection. Fixed; themes never touch it.
  */
 @theme inline {
-  --font-sans: "Google Sans Code", ui-monospace, monospace;
-  --font-display: "Silkscreen", "Google Sans Code", monospace;
-  --font-mono: "Google Sans Code", ui-monospace, "Cascadia Code", "Fira Code",
-    monospace;
+  --font-sans: "VT323", ui-monospace, monospace;
+  --font-display: "Silkscreen", "VT323", monospace;
+  --font-mono: "VT323", ui-monospace, monospace;
 
   /* terminal-interior utilities (theme-driven) */
   --color-term: var(--t-bg);

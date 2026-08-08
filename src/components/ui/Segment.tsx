@@ -28,7 +28,7 @@ export function Segment<T extends string | number>({
             title={opt.hint}
             aria-pressed={active}
             onClick={() => onChange(opt.value)}
-            className="group inline-flex items-center gap-1.5 py-0.5 text-[13px] text-ink"
+            className="group inline-flex items-center gap-1.5 py-0.5 text-[16px] text-ink"
           >
             <span
               aria-hidden

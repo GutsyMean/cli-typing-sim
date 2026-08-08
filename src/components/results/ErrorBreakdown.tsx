@@ -17,7 +17,7 @@ export function ErrorBreakdown({ metrics }: { metrics: TestMetrics }) {
                 <kbd className="inline-block min-w-8 border-2 border-ink bg-paper px-2 py-1 text-center font-mono text-base font-bold text-ink shadow-[2px_2px_0_var(--w-ink)]">
                   {m.char === ' ' ? '␣' : m.char}
                 </kbd>
-                <span className="text-xs text-ink">×{m.count}</span>
+                <span className="text-[14px] text-ink">×{m.count}</span>
               </span>
             ))}
           </div>
@@ -32,7 +32,7 @@ export function ErrorBreakdown({ metrics }: { metrics: TestMetrics }) {
               const acc = c.total === 0 ? 100 : ((c.total - c.errors) / c.total) * 100
               return (
                 <div key={c.category} className="flex items-center gap-3">
-                  <span className="w-28 shrink-0 font-mono text-xs text-ink">
+                  <span className="w-28 shrink-0 font-mono text-[14px] text-ink">
                     {categoryLabel(c.category)}
                   </span>
                   <span className="dither-25 h-3 flex-1 overflow-hidden border border-ink">
@@ -41,7 +41,7 @@ export function ErrorBreakdown({ metrics }: { metrics: TestMetrics }) {
                       style={{ width: `${acc}%` }}
                     />
                   </span>
-                  <span className="w-14 text-right text-xs text-ink tabular-nums">
+                  <span className="w-14 text-right text-[14px] text-ink tabular-nums">
                     {fmtPercent(acc)}
                   </span>
                 </div>

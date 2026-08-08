@@ -84,10 +84,10 @@ export function HomeScreen({ onStart }: { onStart: () => void }) {
               <h1 className="font-display text-3xl leading-none text-ink sm:text-4xl">
                 termtype
               </h1>
-              <p className="mt-2 text-[13px] text-ink">
+              <p className="mt-2 text-[16px] text-ink">
                 muscle memory for the command line
               </p>
-              <p className="mt-0.5 text-[11px] text-ink">
+              <p className="mt-0.5 text-[14px] text-ink">
                 version 1.0 · 1,900+ commands · 3,500+ flags · one color window
               </p>
             </div>
@@ -95,7 +95,7 @@ export function HomeScreen({ onStart }: { onStart: () => void }) {
           <button
             type="button"
             onClick={onStart}
-            className="btn btn-default px-7 py-2.5 font-display text-[13px] text-ink"
+            className="btn btn-default px-7 py-2.5 font-display text-[16px] text-ink"
           >
             {learnMode ? 'start learn' : 'start'}
           </button>
@@ -136,12 +136,12 @@ export function HomeScreen({ onStart }: { onStart: () => void }) {
       <footer className="window mt-8 flex flex-col items-center gap-2.5 p-4">
         <div className="flex flex-wrap items-center justify-center gap-x-6 gap-y-2">
           <KeyHint keys={['enter']} label={learnMode ? 'start learning' : 'start'} />
-          <span className="text-[12px] text-ink">
+          <span className="text-[15px] text-ink">
             during a test: <b>enter</b> runs a command · <b>tab+enter</b> restarts ·{' '}
             <b>esc</b> quits
           </span>
         </div>
-        <span className="text-[11px] text-ink">
+        <span className="text-[14px] text-ink">
           command examples from{' '}
           <a
             href="https://github.com/tldr-pages/tldr"
@@ -171,7 +171,7 @@ function HistoryEmptyHint() {
   const count = useHistory((s) => s.entries.length)
   if (count >= 2) return null
   return (
-    <p className="border-2 border-dashed border-ink px-4 py-6 text-center text-[13px] text-ink">
+    <p className="border-2 border-dashed border-ink px-4 py-6 text-center text-[16px] text-ink">
       no tests on file — finish your first test and your progress graph is saved here.
     </p>
   )
