@@ -7,8 +7,7 @@
 @theme inline {
   --font-sans: "Archivo", system-ui, ui-sans-serif, sans-serif;
   --font-display: "Anton", "Archivo", sans-serif;
-  --font-mono: "Google Sans Code", ui-monospace, "Cascadia Code", "Fira Code",
-    monospace;
+  --font-mono: "Courier Prime", "Courier New", ui-monospace, monospace;
 
   /* spec-sheet chrome world — fixed print palette, independent of the
      user-selectable terminal themes (--t-*) that rule inside the terminal */
