@@ -50,7 +50,7 @@ export function WpmChart({ bins }: { bins: SecondBin[] }) {
                 x2={W - PAD.right}
                 y1={gy}
                 y2={gy}
-                stroke="var(--t-edge)"
+                stroke="rgba(255,255,255,0.1)"
                 strokeWidth="1"
               />
               <text
@@ -59,7 +59,7 @@ export function WpmChart({ bins }: { bins: SecondBin[] }) {
                 textAnchor="end"
                 className="font-sans"
                 fontSize="10"
-                fill="var(--t-dim)"
+                fill="var(--w-legend-dim)"
               >
                 {fmtInt(value)}
               </text>
@@ -75,7 +75,7 @@ export function WpmChart({ bins }: { bins: SecondBin[] }) {
               textAnchor="middle"
               className="font-sans"
               fontSize="10"
-              fill="var(--t-dim)"
+              fill="var(--w-legend-dim)"
             >
               {b.sec}
             </text>
@@ -86,7 +86,7 @@ export function WpmChart({ bins }: { bins: SecondBin[] }) {
         <motion.path
           d={smoothPath(rawPts)}
           fill="none"
-          stroke="var(--t-faint)"
+          stroke="rgba(207,209,213,0.35)"
           strokeWidth="1.5"
           initial={{ pathLength: 0 }}
           animate={{ pathLength: 1 }}
@@ -96,7 +96,7 @@ export function WpmChart({ bins }: { bins: SecondBin[] }) {
         <motion.path
           d={smoothPath(smoothPts)}
           fill="none"
-          stroke="var(--t-accent)"
+          stroke="var(--w-readout)"
           strokeWidth="2.5"
           strokeLinecap="round"
           initial={{ pathLength: 0 }}
@@ -113,7 +113,7 @@ export function WpmChart({ bins }: { bins: SecondBin[] }) {
               animate={{ opacity: 1, scale: 1 }}
               transition={{ delay: 0.7 }}
             >
-              <circle cx={x(b.sec)} cy={y(b.raw)} r="3.5" fill="var(--t-err)" />
+              <circle cx={x(b.sec)} cy={y(b.raw)} r="3.5" fill="var(--w-stop)" />
             </motion.g>
           ))}
 
@@ -123,7 +123,7 @@ export function WpmChart({ bins }: { bins: SecondBin[] }) {
             x2={x(hovered.sec)}
             y1={PAD.top}
             y2={PAD.top + innerH}
-            stroke="var(--t-dim)"
+            stroke="var(--w-legend-dim)"
             strokeWidth="1"
             strokeDasharray="3 3"
           />
@@ -132,29 +132,29 @@ export function WpmChart({ bins }: { bins: SecondBin[] }) {
 
       {hovered && (
         <div
-          className="pointer-events-none absolute -translate-x-1/2 rounded-lg border border-edge bg-surface px-3 py-1.5 font-sans text-xs shadow-lg"
+          className="readout pointer-events-none absolute -translate-x-1/2 px-3 py-1.5 font-mono text-xs"
           style={{
             left: `${(x(hovered.sec) / W) * 100}%`,
             top: 0,
           }}
         >
-          <span className="text-dim">{hovered.sec}s · </span>
-          <span className="font-semibold text-accent">{fmtInt(hovered.smooth)} wpm</span>
+          <span className="opacity-70">{hovered.sec}s · </span>
+          <span className="font-semibold">{fmtInt(hovered.smooth)} wpm</span>
           {hovered.errors > 0 && (
-            <span className="text-err"> · {hovered.errors} err</span>
+            <span className="text-stop"> · {hovered.errors} err</span>
           )}
         </div>
       )}
 
-      <div className="mt-1 flex justify-center gap-5 font-sans text-[11px] text-faint">
+      <div className="placard mt-2 flex justify-center gap-5 text-[8px]">
         <span className="inline-flex items-center gap-1.5">
-          <span className="h-0.5 w-4 rounded bg-accent" /> wpm
+          <span className="h-[2px] w-4 bg-readout" /> wpm
         </span>
         <span className="inline-flex items-center gap-1.5">
-          <span className="h-0.5 w-4 rounded bg-faint" /> raw
+          <span className="h-px w-4 bg-legend-dim" /> raw
         </span>
         <span className="inline-flex items-center gap-1.5">
-          <span className="size-2 rounded-full bg-err" /> errors
+          <span className="size-2 rounded-full bg-stop" /> errors
         </span>
       </div>
     </div>

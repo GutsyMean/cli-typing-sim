@@ -1,5 +1,5 @@
 import { motion } from 'motion/react'
-import { useEffect } from 'react'
+import { useEffect, useState } from 'react'
 import { CategoryPicker } from '../components/config/CategoryPicker'
 import { ConfigBar } from '../components/config/ConfigBar'
 import { OptionsPanel } from '../components/config/OptionsPanel'
@@ -10,7 +10,8 @@ import { useHistory } from '../history/historyStore'
 import { LearnOverview } from '../learn/components/LearnOverview'
 import { useSettings } from '../settings/settingsStore'
 
-function Section({
+/** A panel module bolted to the console, with its engraved placard. */
+function Module({
   title,
   children,
   delay = 0,
@@ -24,10 +25,12 @@ function Section({
       initial={{ opacity: 0, y: 12 }}
       animate={{ opacity: 1, y: 0 }}
       transition={{ delay, type: 'spring', bounce: 0, visualDuration: 0.4 }}
+      className="module p-4 pt-3 sm:p-5 sm:pt-3.5"
     >
-      <h2 className="mb-3 font-sans text-[11px] font-semibold tracking-[0.18em] text-faint uppercase">
-        {title}
-      </h2>
+      <div className="mb-4 flex items-center gap-3 px-4">
+        <h2 className="placard text-[10px]">{title}</h2>
+        <span aria-hidden className="h-px flex-1 bg-console-edge" />
+      </div>
       {children}
     </motion.section>
   )
@@ -35,6 +38,12 @@ function Section({
 
 export function HomeScreen({ onStart }: { onStart: () => void }) {
   const learnMode = useSettings((s) => s.mode === 'learn')
+  // lamp-test: flash every lens once at power-up
+  const [lampTest, setLampTest] = useState(true)
+  useEffect(() => {
+    const id = window.setTimeout(() => setLampTest(false), 1400)
+    return () => window.clearTimeout(id)
+  }, [])
 
   useEffect(() => {
     const onKey = (e: KeyboardEvent) => {
@@ -50,80 +59,85 @@ export function HomeScreen({ onStart }: { onStart: () => void }) {
   }, [onStart])
 
   return (
-    <div className="mx-auto w-full max-w-4xl">
-      <header className="mb-10 flex flex-wrap items-end justify-between gap-4">
-        <div>
-          <h1 className="font-mono text-4xl font-bold text-fg">
-            <span className="text-accent">term</span>type
-            <motion.span
-              aria-hidden
-              className="ml-1 inline-block h-8 w-[0.55em] translate-y-1 rounded-[3px] bg-accent"
-              animate={{ opacity: [1, 1, 0, 0] }}
-              transition={{ duration: 1.1, times: [0, 0.45, 0.55, 1], repeat: Infinity }}
-            />
-          </h1>
-          <p className="mt-2 font-sans text-[15px] text-dim">
-            muscle memory for the command line
-          </p>
+    <div className={`mx-auto w-full max-w-4xl ${lampTest ? 'lamp-test' : ''}`}>
+      {/* the console masthead */}
+      <motion.header
+        initial={{ opacity: 0, y: 12 }}
+        animate={{ opacity: 1, y: 0 }}
+        transition={{ type: 'spring', bounce: 0, visualDuration: 0.4 }}
+        className="module mb-6 p-5 sm:p-6"
+      >
+        <div className="flex flex-wrap items-center justify-between gap-x-8 gap-y-5 px-2">
+          <div className="min-w-0">
+            <h1 className="font-mono text-3xl font-semibold tracking-tight text-legend sm:text-4xl">
+              termtype
+            </h1>
+            <p className="mt-1.5 text-[15px] text-legend-dim">
+              muscle memory for the command line
+            </p>
+            <p className="placard mt-3 text-[9px]">
+              unit tt-1979 · 1,900+ commands · 3,500+ flags · operator console
+            </p>
+          </div>
+          <button
+            type="button"
+            onClick={onStart}
+            className={`lens px-8 py-4 text-[14px] font-semibold tracking-[0.14em] uppercase ${
+              'lens-lit-run'
+            }`}
+          >
+            {learnMode ? 'run · learn' : 'run'}
+          </button>
         </div>
-        <motion.button
-          type="button"
-          onClick={onStart}
-          whileHover={{ y: -2 }}
-          whileTap={{ scale: 0.97 }}
-          className="rounded-lg bg-accent px-6 py-3 font-sans text-[15px] font-semibold text-term shadow-lg shadow-accent/20"
-        >
-          {learnMode ? 'start learning' : 'start typing'}
-        </motion.button>
-      </header>
+      </motion.header>
 
-      <div className="flex flex-col gap-9">
-        <Section title="test">
+      <div className="flex flex-col gap-5">
+        <Module title="test program">
           <ConfigBar />
-        </Section>
+        </Module>
 
-        <Section title="command sets" delay={0.05}>
+        <Module title="command sets" delay={0.05}>
           <CategoryPicker />
-        </Section>
+        </Module>
 
         {learnMode && (
-          <Section title="learn progress" delay={0.075}>
+          <Module title="learn progress" delay={0.075}>
             <LearnOverview />
-          </Section>
+          </Module>
         )}
 
-        <Section title="theme" delay={0.1}>
+        <Module title="crt display" delay={0.1}>
           <ThemeGrid />
-        </Section>
+        </Module>
 
-        <Section title="options" delay={0.15}>
+        <Module title="options" delay={0.15}>
           <OptionsPanel />
-        </Section>
+        </Module>
 
         {!learnMode && (
-          <Section title="history" delay={0.2}>
+          <Module title="operator log" delay={0.2}>
             <HistoryGraph />
             <HistoryEmptyHint />
-          </Section>
+          </Module>
         )}
       </div>
 
-      <footer className="mt-12 flex flex-col items-center gap-3 border-t border-edge pt-6 pb-4">
-        <div className="flex items-center justify-center gap-6">
+      <footer className="mt-8 flex flex-col items-center gap-3 pb-4">
+        <div className="flex flex-wrap items-center justify-center gap-x-6 gap-y-2">
           <KeyHint keys={['enter']} label={learnMode ? 'start learning' : 'start'} />
-          <span className="font-sans text-[13px] text-faint">
-            during a test: <span className="text-dim">enter</span> runs a command ·{' '}
-            <span className="text-dim">tab+enter</span> restarts ·{' '}
-            <span className="text-dim">esc</span> quits
+          <span className="text-[13px] text-legend-dim">
+            during a test: <b className="text-legend">enter</b> runs a command ·{' '}
+            <b className="text-legend">tab+enter</b> restarts ·{' '}
+            <b className="text-legend">esc</b> quits
           </span>
         </div>
-        <span className="font-sans text-[11px] text-faint">
+        <span className="text-[12px] text-legend-dim">
           command examples from{' '}
           <a
             href="https://github.com/tldr-pages/tldr"
             target="_blank"
             rel="noreferrer"
-            className="underline decoration-faint hover:text-dim"
+            className="underline hover:text-legend"
           >
             tldr-pages
           </a>{' '}
@@ -132,7 +146,7 @@ export function HomeScreen({ onStart }: { onStart: () => void }) {
             href="https://github.com/withfig/autocomplete"
             target="_blank"
             rel="noreferrer"
-            className="underline decoration-faint hover:text-dim"
+            className="underline hover:text-legend"
           >
             @withfig/autocomplete
           </a>{' '}
@@ -147,8 +161,8 @@ function HistoryEmptyHint() {
   const count = useHistory((s) => s.entries.length)
   if (count >= 2) return null
   return (
-    <p className="rounded-lg border border-dashed border-edge px-4 py-6 text-center font-sans text-[13px] text-faint">
-      finish your first test and your progress graph will grow here.
+    <p className="rounded-sm border border-dashed border-console-edge px-4 py-6 text-center text-[13px] text-legend-dim">
+      no runs on the log — finish your first test and your progress graph will grow here.
     </p>
   )
 }

@@ -1,14 +1,18 @@
 @import "tailwindcss";
 
 /*
- * Every color utility maps to a --t-* custom property that applyTheme.ts
- * writes onto <html>, so switching themes restyles the whole app instantly.
+ * Two token layers:
+ *  --t-*  terminal theme vars written by applyTheme.ts — everything behind
+ *         the CRT glass stays themed.
+ *  --w-*  the midnight machine room — matte charcoal panels, engraved
+ *         legends, backlit annunciator lenses, amber segment readouts.
+ *         Fixed; themes never touch it.
  */
 @theme inline {
-  --font-sans: "Outfit", system-ui, ui-sans-serif, sans-serif;
-  --font-mono: "Google Sans Code", ui-monospace, "Cascadia Code", "Fira Code",
-    monospace;
+  --font-sans: "Archivo Narrow", system-ui, ui-sans-serif, sans-serif;
+  --font-mono: "IBM Plex Mono", ui-monospace, monospace;
 
+  /* terminal-interior utilities (theme-driven) */
   --color-term: var(--t-bg);
   --color-chrome: var(--t-chrome);
   --color-surface: var(--t-surface);
@@ -24,6 +28,18 @@
   --color-p-path: var(--t-p-path);
   --color-p-sym: var(--t-p-sym);
   --color-edge: var(--t-edge);
+
+  /* machine-room world (fixed) */
+  --color-room: var(--w-room);
+  --color-console: var(--w-console);
+  --color-console-edge: var(--w-console-edge);
+  --color-legend: var(--w-legend);
+  --color-legend-dim: var(--w-legend-dim);
+  --color-lamp: var(--w-lamp);
+  --color-lamp-face: var(--w-lamp-face);
+  --color-run: var(--w-run);
+  --color-stop: var(--w-stop);
+  --color-readout: var(--w-readout);
 }
 
 :root {
@@ -44,32 +60,181 @@
   --t-p-sym: #f8f8f2;
   --t-edge: #3b3d4f;
 
+  /* the machine room at midnight */
+  --w-room: #0b0c0e;
+  --w-console: #17181c; /* matte panel */
+  --w-console-edge: #2b2d33;
+  --w-legend: #cfd1d5; /* engraved legend */
+  --w-legend-dim: #85888f;
+  --w-lamp: #ffc46b; /* warm incandescent through the lens */
+  --w-lamp-face: #241703; /* legend on a lit lens */
+  --w-run: #86e29b; /* green RUN lens */
+  --w-stop: #ff7266; /* red STOP lens */
+  --w-readout: #ffb02e; /* amber segment readout */
+
   --terminal-font-size: 1.125rem;
 }
 
 html {
-  background: var(--t-chrome);
+  background: var(--w-room);
   color-scheme: dark;
-}
-
-html[data-light] {
-  color-scheme: light;
 }
 
 body {
   font-family: var(--font-sans);
-  color: var(--t-fg);
+  color: var(--w-legend);
   -webkit-font-smoothing: antialiased;
-  transition: background-color 200ms ease;
+  /* the dark aisle: a faint overhead pool of light, then nothing */
+  background:
+    radial-gradient(
+      90rem 40rem at 50% -8rem,
+      rgba(255, 214, 150, 0.05),
+      transparent 60%
+    ),
+    var(--w-room);
+}
+
+:focus-visible {
+  outline: 2px solid var(--w-lamp);
+  outline-offset: 2px;
 }
 
 ::selection {
-  background: color-mix(in srgb, var(--t-accent) 30%, transparent);
+  background: color-mix(in srgb, var(--w-lamp) 40%, transparent);
 }
 
 * {
   scrollbar-width: thin;
-  scrollbar-color: var(--t-faint) transparent;
+  scrollbar-color: var(--w-console-edge) transparent;
+}
+
+/* ---- console hardware vocabulary ---------------------------------- */
+
+/* a panel module bolted to the console, corner screws included */
+.module {
+  position: relative;
+  background: linear-gradient(180deg, #1a1b20, var(--w-console));
+  border: 1px solid var(--w-console-edge);
+  border-radius: 4px;
+  box-shadow:
+    inset 0 1px 0 rgba(255, 255, 255, 0.05),
+    0 10px 30px -18px rgba(0, 0, 0, 0.9);
+}
+.module::before,
+.module::after {
+  content: "";
+  position: absolute;
+  top: 9px;
+  width: 7px;
+  height: 7px;
+  border-radius: 9999px;
+  background:
+    linear-gradient(
+      45deg,
+      transparent 42%,
+      #3a3d44 42%,
+      #3a3d44 58%,
+      transparent 58%
+    ),
+    radial-gradient(circle at 35% 30%, #4a4d55, #22242a 70%);
+  box-shadow: inset 0 1px 2px rgba(0, 0, 0, 0.8);
+}
+.module::before {
+  left: 9px;
+}
+.module::after {
+  right: 9px;
+}
+
+/* engraved placard lettering */
+.placard {
+  font-family: var(--font-sans);
+  font-weight: 600;
+  text-transform: uppercase;
+  letter-spacing: 0.22em;
+  color: var(--w-legend-dim);
+  text-shadow: 0 -1px 0 rgba(0, 0, 0, 0.9);
+}
+
+/* annunciator button: dark lens at rest, warm lamp when latched */
+.lens {
+  border: 1px solid var(--w-console-edge);
+  border-radius: 3px;
+  background: linear-gradient(180deg, #212228, #17181c);
+  color: var(--w-legend-dim);
+  box-shadow:
+    inset 0 2px 5px rgba(0, 0, 0, 0.65),
+    inset 0 -1px 0 rgba(255, 255, 255, 0.04);
+  transition:
+    background 150ms ease,
+    color 150ms ease,
+    box-shadow 150ms ease;
+}
+.lens:hover {
+  color: var(--w-legend);
+}
+
+.lens-lit {
+  border-color: color-mix(in srgb, var(--w-lamp) 55%, var(--w-console-edge));
+  background:
+    radial-gradient(
+      120% 160% at 50% 20%,
+      #ffe1ac,
+      var(--w-lamp) 55%,
+      #d99334 100%
+    );
+  color: var(--w-lamp-face);
+  font-weight: 700;
+  box-shadow:
+    inset 0 1px 2px rgba(255, 255, 255, 0.55),
+    inset 0 -2px 5px rgba(140, 84, 8, 0.55),
+    0 0 18px -2px color-mix(in srgb, var(--w-lamp) 65%, transparent);
+}
+
+.lens-lit-run {
+  border-color: color-mix(in srgb, var(--w-run) 55%, var(--w-console-edge));
+  background:
+    radial-gradient(
+      120% 160% at 50% 20%,
+      #d6ffdf,
+      var(--w-run) 55%,
+      #3f9c58 100%
+    );
+  color: #06230f;
+  font-weight: 700;
+  box-shadow:
+    inset 0 1px 2px rgba(255, 255, 255, 0.55),
+    inset 0 -2px 5px rgba(16, 84, 36, 0.6),
+    0 0 20px -2px color-mix(in srgb, var(--w-run) 60%, transparent);
+}
+
+/* the amber seven-segment readout window */
+.readout {
+  background: #0a0a0c;
+  border: 1px solid var(--w-console-edge);
+  border-radius: 3px;
+  box-shadow: inset 0 2px 8px rgba(0, 0, 0, 0.9);
+  color: var(--w-readout);
+  text-shadow: 0 0 10px color-mix(in srgb, var(--w-readout) 55%, transparent);
+}
+
+/* lamp-test: every lens flashes once at power-up */
+@keyframes lamp-test {
+  0% {
+    filter: brightness(1);
+  }
+  18% {
+    filter: brightness(2.6) saturate(0.6);
+  }
+  40% {
+    filter: brightness(1);
+  }
+  100% {
+    filter: brightness(1);
+  }
+}
+.lamp-test .lens {
+  animation: lamp-test 1.1s ease-out both;
 }
 
 @keyframes caret-blink {
@@ -109,4 +274,17 @@ body {
   font-size: var(--terminal-font-size);
   line-height: 1.9;
   font-variant-ligatures: none;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .caret-blink,
+  .lamp-test .lens {
+    animation: none;
+  }
+  *,
+  *::before,
+  *::after {
+    animation-duration: 0.01ms !important;
+    transition-duration: 0.01ms !important;
+  }
 }

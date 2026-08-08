@@ -1,5 +1,4 @@
-import { motion } from 'motion/react'
-
+/** A small annunciator lamp: dark lens off, warm lamp when latched on. */
 export function Toggle({
   checked,
   onChange,
@@ -15,21 +14,22 @@ export function Toggle({
       role="switch"
       aria-checked={checked}
       onClick={() => onChange(!checked)}
-      className="group flex w-full items-center justify-between gap-3 rounded-lg px-1 py-1.5 text-left"
+      className="group flex w-full items-center justify-between gap-3 px-1 py-1.5 text-left"
     >
-      <span className="font-sans text-[13px] text-dim transition-colors group-hover:text-fg">
+      <span
+        className={`text-[14px] ${
+          checked ? 'text-legend' : 'text-legend-dim group-hover:text-legend'
+        }`}
+      >
         {label}
       </span>
       <span
-        className={`flex h-5 w-9 shrink-0 items-center rounded-full border px-0.5 transition-colors duration-200 ${
-          checked ? 'justify-end border-transparent bg-accent/90' : 'justify-start border-edge bg-raised'
+        aria-hidden
+        className={`lens flex h-5 w-10 items-center justify-center text-[9px] font-semibold tracking-[0.12em] uppercase ${
+          checked ? 'lens-lit' : ''
         }`}
       >
-        <motion.span
-          layout
-          transition={{ type: 'spring', stiffness: 700, damping: 40 }}
-          className={`size-4 rounded-full ${checked ? 'bg-term' : 'bg-dim'}`}
-        />
+        {checked ? 'on' : 'off'}
       </span>
     </button>
   )

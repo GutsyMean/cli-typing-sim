@@ -45,28 +45,37 @@ export function LearnSummaryScreen({
 
   if (summary.nothingToLearn) {
     return (
-      <div className="mx-auto flex w-full max-w-2xl flex-col items-center gap-6 pt-16 text-center">
-        <h2 className="font-mono text-3xl font-bold text-accent">all mastered ✓</h2>
-        <p className="font-sans text-[15px] text-dim">
-          every command in your selected categories and difficulties is already at full
-          mastery. widen the selection on the config screen — or reset progress if you
-          want to drill them again.
-        </p>
-        <div className="flex items-center gap-6">
-          <KeyHint keys={['esc']} label="back to config" />
+      <div className="mx-auto w-full max-w-2xl pt-16">
+        <div className="module p-8 text-center">
+          <h2 className="lens lens-lit-run mx-auto inline-block px-4 py-2 text-xl tracking-[0.12em] uppercase">
+            all mastered
+          </h2>
+          <p className="mt-5 text-[15px] text-legend">
+            every command in your selected categories and difficulties is already at full
+            mastery.{' '}
+            <span className="text-legend-dim">
+              widen the selection on the config screen — or reset progress if you want to
+              drill them again.
+            </span>
+          </p>
+          <div className="mt-6 flex items-center justify-center">
+            <KeyHint keys={['esc']} label="back to config" />
+          </div>
         </div>
       </div>
     )
   }
 
   return (
-    <div className="mx-auto flex w-full max-w-3xl flex-col gap-8">
-      <div>
-        <div className="font-sans text-sm font-medium text-dim">commands mastered</div>
-        <div className="font-mono text-6xl font-bold text-accent tabular-nums">
-          {summary.mastered}
+    <div className="mx-auto flex w-full max-w-3xl flex-col gap-6">
+      <div className="module flex flex-wrap items-start gap-x-8 gap-y-3 p-5 pt-4">
+        <div className="flex flex-col gap-1.5">
+          <div className="readout px-5 py-2 font-mono text-6xl font-semibold tabular-nums">
+            {summary.mastered}
+          </div>
+          <div className="placard text-center text-[9px]">commands mastered</div>
         </div>
-        <div className="mt-1 font-sans text-sm text-faint">
+        <div className="pt-2 text-[13px] text-legend-dim">
           {summary.totalAnswered} answers across {summary.roundsCompleted} completed round
           {summary.roundsCompleted === 1 ? '' : 's'}
         </div>
@@ -83,12 +92,12 @@ export function LearnSummaryScreen({
           .map((t) => {
             const s = summary.byType[t]
             return (
-              <div key={t} className="rounded-xl border border-edge bg-term p-4">
-                <div className="font-sans text-xs font-medium text-faint">{typeLabel[t]}</div>
-                <div className="mt-1 font-mono text-2xl font-semibold text-fg tabular-nums">
+              <div key={t} className="module p-3.5">
+                <div className="placard text-[8px]">{typeLabel[t]}</div>
+                <div className="mt-1.5 font-mono text-2xl font-semibold text-readout tabular-nums">
                   {fmtPercent((s.correct / s.total) * 100)}
                 </div>
-                <div className="font-sans text-xs text-dim">
+                <div className="text-xs text-legend-dim">
                   {s.correct}/{s.total} correct
                 </div>
               </div>
@@ -101,21 +110,25 @@ export function LearnSummaryScreen({
           initial={{ opacity: 0, y: 10 }}
           animate={{ opacity: 1, y: 0 }}
           transition={{ delay: 0.2 }}
+          className="module p-4 pt-3"
         >
-          <h3 className="mb-3 font-sans text-sm font-medium text-dim">
-            needs more work
-          </h3>
-          <div className="flex flex-col gap-2">
+          <h3 className="placard mb-3 px-4 text-[9px]">needs more work</h3>
+          <div className="flex flex-col gap-1.5">
             {summary.weakest.map((w) => (
               <div
                 key={w.label}
-                className="flex items-baseline justify-between gap-4 rounded-lg border border-edge bg-surface px-3 py-2"
+                className="lens flex items-baseline justify-between gap-4 px-3 py-2"
               >
                 <div className="min-w-0">
-                  <div className="truncate font-mono text-sm text-fg">{w.label}</div>
-                  <div className="truncate font-sans text-xs text-faint">{w.desc}</div>
+                  <div className="truncate font-mono text-sm font-semibold text-legend">
+                    {w.label}
+                  </div>
+                  <div className="truncate text-xs text-legend-dim">{w.desc}</div>
                 </div>
-                <span className="shrink-0 font-sans text-xs text-err">
+                <span
+                  className="shrink-0 rounded-[3px] px-1.5 py-0.5 text-xs font-bold"
+                  style={{ background: 'var(--w-stop)', color: '#2b0a06' }}
+                >
                   ×{w.misses} missed
                 </span>
               </div>

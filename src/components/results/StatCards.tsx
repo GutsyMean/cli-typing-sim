@@ -25,7 +25,7 @@ function CountUp({
   return <>{format(display)}</>
 }
 
-function BigStat({
+function BigReadout({
   label,
   value,
   format,
@@ -37,40 +37,43 @@ function BigStat({
   delay?: number
 }) {
   return (
-    <div>
-      <div className="font-sans text-sm font-medium text-dim">{label}</div>
-      <div className="font-mono text-6xl font-bold text-accent tabular-nums">
+    <div className="flex flex-col gap-1.5">
+      <div className="readout px-5 py-2 font-mono text-6xl font-semibold tabular-nums">
         <CountUp value={value} format={format} delay={delay} />
       </div>
+      <div className="placard text-center text-[9px]">{label}</div>
     </div>
   )
 }
 
-function SmallStat({ label, children }: { label: string; children: React.ReactNode }) {
+function SmallReadout({ label, children }: { label: string; children: React.ReactNode }) {
   return (
-    <div>
-      <div className="font-sans text-xs font-medium text-faint">{label}</div>
-      <div className="font-mono text-2xl font-semibold text-fg tabular-nums">{children}</div>
+    <div className="flex flex-col gap-1">
+      <div className="readout px-3 py-1.5 font-mono text-2xl font-semibold tabular-nums">
+        {children}
+      </div>
+      <div className="placard text-center text-[8px]">{label}</div>
     </div>
   )
 }
 
+/** The console readout bank after a run. */
 export function StatCards({ metrics }: { metrics: TestMetrics }) {
   return (
-    <div className="flex flex-wrap items-end gap-x-12 gap-y-6">
-      <BigStat label="wpm" value={metrics.wpm} format={fmtInt} />
-      <BigStat label="acc" value={metrics.accuracy} format={fmtPercent} delay={0.1} />
-      <div className="flex gap-x-10">
-        <SmallStat label="raw">
+    <div className="module flex flex-wrap items-start gap-x-8 gap-y-4 p-5 pt-4">
+      <BigReadout label="words per minute" value={metrics.wpm} format={fmtInt} />
+      <BigReadout label="accuracy" value={metrics.accuracy} format={fmtPercent} delay={0.1} />
+      <div className="flex flex-wrap gap-x-5 gap-y-3 pt-1">
+        <SmallReadout label="raw">
           <CountUp value={metrics.raw} format={fmtInt} delay={0.2} />
-        </SmallStat>
-        <SmallStat label="consistency">
+        </SmallReadout>
+        <SmallReadout label="consistency">
           <CountUp value={metrics.consistency} format={fmtPercent} delay={0.25} />
-        </SmallStat>
-        <SmallStat label="time">{fmtClock(metrics.seconds)}</SmallStat>
-        <SmallStat label="chars">
+        </SmallReadout>
+        <SmallReadout label="time">{fmtClock(metrics.seconds)}</SmallReadout>
+        <SmallReadout label="chars">
           {metrics.correctChars}/{metrics.totalChars}
-        </SmallStat>
+        </SmallReadout>
       </div>
     </div>
   )

@@ -40,9 +40,10 @@ export function ResultsScreen({
   const { metrics, settings } = result
 
   return (
-    <div className="mx-auto flex w-full max-w-4xl flex-col gap-8">
-      <div className="flex flex-wrap items-center gap-2 font-sans text-xs text-faint">
-        <span className="rounded-md bg-surface px-2 py-1">
+    <div className="mx-auto flex w-full max-w-4xl flex-col gap-6">
+      <div className="flex flex-wrap items-center gap-2">
+        <span className="placard text-[9px]">end of run</span>
+        <span className="lens lens-lit px-2 py-0.5 text-[11px] uppercase">
           {settings.mode === 'timed'
             ? `${settings.duration}s sprint`
             : settings.mode === 'endless'
@@ -50,7 +51,7 @@ export function ResultsScreen({
               : `${settings.commandCount} commands`}
         </span>
         {settings.categories.map((c) => (
-          <span key={c} className="rounded-md bg-surface px-2 py-1 font-mono">
+          <span key={c} className="lens px-2 py-0.5 font-mono text-[11px]">
             {categoryLabel(c)}
           </span>
         ))}
@@ -62,8 +63,9 @@ export function ResultsScreen({
         initial={{ opacity: 0, y: 10 }}
         animate={{ opacity: 1, y: 0 }}
         transition={{ delay: 0.15 }}
-        className="rounded-xl border border-edge bg-term p-5"
+        className="module p-4 pt-3"
       >
+        <div className="placard mb-3 px-4 text-[9px]">wpm over time</div>
         <WpmChart bins={metrics.bins} />
       </motion.div>
 
@@ -80,7 +82,7 @@ export function ResultsScreen({
         <KeyHint keys={['esc']} label="config" />
       </div>
 
-      <p className="text-center font-sans text-[11px] text-faint">
+      <p className="text-center text-[12px] text-legend-dim">
         wpm counts correct characters over active typing time — pauses between commands
         (after the last character and before the next one) don&apos;t count against you.
       </p>

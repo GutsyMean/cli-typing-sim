@@ -1,40 +1,44 @@
-import { motion } from 'motion/react'
 import { useSettings } from '../../settings/settingsStore'
 import { themes } from '../../settings/themes'
 
+/** CRT phosphor options: small tube previews; the fitted one's placard lights. */
 export function ThemeGrid() {
   const current = useSettings((s) => s.theme)
   const set = useSettings((s) => s.set)
 
   return (
-    <div className="grid grid-cols-2 gap-2 sm:grid-cols-4">
+    <div className="grid grid-cols-2 gap-2.5 sm:grid-cols-4">
       {themes.map((theme) => {
         const active = theme.id === current
         const v = theme.vars
         return (
-          <motion.button
+          <button
             key={theme.id}
             type="button"
+            aria-pressed={active}
             onClick={() => set('theme', theme.id)}
-            whileHover={{ y: -2 }}
-            whileTap={{ scale: 0.97 }}
-            className={`overflow-hidden rounded-lg border text-left transition-colors duration-150 ${
-              active ? 'border-accent/70' : 'border-edge hover:border-faint'
-            }`}
-            style={{ background: v['--t-bg'] }}
+            className="group text-left"
           >
-            <span className="flex items-center gap-1.5 px-3 pt-2.5">
-              <span className="size-2.5 rounded-full" style={{ background: v['--t-accent'] }} />
-              <span className="size-2.5 rounded-full" style={{ background: v['--t-p-path'] }} />
-              <span className="size-2.5 rounded-full" style={{ background: v['--t-err'] }} />
+            <span
+              className={`block rounded-sm px-2.5 py-2.5 font-mono text-[11px] shadow-[inset_0_0_0_1px_rgba(0,0,0,0.7),inset_0_2px_8px_rgba(0,0,0,0.5)] ${
+                active
+                  ? 'ring-1 ring-lamp/60 shadow-[inset_0_0_0_1px_rgba(0,0,0,0.7),0_0_16px_-4px_var(--w-lamp)]'
+                  : ''
+              }`}
+              style={{ background: v['--t-bg'] }}
+            >
+              <span style={{ color: v['--t-p-user'] }}>$</span>{' '}
+              <span style={{ color: v['--t-fg'] }}>ls</span>{' '}
+              <span style={{ color: v['--t-accent'] }}>-la</span>
             </span>
             <span
-              className="block px-3 pb-2.5 pt-1.5 font-mono text-xs font-medium"
-              style={{ color: v['--t-fg'] }}
+              className={`lens mt-1.5 block truncate px-2 py-1 text-center text-[10px] tracking-[0.1em] uppercase ${
+                active ? 'lens-lit' : 'group-hover:text-legend'
+              }`}
             >
               {theme.label}
             </span>
-          </motion.button>
+          </button>
         )
       })}
     </div>
